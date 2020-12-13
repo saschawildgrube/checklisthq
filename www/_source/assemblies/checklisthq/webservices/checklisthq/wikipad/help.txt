@@ -1,0 +1,5 @@
+PURPOSE
+
+	* to add recurring tasks to a user's wikipad task list
+
+{COMMAND_REFERENCE}

@@ -1,0 +1,4 @@
+LEVEL	;CONTEXT																		;LABEL														;CONDITIONS
+0			;https://www.wildgrube.com/about						;?TID_NAVIGATION_ABOUT?						;
+0			;https://www.wildgrube.com/dataprotection		;?TID_NAVIGATION_DATAPROTECTION?	;
+0			;"https://www.wildgrube.com/start/#contact"	;?TID_NAVIGATION_CONTACT?					;

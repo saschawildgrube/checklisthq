@@ -1,0 +1,135 @@
+TID_TITLE
+Checklist HQ
+TID_TITLE_DEFAULT
+?TID_TITLE?
+TID_DEFAULT_MAIL_SENDER_NAME
+Checklist HQ
+TID_DEFAULT_MAIL_SENDER_ADDRESS
+sascha@wildgrube.com
+TID_META_KEYWORDS_DEFAULT
+checklist tasklist todolist wikipad
+TID_META_DESCRIPTION_DEFAULT
+Checklist HQ is about to become your one-stop-shop for todos. Use it to manage your todo list, links, notes and recurring tasks using wiki syntax.
+TID_TOOLTIP_SSL
+This page has been transferred using HTTPS.
+TID_COPYRIGHT
+Copyright &copy; {COPYRIGHT_PERIOD} by Sascha Wildgrube
+TID_NAVIGATION_START
+Welcome
+TID_NAVIGATION_TASKS
+Tasks
+TID_NAVIGATION_LINKS
+Links
+TID_NAVIGATION_NOTES
+Notes
+TID_NAVIGATION_RECURRING
+Recurring
+TID_NAVIGATION_HEADER
+Header 
+TID_NAVIGATION_USERSETTINGS
+My Settings
+TID_NAVIGATION_ABOUT
+About
+TID_NAVIGATION_DATAPROTECTION
+Data Protection
+TID_NAVIGATION_CONTACT
+Contact
+TID_NAVIGATION_SIGNIN
+Sign in
+TID_NAVIGATION_SIGNOUT
+Deleting your account
+TID_NAVIGATION_LOGIN
+Login
+TID_PRIVILEGE_SYSTEMADMIN
+System Administrator
+TID_TEXT_LOGINSTATUSWELCOMEUSER
+Hi {USERNAME}!
+TID_BUTTON_WELCOME
+Get Started
+TID_TITLE_WELCOME
+Welcome to Checklist HQ
+TID_TEXT_WELCOME
+Checklist HQ is the new home for your personal todo list and checklists.
+TID_TITLE_SIGNIN
+Sign in to Checklist HQ
+TID_TITLE_LOGIN
+Log in to Checklist HQ
+TID_TITLE_LOGOUT
+See you soon!
+TID_TEXT_LOGOUT
+Looking forward to see you again at Checklist HQ!
+TID_CONTENT_WIKIPADDEFAULT
+=This is your wikipad=
+You can edit it by clicking on the 'edit' tab.
+
+You can use wiki syntax when editing the wikipad.
+
+
+* You can use bullet lists
+* as you like
+
+# And numbered lists
+# with ease
+
+You can use [http://www.checklisthq.com Links].
+
+
+And Tables:
+{|
+!Header 1
+!Header 2
+|-
+|Cell 1
+|Cell 2
+|}
+TID_CONTENT_TASKSDEFAULT
+=WAITING FOR=
+* add tasks that you have delegated to others or you are awaiting a response
+=NEXT ACTION=
+* This is the next task on your task list. Do it now!
+=MAYBE=
+* Add fancy ideas here.
+TID_CONTENT_LINKSDEFAULT
+Add your favorites links here:
+* [http://www.example.com example.com]
+* [http://www.google.com google.com]
+* [http://www.wikipedia.org wikipedia.org]
+TID_CONTENT_RECURRINGDEFAULT
+Some tasks need to be done on a regular basis.
+
+Use the format below to set up task lists that should be added to your NEXT ACTION section on the task page.
+
+If you don't have a NEXT ACTION section on your task page, the tasks will be just added on top of the page.
+=DAILY=
+* Drink 1 liter of water
+=MONDAY=
+* Prepare for the week
+=FRIDAY=
+* Prepare for weekend
+=MONTHLY=
+* Check all reminders
+=QUARTERLY=
+* Check your long term investment portfolio
+=JANUARY=
+* Clean up the mess after new years eve party
+=DECEMBER=
+* Buy christmas gifts
+TID_CONTENT_HEADERDEFAULT
+You can edit this header [[header|here]].
+TID_LOGIN_INFO_SUCCESS
+Welcome back! Enjoy using Checklist HQ!
+TID_INFO_USER
+If you want to, you can access your dashboard page without authentication using the URL /user/yourusername. If you want to use this feature go to 'My Settings'.
+TID_TITLE_USER
+Dashboard
+TID_TEXT_RECURRING
+Use this page to configure recurring tasks.
+
+Recurring task are added to the "Tasks" page on top or after the =NEXT ACTION= header if it exists.
+
+Recurring tasks can be scheduled using the following headers:
+=DAILY= for daily tasks
+=MONDAY= to =SUNDAY= for weekly tasks on a specific day of the week
+=MONTHLY= tasks are added on the first day of each month
+=QUARTERLY= tasks are added on the first day of a new quarter
+=JANUARY= to =DECEMBER= are annual tasks added once a year on the first day of the corresponding month
