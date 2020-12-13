@@ -197,6 +197,12 @@
 					$arrayConfig);
 				$this->SetOutputItem("MODULE_HEADER",$headerwikipad->RenderModule());
 			}
+			
+			// FORK ME ON GITHUB
+			$this->IncludeElement('forkmeongithub');
+			$forkmeongithub = new CForkMeOnGithubElement($this,'default');
+			$this->SetOutputItem('FORKMEONGITHUB',$forkmeongithub->RenderForkMeOnGithub('saschawildgrube','checklisthq'));
+			
 
 
 		}
