@@ -1,10 +1,11 @@
 ={WDK} Release Notes=
 ==Version 0.0.0.76==
-NOT YET Baselined
+Baselined 2020-12-15
 
-* IMPORTANT
+* '''IMPORTANT'''
 ** Removed glyphicon support
 ** By default CWebsite::ActivateJQuery() function now includes JQuery 3 (instead of 1)
+** Renamed CBootstrapLayout and CBootstrapThemeLayout to CBootstrap3Layout and CBootstrap3ThemeLayout
 * Security
 ** No changes
 * Defects
@@ -19,7 +20,6 @@ NOT YET Baselined
 ** Removed no longer needed images used to construct a very old variant of the tab navigation element
 ** Moved function MakeTel() to wdk_html.inc
 ** Renamed CWebsite->ActivateBootstrap() to ActivateBootstrap3() to support multiple Bootstrap versions
-** Renamed CBootstrapLayout and CBootstrapThemeLayout to CBootstrap3Layout and CBootstrap3ThemeLayout
 ** Removed bootstrap files from the distribution. All files are now loaded from the corresponding CDNs.
 ** WDK JS functions to store and remember scroll positions are now JQuery 3 compatible.
 * New Features
@@ -38,7 +38,7 @@ NOT YET Baselined
 ==Version 0.0.0.75==
 Baselined 2020-10-20
 
-* IMPORTANT
+* '''IMPORTANT'''
 ** GetStage() has been renamed to GetEnvID()!
 ** GetDatabaseConfigID() has been renamed to GetEnvConfigID()!
 ** ICON SUPPORT HAS CHANGED SIGNIFICANTLY. CHECK YOUR ICONS, TOOLBARS, ETC.!

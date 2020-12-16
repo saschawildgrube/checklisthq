@@ -21,11 +21,10 @@
 * Update version in wdk.inc 
 * Remove the baseline date in wdk.inc
 * Update version in wdk.txt and add "WORK IN PROGRESS" after he version number
-* Add new version chapter in content_wdkdocs-prologue-releasenotes.txt:<pre>
-* Update your websites
+* Add new version chapter in content_wdkdocs-releasenotes.txt:<pre>
 ==Version 0.0.0.x WORK IN PROGRESS==
 NOT YET Baselined
-* IMPORTANT
+* '''IMPORTANT'''
 ** No issues
 * Security
 ** No Changes
@@ -40,3 +39,4 @@ NOT YET Baselined
 * Documentation
 ** No Changes
 </pre>
+* Update your websites
