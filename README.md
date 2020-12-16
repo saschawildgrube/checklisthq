@@ -5,7 +5,7 @@ Checklist HQ is the new home for your personal todo list and checklists.
 
 ## Installation
 * Setup a LAMP stack
-* Make sure your webserver supports the directoves in the .htaccess files or provide equivalent configuration
+* Make sure your webserver supports the directives in the .htaccess files or provide equivalent configuration
 * The /www/ folder is the document root
 * Adapt the functions in /www/_source/env.inc
 * Adapt the functions in /www/quality/testwebsite/env.inc
