@@ -44,6 +44,7 @@
 			
 			$arrayConfig["admin_email"] = GetAdminEmail();
 			$arrayConfig["seourl"] = "seourl";
+			$arrayConfig["opengraph"] = true;
 			
 			$arrayConfig["passwordpolicy"] = array(
 				"minimumlength" => 6,
@@ -120,22 +121,7 @@
 					.'&nbsp;'
 					.'?TID_TITLE?'));
 	
-			
-			// OPEN GRAPH
-			$this->AddHeader('<meta property="og:image" content="{IMAGEURL ID="opengraph_checklisthq"}"/>');  
-	   	$this->AddHeader('<meta property="og:image:width" content="1280"/>');
-	   	$this->AddHeader('<meta property="og:image:height" content="640"/>');
-	   	$arrayParams = array();
-	   	$arrayParams["content"] = $this->GetContent();
-	   	$strPreferredLink = $this->MakeSitemapURL($arrayParams,true);
-			$this->AddHeader('<meta property="og:url" content="'.$strPreferredLink.'"/>');
-			$this->AddHeader('<meta property="og:type" content="website"/>');
-			$this->AddHeader('<meta property="og:title" content="'.$this->CallbackGetWebsiteTitle().'"/>');
-			$this->AddHeader('<meta property="og:image:alt" content="'.$this->CallbackGetWebsiteTitle().'"/>');
-			$this->AddHeader('<meta property="og:description" content="'.$this->CallbackGetWebsiteDescription().'"/>');			
-			
-			
-			
+		
 			return $bResult;
 		}
 		
@@ -358,6 +344,11 @@
 				$this->SendMailToAdmin("LOGIN $strUserName","");
 			}
 			return $bResult;
+		}
+		
+		function OnGetOpenGraphImageURL()
+		{
+			return $this->GetImageURL('opengraph_checklisthq','png');
 		}
 
 	}
