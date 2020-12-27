@@ -4858,7 +4858,7 @@ FileRead(GetWDKDir() . "wdk_help.txt").
 		
 		function OnGetOpenGraphImageURL()
 		{
-			return $this->MakeImageURL('opengraph');	
+			return $this->GetImageURL('opengraph','png');	
 		}
 
 		
