@@ -2,7 +2,7 @@
 
 	class CMyContent extends CContent
 	{
-		function CallbackRenderContent(&$arrayItems)
+		function OnRenderContent(&$arrayItems)
 		{
 			$message = new CMessageElement($this->GetWebsite(),'info');
 			$arrayItems['MESSAGE'] = $message->RenderMessage($this->GetWebsite()->LoadString('TID_INFO_USER'));

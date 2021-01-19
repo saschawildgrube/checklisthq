@@ -25,23 +25,23 @@
 				array());
 		}
 		
-		function CallbackInitParameterDefinition(&$paramDef)
+		function OnInitParameterDefinition(&$paramDef)
 		{
-			return parent::CallbackInitParameterDefinition($paramDef);
+			return parent::OnInitParameterDefinition($paramDef);
 		}
 		
-		function CallbackInitCommandDefinition(&$commandDef)
+		function OnInitCommandDefinition(&$commandDef)
 		{
 			$commandDef->AddCommandDefinition('recurringtasks',array());
-			return parent::CallbackInitCommandDefinition($commandDef);
+			return parent::OnInitCommandDefinition($commandDef);
 		}
 		
-		function CallbackInit()
+		function OnInit()
 		{
-			return parent::CallbackInit();
+			return parent::OnInit();
 		}		
 		
-		function CallbackCommand($strCommand)
+		function OnCommand($strCommand)
 		{
 			switch ($strCommand)
 			{
@@ -50,7 +50,7 @@
 				return;
 
 			default:
-				parent::CallbackCommand($strCommand);
+				parent::OnCommand($strCommand);
 				return;
 			}
 		}

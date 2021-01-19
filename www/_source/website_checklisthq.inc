@@ -66,7 +66,7 @@
 					
 		}
 		
-		function CallbackInitAssemblyLine(&$assemblyLine)
+		function OnInitAssemblyLine(&$assemblyLine)
 		{
 			$assembly = new CAssembly($this,"checklisthq");
 			$assemblyLine->AddAssembly($assembly);
@@ -74,12 +74,12 @@
 			$assembly = new CAssembly($this,"google");
 			$assemblyLine->AddAssembly($assembly);
 			
-			parent::CallbackInitAssemblyLine($assemblyLine);
+			parent::OnInitAssemblyLine($assemblyLine);
 		}
 		
-		function CallbackInit()
+		function OnInit()
 		{
-			$bResult = parent::CallbackInit();
+			$bResult = parent::OnInit();
 
 			$this->AddHeader("<!--AVAILABILITY-CHECK-->");
 			
@@ -145,7 +145,7 @@
 
 
 
-		function CallbackPreContent()
+		function OnPreContent()
 		{
 	
 			if ($this->GetAuthUserID() != "")
@@ -157,7 +157,7 @@
 			}
 		}
 
-		function CallbackPostContent()
+		function OnPostContent()
 		{
 			// DATETIME
 			$this->IncludeElement("datetime");
@@ -194,7 +194,7 @@
 		}
 		
 		
-		function CallbackRenderSpecialContent($strContentID)
+		function OnRenderSpecialContent($strContentID)
 		{
 			if ($this->GetVar("signin") != "")
 			{
@@ -211,7 +211,7 @@
 			return "";
 		}
 
-		function CallbackRenderGenericOutputItem($strItem, $arrayAttributes)
+		function OnRenderGenericOutputItem($strItem, $arrayAttributes)
 		{
 			switch ($strItem)
 			{
@@ -220,14 +220,14 @@
 					ArrayGetValue($arrayAttributes,"app"),
 					ArrayGetValue($arrayAttributes,"email"));
 			default:
-				return parent::CallbackRenderGenericOutputItem($strItem, $arrayAttributes);
+				return parent::OnRenderGenericOutputItem($strItem, $arrayAttributes);
 			}
 		}
 		
 		
 
 
-		function CallbackRenderNavigation($strOutput)
+		function OnRenderNavigation($strOutput)
 		{
 
 			$navigationtree = new CNavigationTree();
@@ -279,7 +279,7 @@
 		
 
 
-		function CallbackCheckCondition($strCondition)
+		function OnCheckCondition($strCondition)
 		{
 			if ($strCondition == 'dev')
 			{
@@ -310,10 +310,10 @@
 			}			
 			
 			
-			return parent::CallbackCheckCondition($strCondition);	
+			return parent::OnCheckCondition($strCondition);	
 		}
 
-		function CallbackParseSEOURL($strSEOURL)
+		function OnParseSEOURL($strSEOURL)
 		{
 			if ($strSEOURL != "")
 			{
@@ -328,17 +328,17 @@
 						$this->SetContent("user");
 						$this->SetVar("user",$strUserName);
 						$this->Trace($this->GetAllVars());						
-						$this->Trace("CallbackParseSEOURL: user/$strUserName");
+						$this->Trace("OnParseSEOURL: user/$strUserName");
 						return;
 					}
 				}
 			}
-			parent::CallbackParseSEOURL($strSEOURL);	
+			parent::OnParseSEOURL($strSEOURL);	
 		}
 
-		function CallbackUserLogin($strUserName,$strAuthenticationPayload)
+		function OnUserLogin($strUserName,$strAuthenticationPayload)
 		{
-			$bResult = parent::CallbackUserLogin($strUserName,$strAuthenticationPayload);
+			$bResult = parent::OnUserLogin($strUserName,$strAuthenticationPayload);
 			if ($bResult == true)
 			{
 				$this->SendMailToAdmin("LOGIN $strUserName","");
