@@ -18,10 +18,17 @@
 	{ 
 		$str = ReplaceString($str,"\r\n","\n");
 		$str = ReplaceString($str,"\r","\n");
-		$str = ReplaceString($str,"\n","<br/>");
+		$str = ReplaceString($str,"\n",'<br/>');
 		return $str;
-		
 	}
+
+	function HtmlConvertBr($str) 
+	{ 
+		$str = ReplaceString($str,'<br/>',"\n");
+		$str = ReplaceString($str,'<br>',"\n");
+		return $str;
+	}
+
 	
 	function MakeDocType($strDocType)
 	{

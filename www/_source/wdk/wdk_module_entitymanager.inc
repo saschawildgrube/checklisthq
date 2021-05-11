@@ -124,21 +124,26 @@
 		}
 		
 		final
-		function CheckCondition($strEntity,$strContext)
+		function CheckEntityCondition($strEntity,$strContext)
 		{
-			$arrayEntityDefinition = $this->m_entityDef->GetEntityDefinition($strEntity);
-			$strCondition = ArrayGetValue($arrayEntityDefinition,"conditions",$strContext);
-			if ($strCondition == "")
+			if ($strContext == '')
 			{
 				return true;	
 			}
-			$bResult = $this->GetWebsite()->CheckCondition($strCondition);
+			$arrayEntityDefinition = $this->m_entityDef->GetEntityDefinition($strEntity);
+			$strCondition = ArrayGetValue($arrayEntityDefinition,'conditions',$strContext);
+			if ($strCondition == '')
+			{
+				return true;	
+			}
+			$bResult = $this->CheckCondition($strCondition);
 			if ($bResult == false)
 			{
-				$this->Trace("CheckCondition(\"$strEntity\",\"$strContext\") returns false");				
+				$this->Trace('CheckEntityCondition("'.$strEntity.'","'.$strContext.'") returns false');				
 			}
 			return $bResult;
 		}
+		
 		final
 		function CheckConditionForItem($strEntity,$arrayItem,$strState)
 		{
@@ -199,7 +204,7 @@
 			{
 				return false;	
 			}
-			if ($this->CheckCondition($strEntity,$strState) == false)
+			if ($this->CheckEntityCondition($strEntity,$strState) == false)
 			{
 				return false;		
 			}
@@ -292,7 +297,7 @@
 			{
 				if ($strState == $strEntity."_list")
 				{
-					if ($this->CheckCondition($strEntity,"list"))
+					if ($this->CheckEntityCondition($strEntity,"list"))
 					{
 						$this->Trace("CEntityManagerModule::OnRenderModule(\"$strState\") -> calling StateList(\"$strEntity\")");
 						return $this->StateList($strEntity);
@@ -475,7 +480,7 @@
 				$bDefault = GetBoolValue(ArrayGetValue($arrayEntityDefinition,"default"));
 				if ($bDefault == true)
 				{
-					if ($this->CheckCondition($strEntity,"list"))
+					if ($this->CheckEntityCondition($strEntity,"list"))
 					{
 						$this->Trace("CEntityManagerModule::OnRenderModule(\"$strState\") -> calling StateList(\"$strEntity\")");
 						return $this->StateList($strEntity);
@@ -2017,7 +2022,7 @@
 					$strTasks = "";
 					foreach ($arrayTasks as $strTaskID => $arrayTask)
 					{
-						if ($this->CheckCondition($strEntity,$strTaskID) == true)
+						if ($this->CheckEntityCondition($strEntity,$strTaskID) == true)
 						{
 							$strState = ArrayGetValue($arrayTask,"state");
 							if ($this->IsStateSupported($strEntity,$strState))

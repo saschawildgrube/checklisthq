@@ -96,13 +96,13 @@
 		$strIPregex = '\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b';
 
 		$strURLregex =
-			'((https?|ftp)\:\/\/)?' // SCHEME 
-    . '([a-z0-9+!*(),;?&=$_.-]+(\:[a-z0-9+!*(),;?&=$_.-]+)?@)?' // USER and PASSWORD
-    . '(([a-z0-9-.]*)\.([a-z]{2,20})|'.$strIPregex.'|localhost)' // HOST with TLD or IP or "localhost"
+			'((https?|ftp)\:\/\/)' // SCHEME 
+    . '([a-zA-Z0-9+!*(),;?&=$_.-]+(\:[a-zA-Z0-9+!*(),;?&=$_.-]+)?@)?' // USER and PASSWORD
+    . '(([a-zA-Z0-9-.]*)\.([a-zA-Z]{2,20})|'.$strIPregex.'|localhost)' // HOST with TLD or IP or "localhost"
     . '(\:[0-9]{2,5})?' // PORT
-    . '(\/([a-z0-9!$%\/()=@+~,:\-_]\.?)+)*\/?' // PATH allowing double slashes and commas, equal signs...
-    . '(\?[a-z\:+&$_.-][a-z0-9;:@&%=+\/$_.\?\{\}\-]*)?' // GET Query      
-		. '(#([a-z!_\.\-\/][a-z0-9:&%!+\/=$_\.\?\-]*)?)?' // ANCHOR 
+    . '(\/([a-zA-Z0-9!$%\/()=@+~,:\-_]\.?)+)*\/?' // PATH allowing double slashes and commas, equal signs...
+    . '(\?([a-zA-Z\:+&$_.-][a-zA-Z0-9;:@&%=+\/$_,.\!\?\{\}\(\)\-]*)?)?' // GET Query      
+		. '(#([a-zA-Z0-9!_\.\-\/][a-zA-Z0-9:&%!+\/=$_\.\?\-]*)?)?' // ANCHOR 
 		;
 		
 		$strURLregex = '/^'.$strURLregex.'$/';
@@ -113,25 +113,6 @@
 
 	function IsValidURL($strURL)
 	{
-		if ($strURL == "")	
-		{
-			return false;
-		}
-		if (StringCheckCharSet($strURL,CHARSET_URL) == false)
-		{
-			return false;	
-		}
-		if (
-					(StringSection($strURL,0,7) != "http://")
-			&& 	(StringSection($strURL,0,8) != "https://")
-			&& 	(StringSection($strURL,0,6) != "ftp://") 
-			)
-		{
-			return false;
-		}
-		
-		$strURL = StringLowerCase(u($strURL));
-
 		if (RegExpMatch($strURL,GetRegExURL()) == false) 
 		{ 
 			return false; 

@@ -129,6 +129,16 @@
 	{
 		return parseInt(GetNumberValue(value));	
 	}
+	
+	function ArrayKeyExists(aArray,vKey)
+	{
+		if (typeof aArray[vKey] === 'undefined')
+		{
+			return false;
+		}
+		return true;
+	}
+
 
 	function HttpRequest(strURL)
 	{

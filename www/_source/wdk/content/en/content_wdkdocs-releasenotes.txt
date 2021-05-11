@@ -1,4 +1,28 @@
 ={WDK} Release Notes= 
+==Version 0.0.0.79 WORK IN PROGRESS==
+NOT YET Baselined
+* '''IMPORTANT'''
+** CEntityManagerModule::CheckCondition() has been renamed to ::CheckEntityCondition() to avoid a conflict with the newly introduced CWebsiteSatellite::CheckCondition() function.
+* Security
+** No changes
+* Defects
+** No changes
+* New features
+** Added javascript function ArrayKeyExists() to wdk.js.
+* Improvements
+** Added CWebsitePlugin::SetOutputItem() and ::SetOutputItem() to avoid the CWebsiteSatellite default behaviour.
+** Added CWebsiteSatellite::GetContent(), ::SetCondition(), ::SetLayoutConfigItem(), ::CheckCondition(), ::GetSiteTeamEmail() and ::GetCurrentURL().
+** Updated IsValidURL() to cover cases with brackets in the get parameter part of URLs, the exclamation mark in the path and question mark at the end.
+** IsValidURL() is now entirely based on one regular expression.
+** IsValidURL() can now deal with anchors that start with a number.
+* Discontinued
+** Removed the GOOGLEMAPS generic output item from CWebsite. The underlying element has already been removed in an earlier release.
+* Quality
+** No changes
+* Refactoring
+** No changes
+* Documentation
+** No changes
 ==Version 0.0.0.78== 
 Baselined 2021-01-17
 * '''IMPORTANT'''

@@ -21,6 +21,15 @@
 		{
 			return 'Plugin';	
 		}
+		
+		function SetOutputItem($strItem, $strContents)
+		{
+			$this->GetWebsite()->SetOutputItem($strItem, $strContents);	
+		}
+		function SetOutputItems($arrayItems)
+		{
+			$this->GetWebsite()->SetOutputItems($arrayItems);	
+		}
 	
 	
 		function OnInit()
@@ -33,6 +42,12 @@
 		{
 			$this->Trace('OnCreateImage');
 			return false;
+		}
+		
+		function OnUserDelete($strUserID)
+		{
+			$this->Trace('OnUserDelete');
+			return true;
 		}
 		
 		function OnUserChangePassword($strOldPassword,$strNewPassword)
