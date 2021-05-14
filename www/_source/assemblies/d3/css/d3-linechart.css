@@ -1,0 +1,35 @@
+.d3-linechart-svg
+{
+	background-color: white;
+	padding: 14px;
+	box-sizing: border-box;
+	font-family: sans-serif;	
+	text-align: center;
+}
+
+
+.d3-linechart-axis-x
+{
+	font-size: 14px;
+}
+
+.d3-linechart-axis-y
+{
+	font-size: 14px;
+}
+
+.d3-linechart-column-background
+{
+	//fill: #F5F5F5;
+	fill: lightgrey;
+}
+
+.d3-linechart-dot
+{
+	stroke-width: 0;
+}
+
+.d3-linechart-line
+{
+	stroke-width: 2;
+}

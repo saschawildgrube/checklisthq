@@ -74,6 +74,9 @@
 			$assembly = new CAssembly($this,"google");
 			$assemblyLine->AddAssembly($assembly);
 			
+			$assembly = new CAssembly($this,'d3');
+			$assemblyLine->AddAssembly($assembly);	
+			
 			parent::OnInitAssemblyLine($assemblyLine);
 		}
 		

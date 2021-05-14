@@ -5,8 +5,8 @@ LEVEL	;CONTEXT							;LABEL															;CONDITIONS
 0			;tasks								;?TID_NAVIGATION_TASKS?							;login
 0			;links								;?TID_NAVIGATION_LINKS?							;login
 0			;notes								;?TID_NAVIGATION_NOTES?							;login
+0			;project							;?TID_NAVIGATION_PROJECT?						;login
+0			;recurring						;?TID_NAVIGATION_RECURRING?					;login 
 0			;header								;?TID_NAVIGATION_HEADER?						;login
-0			;recurring						;?TID_NAVIGATION_RECURRING?					;login
-#0			;incubatingreminders	;Incubating Reminders								;
 0			;include:systemadmin	;																		;
 0			;usersettings					;?TID_NAVIGATION_USERSETTINGS?			;login

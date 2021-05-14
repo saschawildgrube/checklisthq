@@ -1,5 +1,7 @@
 <?php
 
+	require_once('wdk_serialize.inc');
+
 	function IsArray($array)
 	{
 		return is_array($array);
@@ -740,24 +742,41 @@
     }
 		return $arrayResult;
 	}
+
+	function ArraySerialize($arraySource)
+	{
+		if (!IsArray($arraySource))
+		{
+			return false;	
+		}
+		return ObjectSerialize($arraySource);
+	}
+
+	function ArrayUnserialize($vSerialized)
+	{
+		$arrayUnserialized = ObjectUnserialize($vSerialized);
+		if (!IsArray($arrayUnserialized))
+		{
+			return false;	
+		}
+		return $arrayUnserialized;
+	}
 	
 	
 	function ArrayPack($arraySource)
 	{
-		if (!is_array($arraySource))
+		$strSerialized = ArraySerialize($arraySource);
+		if ($strSerialized == false)
 		{
-			return '';	
+			return false;
 		}
-		return base64_encode(serialize($arraySource));
+		return base64_encode($strSerialized);
 	}
 
 	function ArrayUnpack($strPacked)
 	{
-		$ea = new CErrorAmnesty();
-		$ea->Start();
-		$arrayUnpacked = unserialize(base64_decode($strPacked));
-		$ea->End();
-		if (!is_array($arrayUnpacked))
+		$arrayUnpacked = ArrayUnserialize(base64_decode($strPacked));
+		if (!IsArray($arrayUnpacked))
 		{
 			return false;	
 		}

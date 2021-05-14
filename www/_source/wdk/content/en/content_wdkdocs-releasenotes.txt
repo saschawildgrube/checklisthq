@@ -9,6 +9,8 @@ NOT YET Baselined
 ** No changes
 * New features
 ** Added javascript function ArrayKeyExists() to wdk.js.
+** Added functions ObjectSerialize() and ObjectUnserialize() and provide proper error handling for serialize() and unserialize() php functions.
+** Added functions ArraySerialize() and ArrayUnserialize() to wrap ObjectSerialize() and ObjectDeserialize() and verify that input and output are arrays. 
 * Improvements
 ** Added CWebsitePlugin::SetOutputItem() and ::SetOutputItem() to avoid the CWebsiteSatellite default behaviour.
 ** Added CWebsiteSatellite::GetContent(), ::SetCondition(), ::SetLayoutConfigItem(), ::CheckCondition(), ::GetSiteTeamEmail() and ::GetCurrentURL().
@@ -20,7 +22,7 @@ NOT YET Baselined
 * Quality
 ** No changes
 * Refactoring
-** No changes
+** ArrayPack() and ArrayUnpack() are now using ArraySerialize() and ArrayUnserialize() for consistent error handling.
 * Documentation
 ** No changes
 ==Version 0.0.0.78== 
