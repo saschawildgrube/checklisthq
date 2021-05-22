@@ -65,7 +65,6 @@
 			}
 			$arrayLines = StringExplode($strContent,"\n",true);
 			
-			$this->IncludeElement('linkicon'); 
 			$linkicon = new CLinkIconElement($this->GetWebsite(),'default');
 			$strContent = '';
 			$nLine = 0;
