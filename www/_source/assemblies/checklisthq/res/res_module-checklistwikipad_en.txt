@@ -1,0 +1,4 @@
+TID_WIKIPAD_TOOL_DELETELINE
+Check this task off the list
+TID_WIKIPAD_INFO_LINEDELETED
+Great Job! This task is checked off the list: {LINE_DELETED}

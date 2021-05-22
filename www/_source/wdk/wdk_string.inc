@@ -257,7 +257,7 @@
 		}
 		if (ArrayCount($arraySlices) < 1)
 		{
-			return "";
+			return '';
 		}
 		$strFirstSlice = StringEncodeUTF8($arraySlices[0]);
 		$nLength = StringLength($strFirstSlice);

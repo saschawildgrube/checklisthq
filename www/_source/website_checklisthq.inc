@@ -344,7 +344,7 @@
 			$bResult = parent::OnUserLogin($strUserName,$strAuthenticationPayload);
 			if ($bResult == true)
 			{
-				$this->SendMailToAdmin('LOGIN $strUserName','');
+				$this->SendMailToAdmin('LOGIN '.$strUserName,'');
 			}
 			return $bResult;
 		}
