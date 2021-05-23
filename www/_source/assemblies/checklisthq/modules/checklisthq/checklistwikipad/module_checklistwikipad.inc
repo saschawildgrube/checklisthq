@@ -23,6 +23,28 @@
 		}
 		
 		
+		function GetConfigIsTaskList()
+		{
+			return $this->GetModuleConfigBoolean('tasklist');	
+		}	
+		
+		function GetConfigIsHideView()
+		{
+			return $this->GetModuleConfigBoolean('hideview');	
+		}			
+		
+		function OnIsToolVisible($strToolID)
+		{
+			if ($strToolID == 'view')
+			{
+				if ($this->GetCOnfigIsHideView() == true)
+				{
+					return false;
+				}
+			}
+			return parent::OnIsToolVisible($strToolID);	
+		}
+		
 
 		function OnRenderModule($strState)
 		{
@@ -33,9 +55,9 @@
 			
 			switch ($strState)
 			{
-				case 'submit_line_delete':
+				case 'submit_line':
 				{
-					return $this->StateSubmitLineDelete();	
+					return $this->StateSubmitLine();	
 				}
 				default:	
 				{
@@ -51,6 +73,11 @@
 
 			$this->Trace('StateView');
 			
+			if ($this->GetConfigIsHideView())
+			{
+				return $this->StateEdit();
+			}
+			
 			$this->PrepareTabNav('view');
 
 
@@ -61,35 +88,54 @@
 				$this->SetOutputItem('WIKI','');
 				$strContent = '';
 				return parent::StateView();
-				
 			}
-			$arrayLines = StringExplode($strContent,"\n",true);
-			
-			$linkicon = new CLinkIconElement($this->GetWebsite(),'default');
-			$strContent = '';
-			$nLine = 0;
-			foreach ($arrayLines as $strLine)
+
+			if ($this->GetConfigIsTaskList() == true)
 			{
-				$strHtmlLinkLineDelete = '';
-				if (	StringSection($strLine,0,1) == '*'
-					||	StringSection($strLine,0,1) == '#')
+				$arrayLines = StringExplode($strContent,"\n",true);
+				
+				$linkicon = new CLinkIconElement($this->GetWebsite(),'default');
+				$strContent = '';
+				$nLine = 0;
+				foreach ($arrayLines as $strLine)
 				{
-					$arrayParams = array(
-						$this->GetModuleVarName('line') => $nLine,
-						$this->GetModuleVarNameState() => 'submit_line_delete'
-						);
-					$strUrlLineDelete = $this->GetWebsite()->MakeURL($arrayParams);
-					$strHtmlLinkLineDelete = '&nbsp;'.$linkicon->RenderLinkIcon(
-						$strUrlLineDelete,
-						'check-square-o',
-						'?TID_WIKIPAD_TOOL_DELETELINE?');
+					$strHtmlLinkLineDelete = '';
+					$strHtmlLinkLineMoveTop = '';
+					if (	StringSection($strLine,0,1) == '*'
+						||	StringSection($strLine,0,1) == '#')
+					{
+						$arrayParams = array(
+							$this->GetModuleVarName('line') => $nLine,
+							$this->GetModuleVarName('action') => 'delete',
+							$this->GetModuleVarNameState() => 'submit_line'
+							);
+						$strHtmlLinkLineDelete = '&nbsp;'.$linkicon->RenderLinkIcon(
+							$this->GetWebsite()->MakeURL($arrayParams),
+							'check-square-o',
+							'?TID_WIKIPAD_TOOL_LINEDELETE?');
+
+/*
+						$arrayParams = array(
+							$this->GetModuleVarName('line') => $nLine,
+							$this->GetModuleVarName('action') => 'movetop',
+							$this->GetModuleVarNameState() => 'submit_line'
+							);
+						$strUrlLineMoveTop = $this->GetWebsite()->MakeURL($arrayParams);
+						$strHtmlLinkLineMoveTop = '&nbsp;'.$linkicon->RenderLinkIcon(
+							$this->GetWebsite()->MakeURL($arrayParams),
+							'check-square-o',
+							'?TID_WIKIPAD_TOOL_LINEMOVETOP?');
+*/
+
+
+					}
+					$strContent .=
+						$strLine
+						.$strHtmlLinkLineDelete
+						//.'<!-- Line: '.$nLine.'-->'
+						."\n";
+					$nLine++;
 				}
-				$strContent .=
-					$strLine
-					.$strHtmlLinkLineDelete
-					//.'<!-- Line: '.$nLine.'-->'
-					."\n";
-				$nLine++;
 			}
 
 			$wiki = new CWikiElement($this->GetWebSite(),'default');
@@ -102,9 +148,9 @@
 		}
 		
 	
-		function StateSubmitLineDelete()
+		function StateSubmitLine()
 		{
-			$this->Trace('StateSubmitLineDelete');
+			$this->Trace('StateSubmitLine');
 	
 			$strContent = $this->GetData($this->GetDataName());
 			if ($strContent === false)
@@ -115,39 +161,50 @@
 				return $this->StateView();
 			}
 
-			$nLineToDelete = GetIntegerValue($this->GetModuleVar('line'));
+			$nLineToModify = GetIntegerValue($this->GetModuleVar('line'));
 			
-			if ($nLineToDelete < 0)
+			if ($nLineToModify < 0)
 			{
 				$this->Trace('Line is < 0');
 				return $this->StateView();
 			}
 			
 			$arrayLines = StringExplode($strContent,"\n",true);
-			if ($nLineToDelete+1 > ArrayCount($arrayLines))		
+			if ($nLineToModify+1 > ArrayCount($arrayLines))		
 			{
 				$this->Trace('Line+1 is > number of lines');
 				return $this->StateView();
 			}
-				
-			$this->SetOutputItem('LINE_DELETED','<pre>'.$arrayLines[$nLineToDelete].'</pre>');
-			$this->SetInfoMessageCode('LINEDELETED');
 			
-			$strContent = '';
-			$nLine = 0;
-			foreach ($arrayLines as $strLine)
+			$strAction = $this->GetModuleVar('action');
+			
+			if ($strAction == 'delete')
 			{
-				if ($nLine != $nLineToDelete)
+				$this->SetOutputItem('LINE_DELETED','<pre>'.$arrayLines[$nLineToModify].'</pre>');
+				$this->SetInfoMessageCode('LINEDELETED');
+				
+				$strContent = '';
+				$nLine = 0;
+				foreach ($arrayLines as $strLine)
 				{
-					$strContent .=
-						$strLine
-						."\n";
+					if ($nLine != $nLineToModify)
+					{
+						$strContent .=
+							$strLine
+							."\n";
+					}
+					$nLine++;
 				}
-				$nLine++;
+			}
+			else
+			{
+				// implement other line actions
 			}
 
 			$this->SetModuleVar('line','');
+			$this->SetModuleVar('action','');
 					
+
 			if ($this->SetData($this->GetDataName(),$strContent) == false)
 			{
 				$this->SetErrorMessageCode('WIKIPAD_SET');

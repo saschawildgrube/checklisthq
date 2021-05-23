@@ -4821,7 +4821,16 @@ FileRead(GetWDKDir() . "wdk_help.txt").
 			
 		function OnGetWebsiteTitle()
 		{
-			$strTitle = "";
+			foreach ($this->m_arrayPlugins as $plugin)
+			{
+				$strTitle = $plugin->OnGetWebsiteTitle();
+				if ($strTitle != '')
+				{
+					return $strTitle;	
+				}
+			}
+			
+			$strTitle = '';
 			if (IsValidContentID($this->GetContent()) == true)
 			{
 				$strContentUC = StringUppercase($this->GetContent());
@@ -4830,7 +4839,7 @@ FileRead(GetWDKDir() . "wdk_help.txt").
 					if ($strContentUC != 'INDEX')
 					{
 						$strTitle = $this->LoadString('TID_TITLE_'.$strContentUC);
-						if ($strTitle == "")
+						if ($strTitle == '')
 						{
 							$strTitle = $this->LoadString('TID_NAVIGATION_'.$strContentUC);	
 						}
@@ -4857,28 +4866,37 @@ FileRead(GetWDKDir() . "wdk_help.txt").
 
 		function OnGetWebsiteDescription()
 		{
-			$strText = $this->LoadString("TID_META_DESCRIPTION_".StringUppercase($this->GetContent()));
-			if ($strText != "")
+			foreach ($this->m_arrayPlugins as $plugin)
+			{
+				$strDescription = $plugin->OnGetWebsiteDescription();
+				if ($strDescription != '')
+				{
+					return $strDescription;	
+				}
+			}		
+			
+			$strText = $this->LoadString('TID_META_DESCRIPTION_'.StringUppercase($this->GetContent()));
+			if ($strText != '')
 			{
 				return $strText;
 			}
-			$strText = $this->LoadString("TID_META_DESCRIPTION_DEFAULT");
-			if ($strText != "")
+			$strText = $this->LoadString('TID_META_DESCRIPTION_DEFAULT');
+			if ($strText != '')
 			{
 				return $strText;
 			}
-			return "";	
+			return '';	
 		}
 
 		function OnGetWebsiteKeywords()
 		{
-			$strText = $this->LoadString("TID_META_KEYWORDS_".StringUpperCase($this->GetContent()));
-			$strTextDefault = $this->LoadString("TID_META_KEYWORDS_DEFAULT");
-			if ($strTextDefault != "")
+			$strText = $this->LoadString('TID_META_KEYWORDS_'.StringUpperCase($this->GetContent()));
+			$strTextDefault = $this->LoadString('TID_META_KEYWORDS_DEFAULT');
+			if ($strTextDefault != '')
 			{
-				if ($strText != "")
+				if ($strText != '')
 				{
-					$strText = $strText.", ".$strTextDefault;   
+					$strText = $strText.', '.$strTextDefault;   
 				}
 				else
 				{
@@ -4890,18 +4908,26 @@ FileRead(GetWDKDir() . "wdk_help.txt").
 		
 		function OnGetOpenGraphImageURL()
 		{
+			foreach ($this->m_arrayPlugins as $plugin)
+			{
+				$strImageURL = $plugin->OnGetOpenGraphImageURL();
+				if ($strImageURL != '')
+				{
+					return $strImageURL;	
+				}
+			}					
 			return $this->GetImageURL('opengraph','png');	
 		}
 
 		
 		function OnSessionCreate()
 		{
-			$this->Trace("CWebsite::OnSessionCreate");
+			$this->Trace('CWebsite::OnSessionCreate');
 			if ($this->GetSessionMode() == SESSION_MODE_LOCAL_COOKIE)
 			{
-				return "local";					
+				return 'local';					
 			}
-			$strSessionID = "";
+			$strSessionID = '';
 			return $strSessionID;			
 		}
 		

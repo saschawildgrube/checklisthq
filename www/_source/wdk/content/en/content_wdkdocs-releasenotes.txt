@@ -8,17 +8,21 @@ NOT YET Baselined
 * Defects
 ** No changes
 * New features
+** Added CWebsitePlugin::OnGetWebsiteTitle(), ::OnGetWebsiteDescription() and ::OnGetOpenGraphImageURL() functions and corresponding support in CWebsite functions to override default behavior via plugins.
 ** Added javascript function ArrayKeyExists() to wdk.js.
-** Added functions ObjectSerialize() and ObjectUnserialize() and provide proper error handling for serialize() and unserialize() php functions.
+** Added functions ObjectSerialize() and ObjectUnserialize() to provide proper error handling for serialize() and unserialize() php functions.
 ** Added functions ArraySerialize() and ArrayUnserialize() to wrap ObjectSerialize() and ObjectDeserialize() and verify that input and output are arrays. 
+** Added shell script filesys-cleanup.sh to free up disc space by deleting various log files and backups.
 * Improvements
-** Added CWebsitePlugin::SetOutputItem() and ::SetOutputItem() to avoid the CWebsiteSatellite default behaviour.
+** Added CWebsitePlugin::SetOutputItem() and ::SetOutputItem() to avoid the CWebsiteSatellite default behavior.
 ** Added CWebsiteSatellite::GetContent(), ::SetCondition(), ::SetLayoutConfigItem(), ::CheckCondition(), ::GetSiteTeamEmail() and ::GetCurrentURL().
 ** Updated IsValidURL() to cover cases with brackets in the get parameter part of URLs, the exclamation mark in the path and question mark at the end.
 ** IsValidURL() is now entirely based on one regular expression.
 ** IsValidURL() can now deal with anchors that start with a number.
 * Discontinued
 ** Removed the GOOGLEMAPS generic output item from CWebsite. The underlying element has already been removed in an earlier release.
+** Removed outdated shell script beanc.sh
+** Removed shell script listcoredumps.sh
 * Quality
 ** No changes
 * Refactoring
@@ -29,7 +33,7 @@ NOT YET Baselined
 Baselined 2021-01-17
 * '''IMPORTANT'''
 ** Renamed all Callback*() functions to On*(). THIS IS A MASSIVE CHANGE!
-** Introduced plugins and removed plugin-like behaviour from assemblies.
+** Introduced plugins and removed plugin-like behavior from assemblies.
 * Security
 ** No changes
 * Defects

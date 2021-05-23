@@ -6,17 +6,18 @@
 		{
 
 			$arrayConfig = array();
-			$arrayConfig["columns"] = 100;    
-			$arrayConfig["lines"] = 10;
-			$arrayConfig["userspecific"] = true;
-			$arrayConfig["defaultcontent"] = $this->GetWebsite()->LoadString("TID_CONTENT_HEADERDEFAULT");
+			$arrayConfig['columns'] = 100;    
+			$arrayConfig['lines'] = 10;
+			$arrayConfig['userspecific'] = true;
+			$arrayConfig['defaultcontent'] = $this->GetWebsite()->LoadString('TID_CONTENT_HEADERDEFAULT');
+			$arrayConfig['hideview'] = true;
  
-			$this->GetWebsite()->IncludeModule("cms/wikipad");
-			$wikipad = new CWikiPadModule(
+			$this->GetWebsite()->IncludeModule('checklisthq/checklistwikipad');
+			$wikipad = new CChecklistWikiPadModule(
 				$this->GetWebsite(),
-				"header",
+				'header',
 				$arrayConfig);
-			$arrayItems["MODULE_WIKIPAD"] = $wikipad->RenderModule();
+			$arrayItems['MODULE_WIKIPAD'] = $wikipad->RenderModule();
 
 		}
 	}

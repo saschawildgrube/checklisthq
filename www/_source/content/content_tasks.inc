@@ -11,8 +11,8 @@
 			$arrayConfig['userspecific'] = true;
 			$arrayConfig['showsubmitbuttonsaveandstay'] = true;
 			$arrayConfig['defaultcontent'] = $this->GetWebsite()->LoadString('TID_CONTENT_TASKSDEFAULT');
+			$arrayConfig['tasklist'] = true; // Enable the tool icons to directly modify a bullet led row
  
-			//$this->GetWebsite()->IncludeModule('cms/wikipad');
 			$this->GetWebsite()->IncludeModule('checklisthq/checklistwikipad');
 			
 			$wikipad = new CChecklistWikiPadModule(
