@@ -31,19 +31,84 @@
 		function GetConfigIsHideView()
 		{
 			return $this->GetModuleConfigBoolean('hideview');	
+		}		
+		
+		function GetConfigIsNetworkgraph()
+		{
+			return $this->GetModuleConfigBoolean('networkgraph');	
 		}			
 		
 		function OnIsToolVisible($strToolID)
 		{
 			if ($strToolID == 'view')
 			{
-				if ($this->GetCOnfigIsHideView() == true)
+				if ($this->GetConfigIsHideView() == true)
 				{
 					return false;
 				}
 			}
+			if ($strToolID == 'networkgraph')
+			{
+				if ($this->GetConfigIsNetworkgraph() == true)
+				{
+					return true;
+				}
+			}			
 			return parent::OnIsToolVisible($strToolID);	
 		}
+		
+		
+		function PrepareTabNav($strState)
+		{
+			if ($this->IsViewOnly() == true)
+			{
+				$this->SetOutputItem('TABNAV','');
+				return;
+			}
+			
+			$tabnavigationDef = new CTabNavigationDefinition();
+
+			if ($this->IsToolVisible('view') == true)
+			{
+				$arrayParams = array();
+	   		$arrayParams[$this->GetModuleVarNameState()] = 'view';
+	   		$tabnavigationDef->AddTab(
+	      		'view',
+	      		'?TID_WIKIPAD_TAB_VIEW?',
+	      		$this->GetWebsite()->MakeURL($arrayParams));
+			}
+
+			if ($this->IsToolVisible('edit') == true)
+			{
+
+				$arrayParams = array();
+	   		$arrayParams[$this->GetModuleVarNameState()] = 'edit';
+	   		$tabnavigationDef->AddTab(
+	      		'edit',
+	      		'?TID_WIKIPAD_TAB_EDIT?',
+	      		$this->GetWebsite()->MakeURL($arrayParams));
+			}
+			
+			if ($this->IsToolVisible('networkgraph') == true)
+			{
+
+				$arrayParams = array();
+	   		$arrayParams[$this->GetModuleVarNameState()] = 'networkgraph';
+	   		$tabnavigationDef->AddTab(
+	      		'networkgraph',
+	      		'?TID_WIKIPAD_TAB_NETWORKGRAPH?',
+	      		$this->GetWebsite()->MakeURL($arrayParams));
+			}	
+
+			$tabnav = new CTabNavigationElement(
+			   $this->GetWebsite(),
+   			'default');
+
+			$this->SetOutputItem('TABNAV',
+				$tabnav->RenderTabNavigation(
+					$tabnavigationDef,
+					$strState));	
+		}		
 		
 
 		function OnRenderModule($strState)
@@ -53,8 +118,17 @@
 				$strState = 'view';	
 			}
 			
+			if ($strState == '' && $this->GetConfigIsNetworkgraph() == true)
+			{
+				$strState = 'networkgraph';	
+			}
+			
 			switch ($strState)
 			{
+				case 'networkgraph':
+				{
+					return $this->StateNetworkgraph();	
+				}
 				case 'submit_line':
 				{
 					return $this->StateSubmitLine();	
@@ -249,11 +323,12 @@
 					}
 					$nLine++;
 				}
+				if ($strLineToMove != '')
+				{
+					$strContent .= $strLineToMove;
+				}
 			}
-			if ($strLineToMove != '')
-			{
-				$strContent .= $strLineToMove;
-			}
+
 
 			$this->SetModuleVar('line','');
 			$this->SetModuleVar('action','');
@@ -265,6 +340,115 @@
 			}
 			
 			return $this->StateView();
+		}
+		
+		
+		function StateNetworkgraph()
+		{
+			$this->Trace('StateNetworkgraph');
+			
+			$this->PrepareTabNav('networkgraph');
+			
+			function GetLevelFromWikiLine($strLine)
+			{
+				$nLineLevel = 0;
+				if (FindString($strLine,'===') == 0)
+				{
+					$nLineLevel = 3;
+				}
+				else if (FindString($strLine,'==') == 0)
+				{
+					$nLineLevel = 2;
+				}
+				else if (FindString($strLine,'=') == 0)
+				{
+					$nLineLevel = 1;
+				}
+				if (FindString($strLine,'***') == 0)
+				{
+					$nLineLevel = 6;
+				}
+				else if (FindString($strLine,'**') == 0)
+				{
+					$nLineLevel = 5;
+				}
+				else if (FindString($strLine,'*') == 0)
+				{
+					$nLineLevel = 4;
+				}
+				return $nLineLevel;
+			}
+			
+	
+			$strContent = $this->GetData($this->GetDataName());	
+
+			$arrayCurrent = array();
+			$nCurrentLevel = 0;
+
+			$arrayNodes = array();
+	
+			$arrayLines = StringExplode($strContent,"\n",true);
+			
+			$nID = 0;
+			foreach ($arrayLines as $strLine)
+			{
+				$strLine = StringTrim($strLine);
+				$nLevel = GetLevelFromWikiLine($strLine);
+				if ($nLevel != -1)
+				{
+					$arrayNode = array();
+					$arrayNode['id'] = ''.$nID++;
+					$arrayNode['name'] = StringRemoveCharacters($strLine,'=*');
+					$arrayNode['level'] = $nLevel;
+					$arrayNodes[] = $arrayNode;
+				}								
+			}
+
+			// Derive links		
+
+			$arrayLinks = array();
+			
+			$nCurrentIndex = 0;
+			foreach ($arrayNodes as $arrayNode)
+			{
+				$nLevel = ArrayGetValue($arrayNode,'level');
+				if ($nLevel > 0)
+				{
+					$nIndex = $nCurrentIndex - 1;
+					while ($nIndex >= 0)
+					{
+						$arrayPreviousNode = $arrayNodes[$nIndex];
+						$nPreviousLevel = ArrayGetValue($arrayPreviousNode,'level');
+						if ($nPreviousLevel < $nLevel)
+						{
+							$arrayLink = array();
+							$arrayLink['source'] = ArrayGetValue($arrayNode,'id');
+							$arrayLink['target'] = ArrayGetValue($arrayPreviousNode,'id');
+							$arrayLink['strength'] = 0.50; 
+							$arrayLinks[] = $arrayLink;
+							break;	
+						}
+						$nIndex--;	
+					}
+					
+					
+				}	
+				
+				$nCurrentIndex++;	
+			}
+			
+			// Render the graph
+		
+			$arrayData = array();	
+			$arrayData['nodes'] = $arrayNodes;
+			$arrayData['links'] = $arrayLinks;
+			
+			$this->IncludeElement('network');
+			$network = new CNetworkElement($this->GetWebsite(),'default');
+
+			$this->SetOutputItem('NETWORKGRAPH',$network->RenderNetwork($arrayData));	
+			
+			return 'networkgraph';
 		}
 
 	}
