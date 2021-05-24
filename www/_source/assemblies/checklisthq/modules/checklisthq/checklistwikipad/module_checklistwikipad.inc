@@ -105,7 +105,7 @@
 					if (	StringSection($strLine,0,1) == '*'
 						||	StringSection($strLine,0,1) == '#')
 					{
-
+/*
 						$arrayParams = array(
 							$this->GetModuleVarName('line') => $nLine,
 							$this->GetModuleVarName('action') => 'movedown',
@@ -115,7 +115,7 @@
 							$this->GetWebsite()->MakeURL($arrayParams),
 							'hand-o-down',
 							'?TID_WIKIPAD_TOOL_LINEMOVEDOWN?');
-
+*/
 
 						$arrayParams = array(
 							$this->GetModuleVarName('line') => $nLine,
