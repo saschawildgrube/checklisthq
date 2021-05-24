@@ -7,6 +7,6 @@ Do next
 TID_WIKIPAD_TOOL_LINEMOVEUP
 Do sooner
 TID_WIKIPAD_TOOL_LINEMOVEDOWN
-Do later
+Do it later
 TID_WIKIPAD_TOOL_LINEMOVEBOTTOM
 Move this task to the end of the list
