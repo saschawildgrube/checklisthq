@@ -147,8 +147,13 @@
 
 			$this->Trace('StateView');
 			
-			if ($this->GetConfigIsHideView())
+			if ($this->GetConfigIsHideView() == true)
 			{
+				if ($this->GetConfigIsNetworkgraph() == true)
+				{
+					return $this->StateNetworkgraph();	
+				}
+				
 				return $this->StateEdit();
 			}
 			
