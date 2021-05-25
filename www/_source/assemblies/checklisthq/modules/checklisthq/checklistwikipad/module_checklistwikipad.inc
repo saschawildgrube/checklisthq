@@ -53,6 +53,10 @@
 				{
 					return true;
 				}
+				else
+				{
+					return false;	
+				}
 			}			
 			return parent::OnIsToolVisible($strToolID);	
 		}
