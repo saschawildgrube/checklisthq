@@ -109,17 +109,6 @@
 	      		$this->GetWebsite()->MakeURL($arrayParams));
 			}
 			
-			if ($this->IsToolVisible('networkgraph') == true)
-			{
-
-				$arrayParams = array();
-	   		$arrayParams[$this->GetModuleVarNameState()] = 'networkgraph';
-	   		$tabnavigationDef->AddTab(
-	      		'networkgraph',
-	      		'?TID_WIKIPAD_TAB_NETWORKGRAPH?',
-	      		$this->GetWebsite()->MakeURL($arrayParams));
-			}	
-
 			if ($this->IsToolVisible('zoomablesunburst') == true)
 			{
 
@@ -128,6 +117,17 @@
 	   		$tabnavigationDef->AddTab(
 	      		'zoomablesunburst',
 	      		'?TID_WIKIPAD_TAB_ZOOMABLESUNBURST?',
+	      		$this->GetWebsite()->MakeURL($arrayParams));
+			}	
+
+			if ($this->IsToolVisible('networkgraph') == true)
+			{
+
+				$arrayParams = array();
+	   		$arrayParams[$this->GetModuleVarNameState()] = 'networkgraph';
+	   		$tabnavigationDef->AddTab(
+	      		'networkgraph',
+	      		'?TID_WIKIPAD_TAB_NETWORKGRAPH?',
 	      		$this->GetWebsite()->MakeURL($arrayParams));
 			}	
 
@@ -188,9 +188,13 @@
 			
 			if ($this->GetConfigIsHideView() == true)
 			{
-				if ($this->GetConfigIsNetworkgraph() == true)
+				if ($this->GetConfigIsZoomableSunburst() == true)
 				{
-					return $this->StateNetworkgraph();	
+					return $this->StateZoomableSunburst();	
+				}
+				if ($this->GetConfigIsNetworkGraph() == true)
+				{
+					return $this->StateNetworkGraph();	
 				}
 				
 				return $this->StateEdit();
@@ -472,12 +476,8 @@
 			$this->PrepareTabNav('zoomablesunburst');		
 			
 			$strContent = $this->GetData($this->GetDataName());	
-			
-			//$this->Debug(ParseWiki($strContent));
-			
+	
 			$arrayData = MakeTreeDataFromWiki($strContent);
-				
-			$this->Debug($arrayData);
 				
 			$this->IncludeElement('zoomablesunburst');
 			$zoomablesunburst = new CZoomableSunBurstElement($this->GetWebsite(),'default');
