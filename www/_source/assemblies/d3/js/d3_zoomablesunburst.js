@@ -64,7 +64,7 @@ function D3_ZoomableSunburst(vSelector, aProps)
     .selectAll("path")
     .data(root.descendants().slice(1))
     .join("path")
-      .attr("fill", d => { while (d.depth > 1) d = d.parent; return color(d.data.name); })
+      .attr("fill", d => { while (d.depth > 1) d = d.parent; return color(d.data.label); })
       .attr("fill-opacity", d => arcVisible(d.current) ? (d.children ? 0.6 : 0.4) : 0)
       .attr("d", d => arc(d.current));
 
@@ -73,7 +73,7 @@ function D3_ZoomableSunburst(vSelector, aProps)
       .on("click", clicked);
 
   path.append("title")
-      .text(d => `${d.ancestors().map(d => d.data.name).reverse().join("/")}\n${format(d.value)}`);
+      .text(d => `${d.ancestors().map(d => d.data.label).reverse().join("/")}\n${format(d.value)}`);
 
   const label = g.append("g")
       .attr("pointer-events", "none")
@@ -85,7 +85,7 @@ function D3_ZoomableSunburst(vSelector, aProps)
       .attr("dy", "0.35em")
       .attr("fill-opacity", d => +labelVisible(d.current))
       .attr("transform", d => labelTransform(d.current))
-      .text(d => d.data.name);
+      .text(d => d.data.label);
 
   const parent = g.append("circle")
       .datum(root)

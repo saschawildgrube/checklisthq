@@ -1,6 +1,7 @@
 <?php
 
 	require_once(GetWDKDir().'modules/cms/wikipad/module_wikipad.inc');
+	require_once(GetAssemblyDir('checklisthq').'checklisthq_wiki.inc');
 
 	class CChecklistWikiPadModule extends CWikiPadModule
 	{
@@ -33,9 +34,13 @@
 			return $this->GetModuleConfigBoolean('hideview');	
 		}		
 		
-		function GetConfigIsNetworkgraph()
+		function GetConfigIsNetworkGraph()
 		{
 			return $this->GetModuleConfigBoolean('networkgraph');	
+		}			
+		function GetConfigIsZoomableSunburst()
+		{
+			return $this->GetModuleConfigBoolean('zoomablesunburst');	
 		}			
 		
 		function OnIsToolVisible($strToolID)
@@ -49,7 +54,7 @@
 			}
 			if ($strToolID == 'networkgraph')
 			{
-				if ($this->GetConfigIsNetworkgraph() == true)
+				if ($this->GetConfigIsNetworkGraph() == true)
 				{
 					return true;
 				}
@@ -58,6 +63,17 @@
 					return false;	
 				}
 			}			
+			if ($strToolID == 'zoomablesunburst')
+			{
+				if ($this->GetConfigIsZoomableSunburst() == true)
+				{
+					return true;
+				}
+				else
+				{
+					return false;	
+				}
+			}					
 			return parent::OnIsToolVisible($strToolID);	
 		}
 		
@@ -104,6 +120,17 @@
 	      		$this->GetWebsite()->MakeURL($arrayParams));
 			}	
 
+			if ($this->IsToolVisible('zoomablesunburst') == true)
+			{
+
+				$arrayParams = array();
+	   		$arrayParams[$this->GetModuleVarNameState()] = 'zoomablesunburst';
+	   		$tabnavigationDef->AddTab(
+	      		'zoomablesunburst',
+	      		'?TID_WIKIPAD_TAB_ZOOMABLESUNBURST?',
+	      		$this->GetWebsite()->MakeURL($arrayParams));
+			}	
+
 			$tabnav = new CTabNavigationElement(
 			   $this->GetWebsite(),
    			'default');
@@ -122,17 +149,25 @@
 				$strState = 'view';	
 			}
 			
-			if ($strState == '' && $this->GetConfigIsNetworkgraph() == true)
+			if ($strState == '' && $this->GetConfigIsNetworkGraph() == true)
 			{
 				$strState = 'networkgraph';	
+			}
+			if ($strState == '' && $this->GetConfigIsZoomableSunburst() == true)
+			{
+				$strState = 'zoomablesunburst';	
 			}
 			
 			switch ($strState)
 			{
 				case 'networkgraph':
 				{
-					return $this->StateNetworkgraph();	
+					return $this->StateNetworkGraph();	
 				}
+				case 'zoomablesunburst':
+				{
+					return $this->StateZoomableSunburst();	
+				}				
 				case 'submit_line':
 				{
 					return $this->StateSubmitLine();	
@@ -352,55 +387,12 @@
 		}
 		
 		
-		function StateNetworkgraph()
+		function StateNetworkGraph()
 		{
 			$this->Trace('StateNetworkgraph');
 			
 			$this->PrepareTabNav('networkgraph');
 			
-			function GetLevelFromWikiLine($strLine)
-			{
-				$strLine = StringTranslateCharacters($strLine,'#','*');
-				if (FindString($strLine,'******') == 0)
-				{
-					return 9;
-				}
-				if (FindString($strLine,'*****') == 0)
-				{
-					return 8;
-				}
-				if (FindString($strLine,'****') == 0)
-				{
-					return 7;
-				}
-				if (FindString($strLine,'***') == 0)
-				{
-					return 6;
-				}
-				else if (FindString($strLine,'**') == 0)
-				{
-					return 5;
-				}
-				else if (FindString($strLine,'*') == 0)
-				{
-					return 4;
-				}
-				if (FindString($strLine,'===') == 0)
-				{
-					return 3;
-				}
-				else if (FindString($strLine,'==') == 0)
-				{
-					return  2;
-				}
-				else if (FindString($strLine,'=') == 0)
-				{
-					return 1;
-				}
-				return 0;
-			}
-			
-	
 			$strContent = $this->GetData($this->GetDataName());	
 
 			$arrayCurrent = array();
@@ -415,11 +407,11 @@
 			{
 				$strLine = StringTrim($strLine);
 				$nLevel = GetLevelFromWikiLine($strLine);
-				if ($nLevel != -1)
+				if ($nLevel > 0)
 				{
 					$arrayNode = array();
 					$arrayNode['id'] = ''.$nID++;
-					$arrayNode['name'] = StringRemoveCharacters($strLine,'=*');
+					$arrayNode['label'] = StringRemoveCharacters($strLine,'=*');
 					$arrayNode['level'] = $nLevel;
 					$arrayNodes[] = $arrayNode;
 				}								
@@ -471,6 +463,29 @@
 			
 			return 'networkgraph';
 		}
+		
+		
+		function StateZoomableSunburst()
+		{
+			$this->Trace('StateZoomableSunburst');
+			
+			$this->PrepareTabNav('zoomablesunburst');		
+			
+			$strContent = $this->GetData($this->GetDataName());	
+			
+			//$this->Debug(ParseWiki($strContent));
+			
+			$arrayData = MakeTreeDataFromWiki($strContent);
+				
+			$this->Debug($arrayData);
+				
+			$this->IncludeElement('zoomablesunburst');
+			$zoomablesunburst = new CZoomableSunBurstElement($this->GetWebsite(),'default');
+			$this->SetOutputItem('ZOOMABLESUNBURST',$zoomablesunburst->RenderZoomableSunburst($arrayData));
+
+			return 'zoomablesunburst';
+		}
+
 
 	}
 

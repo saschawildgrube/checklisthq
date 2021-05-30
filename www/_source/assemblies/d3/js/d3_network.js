@@ -46,10 +46,10 @@ function D3_Network(vSelector, aProps)
 			node['radius'] = fNodeRadiusMin + ((fNodeRadiusMax - fNodeRadiusMin) * 0.5);
 		}
 		var strText = '';
-		var strName = GetStringValue(node['name']);
-		if (strName != '')
+		var strLabel = GetStringValue(node['label']);
+		if (strLabel != '')
 		{
-			strText += strName;
+			strText += strLabel;
 		}
 		node['text'] = strText;
 	});

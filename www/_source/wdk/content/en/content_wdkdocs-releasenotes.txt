@@ -27,6 +27,7 @@ NOT YET Baselined
 ** No changes
 * Refactoring
 ** ArrayPack() and ArrayUnpack() are now using ArraySerialize() and ArrayUnserialize() for consistent error handling.
+** Added function ParseWiki() to start separating the concerns of parsing a wiki text vs. rendering the html representation.
 * Documentation
 ** No changes
 ==Version 0.0.0.78== 

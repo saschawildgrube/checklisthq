@@ -11,6 +11,7 @@
 			$arrayConfig['showsubmitbuttonsaveandstay'] = true;
 			$arrayConfig['defaultcontent'] = $this->GetWebsite()->LoadString('TID_CONTENT_PROJECTDEFAULT');
 			$arrayConfig['networkgraph'] = true;
+			$arrayConfig['zoomablesunburst'] = true;
 			$arrayConfig['hideview'] = true;
  
 			$this->GetWebsite()->IncludeModule('checklisthq/checklistwikipad');
@@ -19,12 +20,6 @@
 				'project',
 				$arrayConfig);
 			$arrayItems['MODULE_WIKIPAD'] = $wikipad->RenderModule();
-
-
-			// Parse the wiki-syntax to extract the project tree
-
-		
-
 
 		}
 	}
