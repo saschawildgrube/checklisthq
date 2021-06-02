@@ -440,7 +440,7 @@
 		
 		function TriggerEvent($strEventID, $arrayParams)
 		{
-			$this->Trace('TriggerEvent("'.$strEventID.'", ...) BEGIN');
+			$this->Trace('TriggerEvent("'.$strEventID.'", ...) BEGIN'); 
 			parent::TriggerEvent($strEventID, $arrayParams);
 			$this->Trace('TriggerEvent("'.$strEventID.'", ...) END');
 		}

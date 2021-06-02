@@ -76,51 +76,19 @@
 			$nLevel = GetLevelFromWikiLine($strLine);
 			if ($nLevel > 0)
 			{
-				$arrayItem['level'] = $nLevel;
+				$arrayItem['level'] = $nLevel - 1;
 				$strLabel = StringTrim(StringRemoveCharacters($strLine,'=*'));
 				$arrayItem['label'] = $strLabel;
 				$arrayItems[] = $arrayItem;
 			}
 		}
 		
-	
 		// Correct levels
-		$nLastCorrectLevel = 0;
-		$nPreviousLevel = 0;
-		$nLevelGap = 0;
-		foreach ($arrayItems as &$arrayItem)
-		{
-			$nLevel = ArrayGetValue($arrayItem,'level');
-			if ($nLevel <= $nPreviousLevel + 1)
-			{
-				$arrayItem['level_corrected'] = $nLevel;
-				$nLastCorrectLevel = $nLevel;
-				$nLevelGap = 0;
-			}
-			else if ($nLevel > $nLastCorrectLevel + 1 && $nLevelGap > 0)
-			{
-				$nLevel -= $nLevelGap;
-				$arrayItem['level_corrected'] = $nLevel;
-			}
-			else
-			{
-				$nLevelGap = $nLevel - $nPreviousLevel - 1;
-				$nLevel -= $nLevelGap;
-				$arrayItem['level_corrected'] = $nLevel;
-			}
-			$nPreviousLevel = $nLevel;
-		}
-
-		// set the actual level
-		foreach ($arrayItems as &$arrayItem)
-		{
-			$arrayItem['level'] = GetIntegerValue($arrayItem['level_corrected']) - 1;
-		}
+		$arrayItems = AlignListLevels($arrayItems,'level');
 		
 		// Transform to tree data structure
 		$arrayTree = TransformListToTree($arrayItems,'level','children');
-		
-		
+
 		// Add the value for the zoomable sunburst to work with
 		function CallbackMapSetValue($key,$value,$arrayParams)
 		{

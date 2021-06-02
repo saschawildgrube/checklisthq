@@ -1,6 +1,49 @@
 <?php
 
 
+
+	function AlignListLevels($arrayList, $strLevelKey = 'level')
+	{
+		if (IsArray($arrayList) == false)
+		{
+			return [];	
+		}
+		if ($strLevelKey == '')
+		{
+			$strLevelKey = 'level';
+		}
+		
+		$nLastCorrectLevel = 0;
+		$nPreviousLevel = -1;
+		$nLevelGap = 0;
+		foreach ($arrayList as &$arrayItem)
+		{
+			$nLevel = ArrayGetValue($arrayItem,$strLevelKey);
+			if ($nLevel <= $nPreviousLevel + 1)
+			{
+				$arrayItem[$strLevelKey] = $nLevel;
+				$nLastCorrectLevel = $nLevel;
+				$nLevelGap = 0;
+			}
+			else if ($nLevel > $nLastCorrectLevel + 1 && $nLevelGap > 0)
+			{
+				$nLevel -= $nLevelGap;
+				$arrayItem[$strLevelKey] = $nLevel;
+			}
+			else
+			{
+				$nLevelGap = $nLevel - $nPreviousLevel - 1;
+				$nLevel -= $nLevelGap;
+				$arrayItem[$strLevelKey] = $nLevel;
+			}
+			$nPreviousLevel = $nLevel;
+		}
+		
+		return $arrayList;	
+	}
+
+
+
 	function TransformListToTree($arrayList, $strLevelKey = 'level', $strChildrenKey = 'children', $nRootLevel = 0, $nStartIndex = 0)
 	{
 		if (IsArray($arrayList) == false)
@@ -15,8 +58,6 @@
 		{
 			$strChildrenKey = 'children';
 		}
-		
-		
 		
 		$arrayTree = [];
 		$nLevel = $nRootLevel;

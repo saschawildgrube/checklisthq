@@ -47,7 +47,7 @@
 			{
 				$this->Trace("CheckEntityDefinition failed!");
 				$this->Trace($arrayErrors);
-				$this->SetError("ENTITYDEFINITION");
+				$this->SetError("ENTITYDEFINITION"); 
 				return false;	
 			}
 			return true;
