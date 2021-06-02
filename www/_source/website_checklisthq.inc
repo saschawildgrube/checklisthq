@@ -351,7 +351,7 @@
 		
 		function OnGetOpenGraphImageURL()
 		{
-			return $this->GetImageURL('opengraph_checklisthq','png');
+			return $this->GetImageURL('opengraph_checklisthq_sunburst','png');
 		}
 
 	}
