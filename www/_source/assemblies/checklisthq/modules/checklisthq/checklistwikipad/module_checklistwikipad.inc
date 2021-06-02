@@ -491,8 +491,6 @@
 	
 			$arrayData = MakeTreeDataFromWiki($strContent);
 			
-			$this->Debug($arrayData);
-				
 			$this->IncludeElement('zoomablesunburst');
 			$zoomablesunburst = new CZoomableSunBurstElement($this->GetWebsite(),'default');
 			$this->SetOutputItem('ZOOMABLESUNBURST',$zoomablesunburst->RenderZoomableSunburst($arrayData));
