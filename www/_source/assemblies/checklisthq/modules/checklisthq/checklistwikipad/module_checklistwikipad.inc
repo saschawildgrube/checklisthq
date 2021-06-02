@@ -186,6 +186,17 @@
 
 			$this->Trace('StateView');
 			
+			$strPreviousState = $this->GetPreviousState();
+			$this->Trace('Previous state: '.$strPreviousState);
+			if ($this->GetConfigIsZoomableSunburst() == true && $strPreviousState == 'zoomablesunburst')
+			{
+				return $this->StateZoomableSunburst();	
+			}
+			if ($this->GetConfigIsNetworkGraph() == true && $strPreviousState == 'networkgraph')
+			{
+				return $this->StateNetworkGraph();
+			}
+			
 			if ($this->GetConfigIsHideView() == true)
 			{
 				if ($this->GetConfigIsZoomableSunburst() == true)
@@ -196,7 +207,6 @@
 				{
 					return $this->StateNetworkGraph();	
 				}
-				
 				return $this->StateEdit();
 			}
 			
@@ -394,6 +404,7 @@
 		function StateNetworkGraph()
 		{
 			$this->Trace('StateNetworkgraph');
+			$this->SetState('networkgraph');
 			
 			$this->PrepareTabNav('networkgraph');
 			
@@ -472,6 +483,7 @@
 		function StateZoomableSunburst()
 		{
 			$this->Trace('StateZoomableSunburst');
+			$this->SetState('zoomablesunburst');
 			
 			$this->PrepareTabNav('zoomablesunburst');		
 			
