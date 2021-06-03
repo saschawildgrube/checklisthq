@@ -1,0 +1,4 @@
+TID_TITLE_ELEMENT_ZOOMABLESUNBURST
+Zoomable Sunburst
+TID_TEXT_ELEMENT_ZOOMABLESUNBURST
+This element draws a zoomable sunburst diagramme using react and d3.

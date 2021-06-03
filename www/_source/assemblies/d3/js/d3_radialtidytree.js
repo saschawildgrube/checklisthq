@@ -68,7 +68,7 @@ function D3_RadialTidyTree(selector, aProps)
 	  .attr("x", d => d.x < Math.PI === !d.children ? 6 : -6)
 	  .attr("text-anchor", d => d.x < Math.PI === !d.children ? "start" : "end")
 	  .attr("transform", d => d.x >= Math.PI ? "rotate(180)" : null)
-	  .text(d => d.data.name)
+	  .text(d => d.data.label)
 		.clone(true).lower()
 	  .attr("stroke", "white");
 	  

@@ -1,0 +1,4 @@
+TID_TITLE_ELEMENT_RADIALTIDYTREE
+Radial Tidy Tree
+TID_TEXT_ELEMENT_RADIALTIDYTREE
+This element draws a radial tidy tree diagramme using react and d3.

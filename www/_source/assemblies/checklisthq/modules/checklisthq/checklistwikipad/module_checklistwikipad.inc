@@ -34,14 +34,19 @@
 			return $this->GetModuleConfigBoolean('hideview');	
 		}		
 		
-		function GetConfigIsNetworkGraph()
+		function GetConfigIsNetwork()
 		{
-			return $this->GetModuleConfigBoolean('networkgraph');	
+			return $this->GetModuleConfigBoolean('network');	
 		}			
 		function GetConfigIsZoomableSunburst()
 		{
 			return $this->GetModuleConfigBoolean('zoomablesunburst');	
 		}			
+		function GetConfigIsRadialTidyTree()
+		{
+			return $this->GetModuleConfigBoolean('radialtidytree');	
+		}			
+	
 		
 		function OnIsToolVisible($strToolID)
 		{
@@ -52,9 +57,9 @@
 					return false;
 				}
 			}
-			if ($strToolID == 'networkgraph')
+			if ($strToolID == 'network')
 			{
-				if ($this->GetConfigIsNetworkGraph() == true)
+				if ($this->GetConfigIsNetwork() == true)
 				{
 					return true;
 				}
@@ -73,7 +78,18 @@
 				{
 					return false;	
 				}
-			}					
+			}	
+			if ($strToolID == 'radialtidytree')
+			{
+				if ($this->GetConfigIsRadialTidyTree() == true)
+				{
+					return true;
+				}
+				else
+				{
+					return false;	
+				}
+			}									
 			return parent::OnIsToolVisible($strToolID);	
 		}
 		
@@ -120,14 +136,25 @@
 	      		$this->GetWebsite()->MakeURL($arrayParams));
 			}	
 
-			if ($this->IsToolVisible('networkgraph') == true)
+			if ($this->IsToolVisible('radialtidytree') == true)
 			{
 
 				$arrayParams = array();
-	   		$arrayParams[$this->GetModuleVarNameState()] = 'networkgraph';
+	   		$arrayParams[$this->GetModuleVarNameState()] = 'radialtidytree';
 	   		$tabnavigationDef->AddTab(
-	      		'networkgraph',
-	      		'?TID_WIKIPAD_TAB_NETWORKGRAPH?',
+	      		'radialtidytree',
+	      		'?TID_WIKIPAD_TAB_RADIALTIDYTREE?',
+	      		$this->GetWebsite()->MakeURL($arrayParams));
+			}	
+
+			if ($this->IsToolVisible('network') == true)
+			{
+
+				$arrayParams = array();
+	   		$arrayParams[$this->GetModuleVarNameState()] = 'network';
+	   		$tabnavigationDef->AddTab(
+	      		'network',
+	      		'?TID_WIKIPAD_TAB_NETWORK?',
 	      		$this->GetWebsite()->MakeURL($arrayParams));
 			}	
 
@@ -149,24 +176,32 @@
 				$strState = 'view';	
 			}
 			
-			if ($strState == '' && $this->GetConfigIsNetworkGraph() == true)
+			if ($strState == '' && $this->GetConfigIsNetwork() == true)
 			{
-				$strState = 'networkgraph';	
+				$strState = 'network';	
 			}
 			if ($strState == '' && $this->GetConfigIsZoomableSunburst() == true)
 			{
 				$strState = 'zoomablesunburst';	
 			}
-			
+			if ($strState == '' && $this->GetConfigIsRadialTidyTree() == true)
+			{
+				$strState = 'radialtidytree';	
+			}
+						
 			switch ($strState)
 			{
-				case 'networkgraph':
+				case 'network':
 				{
-					return $this->StateNetworkGraph();	
+					return $this->StateNetwork();	
 				}
 				case 'zoomablesunburst':
 				{
 					return $this->StateZoomableSunburst();	
+				}				
+				case 'radialtidytree':
+				{
+					return $this->StateRadialTidyTree();	
 				}				
 				case 'submit_line':
 				{
@@ -183,18 +218,15 @@
 		
 		function StateView()
 		{
-
-			$this->Trace('StateView');
-			
 			$strPreviousState = $this->GetPreviousState();
 			$this->Trace('Previous state: '.$strPreviousState);
 			if ($this->GetConfigIsZoomableSunburst() == true && $strPreviousState == 'zoomablesunburst')
 			{
 				return $this->StateZoomableSunburst();	
 			}
-			if ($this->GetConfigIsNetworkGraph() == true && $strPreviousState == 'networkgraph')
+			if ($this->GetConfigIsNetwork() == true && $strPreviousState == 'network')
 			{
-				return $this->StateNetworkGraph();
+				return $this->StateNetwork();
 			}
 			
 			if ($this->GetConfigIsHideView() == true)
@@ -203,9 +235,9 @@
 				{
 					return $this->StateZoomableSunburst();	
 				}
-				if ($this->GetConfigIsNetworkGraph() == true)
+				if ($this->GetConfigIsNetwork() == true)
 				{
-					return $this->StateNetworkGraph();	
+					return $this->StateNetwork();	
 				}
 				return $this->StateEdit();
 			}
@@ -298,8 +330,6 @@
 	
 		function StateSubmitLine()
 		{
-			$this->Trace('StateSubmitLine');
-	
 			$strContent = $this->GetData($this->GetDataName());
 			if ($strContent === false)
 			{
@@ -401,12 +431,11 @@
 		}
 		
 		
-		function StateNetworkGraph()
+		function StateNetwork()
 		{
-			$this->Trace('StateNetworkgraph');
-			$this->SetState('networkgraph');
+			$this->SetState('network');
 			
-			$this->PrepareTabNav('networkgraph');
+			$this->PrepareTabNav('network');
 			
 			$strContent = $this->GetData($this->GetDataName());	
 
@@ -432,10 +461,7 @@
 				}								
 			}
 
-			// Derive links		
-
 			$arrayLinks = array();
-			
 			$nCurrentIndex = 0;
 			foreach ($arrayNodes as $arrayNode)
 			{
@@ -464,8 +490,6 @@
 				
 				$nCurrentIndex++;	
 			}
-			
-			// Render the graph
 		
 			$arrayData = array();	
 			$arrayData['nodes'] = $arrayNodes;
@@ -474,15 +498,14 @@
 			$this->IncludeElement('network');
 			$network = new CNetworkElement($this->GetWebsite(),'default');
 
-			$this->SetOutputItem('NETWORKGRAPH',$network->RenderNetwork($arrayData));	
+			$this->SetOutputItem('NETWORK',$network->RenderNetwork($arrayData));	
 			
-			return 'networkgraph';
+			return 'network';
 		}
 		
 		
 		function StateZoomableSunburst()
 		{
-			$this->Trace('StateZoomableSunburst');
 			$this->SetState('zoomablesunburst');
 			
 			$this->PrepareTabNav('zoomablesunburst');		
@@ -496,6 +519,24 @@
 			$this->SetOutputItem('ZOOMABLESUNBURST',$zoomablesunburst->RenderZoomableSunburst($arrayData));
 
 			return 'zoomablesunburst';
+		}
+
+		function StateRadialTidyTree()
+		{
+			$this->SetState('radialtidytree');
+			
+			$this->PrepareTabNav('radialtidytree');		
+			
+			$strContent = $this->GetData($this->GetDataName());	
+	
+			$arrayData = MakeTreeDataFromWiki($strContent);
+			$arrayData['label'] = ' ';
+			
+			$this->IncludeElement('radialtidytree');
+			$radialtidytree = new CRadialTidyTreeElement($this->GetWebsite(),'default');
+			$this->SetOutputItem('RADIALTIDYTREE',$radialtidytree->RenderRadialTidyTree($arrayData));
+
+			return 'radialtidytree';
 		}
 
 

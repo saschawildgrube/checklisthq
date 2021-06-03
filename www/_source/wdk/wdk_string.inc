@@ -257,7 +257,7 @@
 		}
 		if (ArrayCount($arraySlices) < 1)
 		{
-			return '';
+			return "";
 		}
 		$strFirstSlice = StringEncodeUTF8($arraySlices[0]);
 		$nLength = StringLength($strFirstSlice);
@@ -366,7 +366,11 @@
 	
 	function StringFilter($strInput,$strFilter)
 	{
-		$strOutput = "";
+		if (StringLength($strFilter) == 0)
+		{
+			return '';
+		}
+		$strOutput = '';
 		for ($nIndex = 0; $nIndex < StringLength($strInput); $nIndex++)
 		{
 			if (FindString($strFilter,$strInput[$nIndex]) != -1)

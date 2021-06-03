@@ -2,7 +2,7 @@
 
 
 
-	function AlignListLevels($arrayList, $strLevelKey = 'level')
+	function AlignListLevels($arrayList, $strLevelKey = 'level', $nRootLevel = 0, $nStartIndex = 0)
 	{
 		if (IsArray($arrayList) == false)
 		{
@@ -58,6 +58,8 @@
 		{
 			$strChildrenKey = 'children';
 		}
+		
+		
 		
 		$arrayTree = [];
 		$nLevel = $nRootLevel;
