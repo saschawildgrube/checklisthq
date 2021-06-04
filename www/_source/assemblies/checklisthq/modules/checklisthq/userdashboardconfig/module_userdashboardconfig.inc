@@ -24,7 +24,7 @@
 			$this->m_arrayErrors = array();
 			$this->SetOutputItem('MESSAGE','');
 			
-			return true;
+			return parent::OnInit();
 		}
 		
 	
