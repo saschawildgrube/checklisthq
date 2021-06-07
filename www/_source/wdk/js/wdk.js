@@ -86,6 +86,39 @@
 		return strOutput;
 	}
 	
+	function GetBoolValue(vInput)
+	{
+		if (vInput == undefined)
+		{
+			return false;
+		}
+		if (vInput == null)
+		{
+			return false;
+		}
+		if (vInput === true)
+		{
+			return true;
+		}
+		if (vInput == 'true')
+		{
+			return true;
+		}
+		if (vInput == 'false')
+		{
+			return false;
+		}
+		if (vInput == 'null')
+		{
+			return false;
+		}
+		if (vInput != 0)
+		{
+			return true;
+		}
+		return false;
+	}	
+	
 	function GetStringValue(value)
 	{
 		if (typeof value == 'string')
@@ -305,4 +338,5 @@
  		StopProgressIndicator(elementContainer);
 	}
 	
+
 

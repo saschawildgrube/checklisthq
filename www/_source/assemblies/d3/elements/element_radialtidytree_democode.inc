@@ -1,7 +1,3 @@
-$this->IncludeElement('radialtidytree');
-
-$radialtidytree = new CRadialTidyTreeElement($this->GetWebsite(),'default');
-
 $strRootPath = GetWDKDir().'quality/tests/';
 $arrayFileObjects = ReadDirectory($strRootPath,true);
 $arrayList = [];
@@ -29,4 +25,6 @@ $arrayData = [];
 $arrayData['label'] = 'WDK Tests';
 $arrayData['children'] = TransformListToTree($arrayList,'level');
 
+$this->IncludeElement('radialtidytree');
+$radialtidytree = new CRadialTidyTreeElement($this->GetWebsite(),'default');
 $strOutput = $radialtidytree->RenderRadialTidyTree($arrayData);

@@ -33,7 +33,7 @@ function D3_ZoomableSunburst(vSelector, aProps)
 	var partition = aData => {
 	  const root = d3.hierarchy(aData)
 	      .sum(d => d.value)
-	      .sort((a, b) => b.value - a.value);
+	      .sort((a,b) => Compare(a, b));
 	  return d3.partition()
 	      .size([2 * Math.PI, root.height + 1])
 	    (root);
@@ -73,7 +73,7 @@ function D3_ZoomableSunburst(vSelector, aProps)
       .on("click", clicked);
 
   path.append("title")
-      .text(d => `${d.ancestors().map(d => d.data.label).reverse().join("/")}\n${format(d.value)}`);
+			.text(d => GetToolTip(d));
 
   const label = g.append("g")
       .attr("pointer-events", "none")
@@ -85,7 +85,7 @@ function D3_ZoomableSunburst(vSelector, aProps)
       .attr("dy", "0.35em")
       .attr("fill-opacity", d => +labelVisible(d.current))
       .attr("transform", d => labelTransform(d.current))
-      .text(d => d.data.label);
+      .text(d => GetLabel(d));
 
   const parent = g.append("circle")
       .datum(root)
@@ -144,6 +144,44 @@ function D3_ZoomableSunburst(vSelector, aProps)
     const y = (d.y0 + d.y1) / 2 * radius;
     return `rotate(${x - 90}) translate(${y},0) rotate(${x < 180 ? 0 : 180})`;
   }
+  
+  function GetLabel(d)
+  {
+  	var strLabel = d.data.label;
+  	return strLabel;
+  }
 
+  function GetToolTip(d)
+  {
+  	var strToolTip = d.ancestors().map(d => d.data.label).reverse().filter(d => (d != '')?(true):(false)).join('/');
+  	var bHideValue = GetBoolValue(GetValue(aProps,'config','hidevalue'));
+  	if (bHideValue == false)
+  	{
+  		strToolTip += `\n` + format(d.value);
+  	}
+    return strToolTip;
+  }
+  
+ 	function CompareStringIgnoreCase(str1, str2)
+	{
+		str1 = GetStringValue(str1);
+		str2 = GetStringValue(str2);
+		return str1.toLowerCase().localeCompare(str2.toLowerCase());	
+	}
+
+  
+  function Compare(a,b)
+  {
+  	var strSort = GetValue(aProps,'config','sort');
+  	if (strSort == 'label')
+  	{
+  		return CompareStringIgnoreCase(a.label,b.label);	
+  	}
+  	if (strSort == 'value')
+  	{
+  		return b.value - a.value;	
+  	}
+  	return 0;
+  }
 	
 }

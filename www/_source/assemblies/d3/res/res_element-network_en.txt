@@ -1,0 +1,4 @@
+TID_TITLE_ELEMENT_NETWORK
+Network
+TID_TEXT_ELEMENT_NETWORK
+This element draws a network graph using react and d3.

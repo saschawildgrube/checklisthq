@@ -16,12 +16,16 @@
 				false); 
 		}
 		
-		function RenderZoomableSunburst($arrayData)
+		function RenderZoomableSunburst($arrayData, $arrayConfig)
 		{
-			$arrayProps = array();
+			$arrayProps = [];
 			$arrayProps['height'] = intval($this->GetLayoutDef('LAYOUT_SVG_HEIGHT'));
 			$arrayProps['width'] = intval($this->GetLayoutDef('LAYOUT_SVG_WIDTH'));
 			$arrayProps['cssclassprefix'] = $this->GetLayoutDef('LAYOUT_CSSCLASSPREFIX');
+			if (IsArray($arrayConfig))
+			{
+				$arrayProps['config'] = $arrayConfig;	
+			}
 			
 			if (ArrayGetValue($arrayData,'label') == '')
 			{
@@ -32,8 +36,7 @@
 			{
 				$arrayData['children'] = [];
 			}
-			
-			
+						
 			$arrayProps['data'] = $arrayData;
 			$this->AddJavaScript('d3_zoomablesunburst');
 			$this->AddJavaScript('react_zoomablesunburst');

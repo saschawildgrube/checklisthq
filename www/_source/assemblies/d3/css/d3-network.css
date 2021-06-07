@@ -39,11 +39,40 @@
 {
 	fill: lightgrey;
 }
+
 .d3-network-node-green circle
 {
 	fill: green;
 }
+
 .d3-network-node-red circle
 {
 	fill: red;
+}
+
+.d3-network-node-darkblue circle
+{
+	fill: darkblue;
+}
+.d3-network-node-darkblue text
+{
+	fill: white;
+}
+
+.d3-network-node-blue circle
+{
+	fill: blue;
+}
+.d3-network-node-blue text
+{
+	fill: white;
+}
+
+.d3-network-node-lightblue circle
+{
+	fill: lightblue;
+}
+.d3-network-node-lightblue text
+{
+	fill: black;
 }

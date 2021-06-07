@@ -1,0 +1,4 @@
+TID_TITLE_ELEMENT_PARALLELSETS
+Parallel Sets 
+TID_TEXT_ELEMENT_PARALLELSETS
+This element draws a parallel set diagramme using react and d3. 

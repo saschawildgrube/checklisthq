@@ -9,11 +9,12 @@ NOT YET Baselined
 ** Function StringRemoveCharacters() was not unicode aware. This has been fixed.
 * New features
 ** Added CWebsitePlugin::OnGetWebsiteTitle(), ::OnGetWebsiteDescription() and ::OnGetOpenGraphImageURL() functions and corresponding support in CWebsite functions to override default behavior via plugins.
-** Added javascript function ArrayKeyExists() to wdk.js.
 ** Added functions ObjectSerialize() and ObjectUnserialize() to provide proper error handling for serialize() and unserialize() php functions.
 ** Added functions ArraySerialize() and ArrayUnserialize() to wrap ObjectSerialize() and ObjectDeserialize() and verify that input and output are arrays. 
 ** Added function TransformListToTree() to convert a list with a numberic level indicator into a tree structure based on the defined levels.
 ** Added function ArrayContains() to check if one array recursively contains another.
+** Added javascript function ArrayKeyExists() to wdk.js.
+** Added javascript function GetBoolValue() to wdk.js.
 ** Added shell script filesys-cleanup.sh to free up disc space by deleting various log files and backups.
 * Improvements
 ** Added CWebsitePlugin::SetOutputItem() and ::SetOutputItem() to avoid the CWebsiteSatellite default behavior.

@@ -514,9 +514,14 @@
 	
 			$arrayData = MakeTreeDataFromWiki($strContent);
 			
+			$arrayConfig = [];
+			$arrayConfig['hidevalue'] = true;
+			$arrayConfig['sort'] = '';
+			
+			
 			$this->IncludeElement('zoomablesunburst');
 			$zoomablesunburst = new CZoomableSunBurstElement($this->GetWebsite(),'default');
-			$this->SetOutputItem('ZOOMABLESUNBURST',$zoomablesunburst->RenderZoomableSunburst($arrayData));
+			$this->SetOutputItem('ZOOMABLESUNBURST',$zoomablesunburst->RenderZoomableSunburst($arrayData,$arrayConfig));
 
 			return 'zoomablesunburst';
 		}

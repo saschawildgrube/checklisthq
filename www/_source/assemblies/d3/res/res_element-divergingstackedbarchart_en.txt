@@ -1,0 +1,4 @@
+TID_TITLE_ELEMENT_DIVERGINGSTACKEDBARCHART
+Diverging Stacked Bar Chart
+TID_TEXT_ELEMENT_DIVERGINGSTACKEDBARCHART
+This element draws a diverging stacked bar chart using react and d3.
