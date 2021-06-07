@@ -117,7 +117,7 @@
 
 		// Put the tree into a root node
 		$arrayData = [];
-		$arrayData['label'] = 'root';
+		$arrayData['label'] = '';
 		$arrayData['children'] = $arrayTree;
 
 		return $arrayData;
