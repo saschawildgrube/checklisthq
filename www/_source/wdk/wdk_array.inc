@@ -817,6 +817,74 @@
 		return true;
 	}
 	
+	
+	function ArrayContains($array1, $array2)
+	{
+		if (!IsArray($array1))
+		{
+			$array1 = [];	
+		}
+		if (!IsArray($array2))
+		{
+			$array2 = [];	
+		}
+		
+   	foreach ($array2 as $vKey => $vValue)
+		{
+			if (is_numeric($vKey) == false) // associative key 
+			{
+				if (ArrayKeyExists($array1,$vKey) == false)
+				{
+					return false;	
+				}
+				if (IsArray(ArrayGetValue($array1,$vKey)) == true)
+				{
+					if (ArrayContains(ArrayGetValue($array1,$vKey),$vValue) == false)
+					{
+						return false;	
+					}
+				}
+				else
+				{
+					if (ArrayGetValue($array1,$vKey) != $vValue)
+					{
+						return false;	
+					}
+				}
+			}
+			else  // indexed value
+			{
+				if (IsArray($vValue) == true)
+				{
+					$bContained = false;
+					foreach ($array1 as $vKey1 => $vValue1)
+					{
+						if (IsArray($vValue1))
+						{
+							if (ArrayContains($vValue1,$vValue) == true)
+							{
+								$bContained = true;	
+							}
+						}
+					}
+					if ($bContained == false)
+					{
+						return false;	
+					}
+		
+				}
+				else
+				{
+					if (ArrayValueExists($array1,$vValue) == false)
+					{
+						return false;	
+					}
+				}
+			}
+		}
+		return true;	
+	}
+	
 	function ArrayUnique($arrayInput)
 	{
 		if (!is_array($arrayInput))

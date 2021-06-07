@@ -65,7 +65,7 @@
 	function MakeTreeDataFromWiki($strWiki)
 	{
 		$arrayWiki = ParseWiki($strWiki);
-						
+
 		$arrayWikiLines = ArrayGetValue($arrayWiki,'lines');
 
 		$arrayItems = [];
@@ -82,7 +82,7 @@
 				$arrayItems[] = $arrayItem;
 			}
 		}
-		
+	
 		// Correct levels
 		$arrayItems = AlignListLevels($arrayItems,'level');
 		

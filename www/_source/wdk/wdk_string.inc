@@ -914,12 +914,14 @@
 	
 	function StringRemoveCharacters($strInput,$strBlacklist)     
 	{
-		$strOutput = "";
+		mb_internal_encoding('UTF-8');
+		$strInput = StringEncodeUTF8($strInput);
+		$strOutput = '';
 		for ($nIndex = 0; $nIndex < StringLength($strInput); $nIndex++)
 		{
-			if (FindString($strBlacklist,$strInput[$nIndex]) == -1)
+			if (FindString($strBlacklist,mb_substr($strInput,$nIndex,1)) == -1)
 			{
-				$strOutput .= $strInput[$nIndex];
+				$strOutput .= mb_substr($strInput,$nIndex,1);
 			}
 		}
 		return $strOutput;
