@@ -471,13 +471,33 @@
 					$arrayNodes[] = $arrayNode;
 				}								
 			}
+			
+			$arrayNodes = AlignListLevels($arrayNodes,'level');
+			foreach ($arrayNodes as &$arrayNode2)
+			{
+				$nLevel = ArrayGetValue($arrayNode2,'level');
+				switch ($nLevel)
+				{
+				case 0:
+					$arrayNode2['type'] = 'darkblue';
+					break;
+				case 1:
+					$arrayNode2['type'] = 'blue';
+					break;
+				default:
+					$arrayNode2['type'] = 'lightblue';
+					break;
+				}
+				
+			}
+			
 
 			$arrayLinks = array();
 			$nCurrentIndex = 0;
 			foreach ($arrayNodes as $arrayNode)
 			{
 				$nLevel = ArrayGetValue($arrayNode,'level');
-				if ($nLevel > 0)
+				if ($nLevel >= 0)
 				{
 					$nIndex = $nCurrentIndex - 1;
 					while ($nIndex >= 0)
