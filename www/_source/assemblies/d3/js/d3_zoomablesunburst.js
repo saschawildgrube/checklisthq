@@ -65,7 +65,7 @@ function D3_ZoomableSunburst(vSelector, aProps)
     .data(root.descendants().slice(1))
     .join("path")
       .attr("fill", d => { while (d.depth > 1) d = d.parent; return color(d.data.label); })
-      .attr("fill-opacity", d => arcVisible(d.current) ? (d.children ? 0.6 : 0.4) : 0)
+      .attr("fill-opacity", d => IsArcVisible(d.current) ? (d.children ? 0.6 : 0.4) : 0)
       .attr("d", d => arc(d.current));
 
   path.filter(d => d.children)
@@ -83,8 +83,8 @@ function D3_ZoomableSunburst(vSelector, aProps)
     .data(root.descendants().slice(1))
     .join("text")
       .attr("dy", "0.35em")
-      .attr("fill-opacity", d => +labelVisible(d.current))
-      .attr("transform", d => labelTransform(d.current))
+      .attr("fill-opacity", d => +IsLabelVisible(d.current))
+      .attr("transform", d => GetLabelTransform(d.current))
       .text(d => GetLabel(d));
 
   const parent = g.append("circle")
@@ -116,29 +116,29 @@ function D3_ZoomableSunburst(vSelector, aProps)
           return t => d.current = i(t);
         })
       .filter(function(d) {
-        return +this.getAttribute("fill-opacity") || arcVisible(d.target);
+        return +this.getAttribute("fill-opacity") || IsArcVisible(d.target);
       })
-        .attr("fill-opacity", d => arcVisible(d.target) ? (d.children ? 0.6 : 0.4) : 0)
+        .attr("fill-opacity", d => IsArcVisible(d.target) ? (d.children ? 0.6 : 0.4) : 0)
         .attrTween("d", d => () => arc(d.current));
 
     label.filter(function(d) {
-        return +this.getAttribute("fill-opacity") || labelVisible(d.target);
+        return +this.getAttribute("fill-opacity") || IsLabelVisible(d.target);
       }).transition(t)
-        .attr("fill-opacity", d => +labelVisible(d.target))
-        .attrTween("transform", d => () => labelTransform(d.current));
+        .attr("fill-opacity", d => +IsLabelVisible(d.target))
+        .attrTween("transform", d => () => GetLabelTransform(d.current));
   }
   
-  function arcVisible(d)
+  function IsArcVisible(d)
   {
     return d.y1 <= 3 && d.y0 >= 1 && d.x1 > d.x0;
   }
 
-  function labelVisible(d)
+  function IsLabelVisible(d)
   {
     return d.y1 <= 3 && d.y0 >= 1 && (d.y1 - d.y0) * (d.x1 - d.x0) > 0.03;
   }
 
-  function labelTransform(d)
+  function GetLabelTransform(d)
   {
     const x = (d.x0 + d.x1) / 2 * 180 / Math.PI;
     const y = (d.y0 + d.y1) / 2 * radius;
@@ -148,6 +148,7 @@ function D3_ZoomableSunburst(vSelector, aProps)
   function GetLabel(d)
   {
   	var strLabel = d.data.label;
+  	strLabel = StringCutOff(strLabel,16);  
   	return strLabel;
   }
 
@@ -161,14 +162,6 @@ function D3_ZoomableSunburst(vSelector, aProps)
   	}
     return strToolTip;
   }
-  
- 	function CompareStringIgnoreCase(str1, str2)
-	{
-		str1 = GetStringValue(str1);
-		str2 = GetStringValue(str2);
-		return str1.toLowerCase().localeCompare(str2.toLowerCase());	
-	}
-
   
   function Compare(a,b)
   {
