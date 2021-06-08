@@ -54,6 +54,7 @@
 			$strMode = $this->GetWebsite()->GetAuthUserData('dashboard','inactive');
 			$bLinks = GetBoolValue($this->GetWebsite()->GetAuthUserData('dashboard_links',true));
 			$bProjectZoomableSunburst = GetBoolValue($this->GetWebsite()->GetAuthUserData('dashboard_project_zoomablesunburst',false));
+			$bFullscreen = GetBoolValue($this->GetWebsite()->GetAuthUserData('dashboard_fullscreen',false));
 
 			$formDef = new CFormDefinition();
 			$arrayParams = array();
@@ -83,6 +84,13 @@
 				$this->GetModuleVarName('project_zoomablesunburst'),
 				'?TID_USERDASHBOARDCONFIG_LABEL_PROJECT_ZOOMABLESUNBURST?',
 				$bProjectZoomableSunburst);
+
+			$formDef->AddControlCheckbox(
+				'FULLSCREEN',
+				$this->GetModuleVarName('fullscreen'),
+				'?TID_USERDASHBOARDCONFIG_LABEL_FULLSCREEN?',
+				$bFullscreen);
+
 			
 			$formDef->AddControlButtonSubmit('?TID_BUTTON_SAVE?');
 			
@@ -119,7 +127,7 @@
 			
 			$bLinks = GetBoolValue($this->GetModuleVar('links'));
 			$bProjectZoomableSunburst = GetBoolValue($this->GetModuleVar('project_zoomablesunburst'));
-
+			$bFullscreen = GetBoolValue($this->GetModuleVar('fullscreen'));
 			
 			if (ArrayCount($this->m_arrayErrors) > 0)			
 			{
@@ -129,6 +137,8 @@
 			$this->GetWebsite()->SetAuthUserData('dashboard',$strMode);
 			$this->GetWebsite()->SetAuthUserData('dashboard_links',$bLinks);
 			$this->GetWebsite()->SetAuthUserData('dashboard_project_zoomablesunburst',$bProjectZoomableSunburst);
+			$this->GetWebsite()->SetAuthUserData('dashboard_fullscreen',$bFullscreen);
+
 						
 			$message = new CMessageElement($this->GetWebsite(),'info');
 			$this->SetOutputItem('MESSAGE',$message->RenderMessage('?TID_USERDASHBOARDCONFIG_INFO_SUCCESS?'));

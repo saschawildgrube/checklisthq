@@ -45,7 +45,9 @@
 				$strDomElementID,
 				$arrayProps);
 				
-			$strOutput = '<div id="'.$strDomElementID.'"></div>';
+			$strCss = 'width: fit-content; margin-left:auto; margin-right: auto';
+				
+			$strOutput = '<div id="'.$strDomElementID.'" style="'.$strCss.'"></div>';
 			return $strOutput;				
 		}	
 

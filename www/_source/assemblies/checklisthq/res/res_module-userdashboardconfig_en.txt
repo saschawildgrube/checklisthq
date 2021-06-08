@@ -14,6 +14,8 @@ TID_USERDASHBOARDCONFIG_LABEL_LINKS
 Show the links on your dashboard page
 TID_USERDASHBOARDCONFIG_LABEL_PROJECT_ZOOMABLESUNBURST
 Show the zoomable sunburst chart on your dashboard page
+TID_USERDASHBOARDCONFIG_LABEL_FULLSCREEN
+Displays the dashboard page in fullscreen (and hides all menus and navigation)
 TID_USERDASHBOARDCONFIG_INFO_SUCCESS
 The dashboard page configuration has been updated.
 TID_USERDASHBOARDCONFIG_ERROR_MODE_INVALID

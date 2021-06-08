@@ -100,13 +100,15 @@
 			{
 				$arrayItems['MODULE_WIKIPAD_PROJECT_ZOOMABLESUNBURST'] = '';
 			}
-		
-		
+				
 			$arrayItems['MESSAGE'] = '';
 			
+			$bFullscreen = GetBoolValue($this->GetWebsite()->GetData('USER',$strTempUserID,'dashboard_fullscreen',false));
+			if ($bFullscreen == true)
+			{
+				$this->GetWebsite()->SetFramework('fullscreen');	
+			}
+						
 			$this->GetWebsite()->SetAuthUserID($strRealUserID);
-			
-			
-		
 		}
 	}
