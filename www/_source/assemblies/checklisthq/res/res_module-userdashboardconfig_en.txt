@@ -5,11 +5,15 @@ Warning: Activating this feature may expose confidential information that you en
 TID_USERDASHBOARDCONFIG_TEXT_ACTIVE
 Your dashboard page is accessible at this URL: {LINK_DASHBOARD}
 TID_USERDASHBOARDCONFIG_LABEL_MODE
-Please choose:
+Please choose
 TID_USERDASHBOARDCONFIG_MODE_INACTIVE
 Deactivated. Your dashboard page will not be accessible.
 TID_USERDASHBOARDCONFIG_MODE_ACTIVE
 Active. Your dashboard page is accessible to everyone.
+TID_USERDASHBOARDCONFIG_LABEL_LINKS
+Show the links on your dashboard page
+TID_USERDASHBOARDCONFIG_LABEL_PROJECT_ZOOMABLESUNBURST
+Show the zoomable sunburst chart on your dashboard page
 TID_USERDASHBOARDCONFIG_INFO_SUCCESS
 The dashboard page configuration has been updated.
 TID_USERDASHBOARDCONFIG_ERROR_MODE_INVALID

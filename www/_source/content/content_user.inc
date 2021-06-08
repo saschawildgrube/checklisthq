@@ -8,7 +8,7 @@
 			$arrayItems['MESSAGE'] = $message->RenderMessage($this->GetWebsite()->LoadString('TID_INFO_USER'));
 			$arrayItems['MODULE_WIKIPAD_HEADER'] = '';
 			$arrayItems['MODULE_WIKIPAD_LINKS'] = '';
-			
+			$arrayItems['MODULE_WIKIPAD_PROJECT_ZOOMABLESUNBURST'] = '';
 
 			$strUserName = $this->GetVar('user');
 			$this->SetVar('user','');
@@ -57,21 +57,51 @@
 			$arrayConfig['viewonly'] = true;
 			$arrayConfig['defaultcontent'] = ' ';
  
-			$this->IncludeModule('cms/wikipad');
-			
-			$headerwikipad = new CWikiPadModule(
-				$this->GetWebsite(),
-				'header',
-				$arrayConfig);
-				
-			$linkswikipad = new CWikiPadModule(
-				$this->GetWebsite(),
-				'links',
-				$arrayConfig);
-				
-				
-			$arrayItems['MODULE_WIKIPAD_HEADER'] = $headerwikipad->RenderModule();
-			$arrayItems['MODULE_WIKIPAD_LINKS'] = $linkswikipad->RenderModule();
+			$this->IncludeModule('checklisthq/checklistwikipad');
+
+
+			$bLinks = GetBoolValue($this->GetWebsite()->GetData('USER',$strTempUserID,'dashboard_links',true));
+			if ($bLinks == true)
+			{
+				$wikipad_header = new CChecklistWikiPadModule(
+					$this->GetWebsite(),
+					'header',
+					$arrayConfig);
+					
+				$wikipad_links = new CChecklistWikiPadModule(
+					$this->GetWebsite(),
+					'links',
+					$arrayConfig);
+
+				$arrayItems['MODULE_WIKIPAD_HEADER'] = $wikipad_header->RenderModule();
+				$arrayItems['MODULE_WIKIPAD_LINKS'] = $wikipad_links->RenderModule();
+			}
+			else
+			{
+				$arrayItems['MODULE_WIKIPAD_HEADER'] = '';
+				$arrayItems['MODULE_WIKIPAD_LINKS'] = '';
+			}
+
+
+			$bProjectZoomableSunburst = GetBoolValue($this->GetWebsite()->GetData('USER',$strTempUserID,'dashboard_project_zoomablesunburst',false));
+			if ($bProjectZoomableSunburst == true)
+			{
+				$arrayConfig['viewonly'] = false;
+				$arrayConfig['hidetabnav'] = true;
+				$arrayConfig['zoomablesunburst'] = true;
+				$wikipad_project_zoomablesunburst = new CChecklistWikiPadModule(
+					$this->GetWebsite(),
+					'project',
+					$arrayConfig);
+				$wikipad_project_zoomablesunburst->SetState('zoomablesunburst');
+				$arrayItems['MODULE_WIKIPAD_PROJECT_ZOOMABLESUNBURST'] = $wikipad_project_zoomablesunburst->RenderModule();
+			}
+			else
+			{
+				$arrayItems['MODULE_WIKIPAD_PROJECT_ZOOMABLESUNBURST'] = '';
+			}
+		
+		
 			$arrayItems['MESSAGE'] = '';
 			
 			$this->GetWebsite()->SetAuthUserID($strRealUserID);

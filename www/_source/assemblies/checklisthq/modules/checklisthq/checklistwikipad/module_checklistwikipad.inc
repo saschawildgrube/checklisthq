@@ -28,6 +28,11 @@
 		{
 			return $this->GetModuleConfigBoolean('tasklist');	
 		}	
+	
+		function GetConfigIsHideTabNav()
+		{
+			return $this->GetModuleConfigBoolean('hidetabnav');	
+		}		
 		
 		function GetConfigIsHideView()
 		{
@@ -101,6 +106,12 @@
 				$this->SetOutputItem('TABNAV','');
 				return;
 			}
+			
+			if ($this->GetConfigIsHideTabNav() == true)
+			{
+				$this->SetOutputItem('TABNAV','');  
+				return;
+			}			
 			
 			$tabnavigationDef = new CTabNavigationDefinition();
 

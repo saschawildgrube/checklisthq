@@ -1,6 +1,6 @@
 <?php
 
-	require_once(GetWDKDir()."wdk_module.inc");
+	require_once(GetWDKDir().'wdk_module.inc');
 	
 	class CUserDashboardConfigModule extends CModule
 	{
@@ -9,12 +9,12 @@
 	
 		function __construct(
 			CWebSite $website,
-			$strInstanceID = "",
+			$strInstanceID = '',
 			$arrayConfig = array())
 		{
 			parent::__construct(
 				$website,
-				"checklisthq/userdashboardconfig",
+				'checklisthq/userdashboardconfig',
 				$strInstanceID,
 				$arrayConfig);
 		}
@@ -30,15 +30,15 @@
 	
 		function OnRenderModule($strState)
 		{
-			$this->Trace("OnRenderModule(\"$strState\")");
+			$this->Trace('OnRenderModule(\'$strState\')');
 			switch ($strState)
 			{
-				case "form":
+				case 'form':
 					return $this->StateForm();
-				case "submit":
+				case 'submit':
 					return $this->StateSubmit();
-				case "":
-					$this->SetState("form");
+				case '':
+					$this->SetState('form');
 				default:
 					return $this->StateForm();
 			}
@@ -49,28 +49,42 @@
 		
 		function StateForm()
 		{
-			$this->SetState("form");
+			$this->SetState('form');
 			
 			$strMode = $this->GetWebsite()->GetAuthUserData('dashboard','inactive');
-
+			$bLinks = GetBoolValue($this->GetWebsite()->GetAuthUserData('dashboard_links',true));
+			$bProjectZoomableSunburst = GetBoolValue($this->GetWebsite()->GetAuthUserData('dashboard_project_zoomablesunburst',false));
 
 			$formDef = new CFormDefinition();
 			$arrayParams = array();
-			$arrayParams[$this->GetModuleVarNameState()] = "submit";
+			$arrayParams[$this->GetModuleVarNameState()] = 'submit';
 			$formDef->SetURL($this->GetWebsite()->GetRootURL(),$arrayParams);
-			$formDef->AddControlStatic("INFO","?TID_USERDASHBOARDCONFIG_TEXT_INFO?");
+			$formDef->AddControlStatic('INFO','?TID_USERDASHBOARDCONFIG_TEXT_INFO?');
 			
 			$arrayOptions = array();
-			$arrayOptions["inactive"] = "?TID_USERDASHBOARDCONFIG_MODE_INACTIVE?";
-			$arrayOptions["active"] = "?TID_USERDASHBOARDCONFIG_MODE_ACTIVE?";
+			$arrayOptions['inactive'] = '?TID_USERDASHBOARDCONFIG_MODE_INACTIVE?';
+			$arrayOptions['active'] = '?TID_USERDASHBOARDCONFIG_MODE_ACTIVE?';
 			$formDef->AddControlSelect(
-				"MODE",
-				$this->GetModuleVarName("mode"),
-				"?TID_USERDASHBOARDCONFIG_LABEL_MODE?",
+				'MODE',
+				$this->GetModuleVarName('mode'),
+				'?TID_USERDASHBOARDCONFIG_LABEL_MODE?',
 				$arrayOptions,
 				$strMode);
+				
+				
+			$formDef->AddControlCheckbox(
+				'LINKS',
+				$this->GetModuleVarName('links'),
+				'?TID_USERDASHBOARDCONFIG_LABEL_LINKS?',
+				$bLinks);
+
+			$formDef->AddControlCheckbox(
+				'PROJECT_ZOOMABLESUNBURST',
+				$this->GetModuleVarName('project_zoomablesunburst'),
+				'?TID_USERDASHBOARDCONFIG_LABEL_PROJECT_ZOOMABLESUNBURST?',
+				$bProjectZoomableSunburst);
 			
-			$formDef->AddControlButtonSubmit("?TID_BUTTON_SAVE?");
+			$formDef->AddControlButtonSubmit('?TID_BUTTON_SAVE?');
 			
 			if ($strMode == 'active')
 			{
@@ -78,21 +92,21 @@
 				$link = new CLinkElement($this->GetWebsite(),'default');
 				$strDashboardLink = $link->RenderLink($strDashboardURL,$strDashboardURL,true);
 				$this->SetOutputItem('LINK_DASHBOARD',$strDashboardLink);
-				$formDef->AddControlStatic("ACTIVE","?TID_USERDASHBOARDCONFIG_TEXT_ACTIVE?");
+				$formDef->AddControlStatic('ACTIVE','?TID_USERDASHBOARDCONFIG_TEXT_ACTIVE?');
 			}
 			
 			
-			$form = new CFormElement($this->GetWebsite(),"default");
+			$form = new CFormElement($this->GetWebsite(),'default');
 			
 			$this->SetOutputItem( 
-				"FORM",
+				'FORM',
 				$form->RenderForm(
 					$formDef,
 					array(),					
 					$this->m_arrayErrors));
 					
 		
-			return "form";
+			return 'form';
 		}
 		
 		function StateSubmit()
@@ -103,13 +117,19 @@
 				$this->m_arrayErrors['MODE'] = '?TID_USERDASHBOARDCONFIG_ERROR_MODE_INVALID?';
 			}
 			
+			$bLinks = GetBoolValue($this->GetModuleVar('links'));
+			$bProjectZoomableSunburst = GetBoolValue($this->GetModuleVar('project_zoomablesunburst'));
+
+			
 			if (ArrayCount($this->m_arrayErrors) > 0)			
 			{
 				return $this->StateForm();	
 			}
 
 			$this->GetWebsite()->SetAuthUserData('dashboard',$strMode);
-			
+			$this->GetWebsite()->SetAuthUserData('dashboard_links',$bLinks);
+			$this->GetWebsite()->SetAuthUserData('dashboard_project_zoomablesunburst',$bProjectZoomableSunburst);
+						
 			$message = new CMessageElement($this->GetWebsite(),'info');
 			$this->SetOutputItem('MESSAGE',$message->RenderMessage('?TID_USERDASHBOARDCONFIG_INFO_SUCCESS?'));
 			
