@@ -281,11 +281,14 @@
 					if (	StringSection($strLine,0,1) == '*'
 						||	StringSection($strLine,0,1) == '#')
 					{
+						
+						$strLineHash = MakeHash($strLine);
 
 						if ($nLine < $nLineCount - 1)
 						{
 							$arrayParams = array(
 								$this->GetModuleVarName('line') => $nLine,
+								$this->GetModuleVarName('linehash') => $strLineHash,
 								$this->GetModuleVarName('action') => 'movedown',
 								$this->GetModuleVarNameState() => 'submit_line'
 								);
@@ -297,6 +300,7 @@
 
 						$arrayParams = array(
 							$this->GetModuleVarName('line') => $nLine,
+							$this->GetModuleVarName('linehash') => $strLineHash,
 							$this->GetModuleVarName('action') => 'delete',
 							$this->GetModuleVarNameState() => 'submit_line'
 							);
@@ -351,6 +355,12 @@
 			}
 
 			$nLineToModify = GetIntegerValue($this->GetModuleVar('line'));
+			$strLineToModifyHash = $this->GetModuleVar('linehash');
+			$strAction = $this->GetModuleVar('action');
+	
+			$this->SetModuleVar('line','');
+			$this->SetModuleVar('linehash','');
+			$this->SetModuleVar('action','');
 			
 			if ($nLineToModify < 0)
 			{
@@ -364,9 +374,17 @@
 				$this->Trace('Line+1 is > number of lines');
 				return $this->StateView();
 			}
+
+			$strLineToModify = $arrayLines[$nLineToModify];
+			$strLineHash = MakeHash($strLineToModify);
+			if ($strLineHash != $strLineToModifyHash)
+			{
+				$this->SetErrorMessageCode('LINEHASH');
+				return $this->StateView();
+			}
 			
-			$strAction = $this->GetModuleVar('action');
 			
+		
 			if ($strAction == 'delete')
 			{
 				$this->SetOutputItem('LINE_DELETED','<pre>'.$arrayLines[$nLineToModify].'</pre>');
@@ -427,11 +445,6 @@
 					$strContent .= $strLineToMove;
 				}
 			}
-
-
-			$this->SetModuleVar('line','');
-			$this->SetModuleVar('action','');
-					
 
 			if ($this->SetData($this->GetDataName(),$strContent) == false)
 			{

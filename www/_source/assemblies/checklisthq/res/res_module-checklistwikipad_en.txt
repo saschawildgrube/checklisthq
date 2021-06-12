@@ -8,6 +8,8 @@ TID_WIKIPAD_TOOL_LINEDELETE
 Check this task off the list
 TID_WIKIPAD_INFO_LINEDELETED
 Great Job! This task is checked off the list: {LINE_DELETED}
+TID_WIKIPAD_ERROR_LINEHASH
+Something went wrong. Maybe the page was reloaded or the the text was changed in the meantime? Please re-select the line.
 TID_WIKIPAD_TOOL_LINEMOVETOP
 Do next
 TID_WIKIPAD_TOOL_LINEMOVEUP
