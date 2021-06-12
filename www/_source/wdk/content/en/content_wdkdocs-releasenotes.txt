@@ -7,6 +7,7 @@ NOT YET Baselined
 ** No changes
 * Defects
 ** Function StringRemoveCharacters() was not unicode aware. This has been fixed.
+** CForkMeOnGithubElement prevented links from being clicked that are (partly) underneath the ribbon. This has been fixed.
 * New features
 ** Added CWebsitePlugin::OnGetWebsiteTitle(), ::OnGetWebsiteDescription() and ::OnGetOpenGraphImageURL() functions and corresponding support in CWebsite functions to override default behavior via plugins.
 ** Added functions ObjectSerialize() and ObjectUnserialize() to provide proper error handling for serialize() and unserialize() php functions.
@@ -24,6 +25,7 @@ NOT YET Baselined
 ** Updated IsValidURL() to cover cases with brackets in the get parameter part of URLs, the exclamation mark in the path and question mark at the end.
 ** IsValidURL() is now entirely based on one regular expression.
 ** IsValidURL() can now deal with anchors that start with a number.
+** CReactElement uses css styles to improve the integration of a react component into an existing layout.
 * Discontinued
 ** Removed the GOOGLEMAPS generic output item from CWebsite. The underlying element has already been removed in an earlier release.
 ** Removed outdated shell script beanc.sh
