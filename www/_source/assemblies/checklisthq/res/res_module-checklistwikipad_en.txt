@@ -4,12 +4,12 @@ TID_WIKIPAD_TAB_ZOOMABLESUNBURST
 Zoomable Sunburst
 TID_WIKIPAD_TAB_RADIALTIDYTREE
 Radial Tidy Tree
+TID_WIKIPAD_ERROR_LINEHASH
+Something went wrong. Maybe the page was reloaded or the the text was changed in the meantime? Please re-select the line.
 TID_WIKIPAD_TOOL_LINEDELETE
 Check this task off the list
 TID_WIKIPAD_INFO_LINEDELETED
 Great Job! This task is checked off the list: {LINE_DELETED}
-TID_WIKIPAD_ERROR_LINEHASH
-Something went wrong. Maybe the page was reloaded or the the text was changed in the meantime? Please re-select the line.
 TID_WIKIPAD_TOOL_LINEMOVETOP
 Do next
 TID_WIKIPAD_TOOL_LINEMOVEUP
@@ -18,3 +18,11 @@ TID_WIKIPAD_TOOL_LINEMOVEDOWN
 Do it later
 TID_WIKIPAD_TOOL_LINEMOVEBOTTOM
 Move this task to the end of the list
+TID_WIKIPAD_TOOL_LINEMOVETOWAITINGFOR
+Move to 'Waiting For'
+TID_WIKIPAD_INFO_LINEMOVEDTOWAITINGFOR
+This task has been moved to 'Waiting For': {LINE_MOVED}
+TID_WIKIPAD_TOOL_LINEMOVETONEXTACTION
+Move to 'Next Action'  
+TID_WIKIPAD_INFO_LINEMOVEDTONEXTACTION
+This task has been moved to 'Next Action': {LINE_MOVED}

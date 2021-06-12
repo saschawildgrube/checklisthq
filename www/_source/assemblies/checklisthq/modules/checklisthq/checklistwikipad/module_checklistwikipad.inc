@@ -273,10 +273,26 @@
 				$strContent = '';
 				$nLine = 0;
 				$nLineCount = ArrayCount($arrayLines);
+				$strSection = 'nextaction'; // the default
 				foreach ($arrayLines as $strLine)
 				{
+					if (FindString($strLine,'=WAITING FOR=') != -1)
+					{
+						$strSection = 'waitingfor';
+					}
+					else if (FindString($strLine,'=NEXT ACTION=') != -1)
+					{
+						$strSection = 'nextaction';	
+					}
+					else if (StringSection($strLine,0,1) == '=')
+					{
+						$strSection = '';	
+					}
+					
 					$strHtmlLinkLineDelete = '';
 					$strHtmlLinkLineMoveDown = '';
+					$strHtmlLinkLineMoveToNextAction = ''; 
+					$strHtmlLinkLineMoveToWaitingFor = '';
 					
 					if (	StringSection($strLine,0,1) == '*'
 						||	StringSection($strLine,0,1) == '#')
@@ -309,6 +325,35 @@
 							'check-square-o',
 							'?TID_WIKIPAD_TOOL_LINEDELETE?');
 
+						if ($strSection != 'waitingfor')
+						{
+							$arrayParams = array(
+								$this->GetModuleVarName('line') => $nLine,
+								$this->GetModuleVarName('linehash') => $strLineHash,
+								$this->GetModuleVarName('action') => 'movetowaitingfor',
+								$this->GetModuleVarNameState() => 'submit_line'
+								);
+							$strHtmlLinkLineMoveToWaitingFor = '&nbsp;'.$linkicon->RenderLinkIcon(
+								$this->GetWebsite()->MakeURL($arrayParams),
+								'hourglass-start',
+								'?TID_WIKIPAD_TOOL_LINEMOVETOWAITINGFOR?');
+						}
+
+						if ($strSection != 'nextaction')   
+						{
+							$arrayParams = array(
+								$this->GetModuleVarName('line') => $nLine,
+								$this->GetModuleVarName('linehash') => $strLineHash,
+								$this->GetModuleVarName('action') => 'movetonextaction',
+								$this->GetModuleVarNameState() => 'submit_line'
+								);
+							$strHtmlLinkLineMoveToWaitingFor = '&nbsp;'.$linkicon->RenderLinkIcon(
+								$this->GetWebsite()->MakeURL($arrayParams),
+								'rocket',
+								'?TID_WIKIPAD_TOOL_LINEMOVETONEXTACTION?');
+						}
+
+
 /*
 						$arrayParams = array(
 							$this->GetModuleVarName('line') => $nLine,
@@ -326,6 +371,8 @@
 					}
 					$strContent .=
 						$strLine
+						.$strHtmlLinkLineMoveToWaitingFor
+						.$strHtmlLinkLineMoveToNextAction
 						.$strHtmlLinkLineMoveDown
 						.$strHtmlLinkLineDelete
 						."\n";
@@ -362,87 +409,165 @@
 			$this->SetModuleVar('linehash','');
 			$this->SetModuleVar('action','');
 			
-			if ($nLineToModify < 0)
+			if ($strAction != '')
 			{
-				$this->Trace('Line is < 0');
-				return $this->StateView();
-			}
 			
-			$arrayLines = StringExplode($strContent,"\n",true);
-			if ($nLineToModify+1 > ArrayCount($arrayLines))		
-			{
-				$this->Trace('Line+1 is > number of lines');
-				return $this->StateView();
-			}
-
-			$strLineToModify = $arrayLines[$nLineToModify];
-			$strLineHash = MakeHash($strLineToModify);
-			if ($strLineHash != $strLineToModifyHash)
-			{
-				$this->SetErrorMessageCode('LINEHASH');
-				return $this->StateView();
-			}
-			
-			
-		
-			if ($strAction == 'delete')
-			{
-				$this->SetOutputItem('LINE_DELETED','<pre>'.$arrayLines[$nLineToModify].'</pre>');
-				$this->SetInfoMessageCode('LINEDELETED');
-				
-				$strContent = '';
-				$nLine = 0;
-				foreach ($arrayLines as $strLine)
+				if ($nLineToModify < 0)
 				{
-					if ($nLine != $nLineToModify)
-					{
-						$strContent .=
-							$strLine
-							."\n";
-					}
-					$nLine++;
+					$this->Trace('Line is < 0');
+					return $this->StateView();
 				}
-			}
-			else if ($strAction == 'movedown')
-			{
-				//$this->SetOutputItem('LINE_MOVED_DOWN','<pre>'.$arrayLines[$nLineToModify].'</pre>');
-				//$this->SetInfoMessageCode('LINEMOVEDDOWN');
 				
-				$strContent = '';
-				$nLine = 0;
-				$strLineToMove = '';
-				foreach ($arrayLines as $strLine)
+				$arrayLines = StringExplode($strContent,"\n",true);
+				if ($nLineToModify+1 > ArrayCount($arrayLines))		
 				{
-					if ($strLineToMove != '')
+					$this->Trace('Line+1 is > number of lines');
+					return $this->StateView();
+				}
+	
+				$strLineToModify = $arrayLines[$nLineToModify];
+				$strLineHash = MakeHash($strLineToModify);
+				if ($strLineHash != $strLineToModifyHash)
+				{
+					$this->SetErrorMessageCode('LINEHASH');
+					return $this->StateView();
+				}
+				
+				$bHasNextAction = (FindString($strContent,'=NEXT ACTION=') != -1)?(true):(false);
+				$bHasWaitingFor = (FindString($strContent,'=WAITING FOR=') != -1)?(true):(false);
+				
+			
+				if ($strAction == 'delete')
+				{
+					$this->SetOutputItem('LINE_DELETED','<pre>'.$arrayLines[$nLineToModify].'</pre>');
+					$this->SetInfoMessageCode('LINEDELETED');
+					
+					$strContent = '';
+					$nLine = 0;
+					foreach ($arrayLines as $strLine)
 					{
-						if (	StringSection($strLine,0,1) == '='
-							||	StringSection($strLine,0,3) == '---')
+						if ($nLine != $nLineToModify)
 						{
 							$strContent .=
-								$strLineToMove
-								."\n"
-								.$strLine
+								$strLine
 								."\n";
-							$strLineToMove = '';
-							$nLine++;
-							continue;
 						}
+						$nLine++;
 					}
-					if ($nLine != $nLineToModify)
+				}
+				else if ($strAction == 'movedown')
+				{
+					//$this->SetOutputItem('LINE_MOVED_DOWN','<pre>'.$arrayLines[$nLineToModify].'</pre>');
+					//$this->SetInfoMessageCode('LINEMOVEDDOWN');
+					
+					$strContent = '';
+					$nLine = 0;
+					$strLineToMove = '';
+					foreach ($arrayLines as $strLine)
+					{
+						if ($strLineToMove != '')
+						{
+							if (	StringSection($strLine,0,1) == '='
+								||	StringSection($strLine,0,3) == '---')
+							{
+								$strContent .=
+									$strLineToMove
+									."\n"
+									.$strLine
+									."\n";
+								$strLineToMove = '';
+								$nLine++;
+								continue;
+							}
+						}
+						if ($nLine != $nLineToModify)
+						{
+							$strContent .=
+								$strLine
+								."\n";
+						}
+						else
+						{
+							$strLineToMove = $strLine;
+						}
+						$nLine++;
+					}
+					if ($strLineToMove != '')
+					{
+						$strContent .= $strLineToMove;
+					}
+				}
+				else if ($strAction == 'movetonextaction')
+				{
+					if ($bHasNextAction == false)
+					{
+						$arrayLines[] = '=NEXT ACTION=';
+					}
+	
+					$strContent = '';
+					$nLine = 0;
+					foreach ($arrayLines as $strLine)
+					{
+						$this->Trace($strLine);
+						if ($nLine != $nLineToModify)
+						{
+							$strContent .=
+								$strLine
+								."\n";
+							if (FindString($strLine,'=NEXT ACTION=') != -1)
+							{
+								$strContent .=
+									$strLineToModify
+									."\n";
+							}
+						}
+						$nLine++;
+					}
+					
+					$this->SetOutputItem('LINE_MOVED','<pre>'.$strLineToModify.'</pre>');
+					$this->SetInfoMessageCode('LINEMOVEDTONEXTACTION');	
+				}
+				else if ($strAction == 'movetowaitingfor')
+				{
+					$strContent = '';
+		
+					if ($bHasWaitingFor == false)  
 					{
 						$strContent .=
-							$strLine
+							'=WAITING FOR='
+							."\n"
+							.$strLineToModify
 							."\n";
 					}
-					else
+					
+					if ($bHasNextAction == false)
 					{
-						$strLineToMove = $strLine;
+						$strContent .=
+							'=NEXT ACTION='
+							."\n";
 					}
-					$nLine++;
-				}
-				if ($strLineToMove != '')
-				{
-					$strContent .= $strLineToMove;
+	
+					$nLine = 0;
+					foreach ($arrayLines as $strLine)
+					{
+						$this->Trace($strLine);
+						if ($nLine != $nLineToModify)
+						{
+							$strContent .=  
+								$strLine
+								."\n";
+							if (FindString($strLine,'=WAITING FOR=') != -1)
+							{
+								$strContent .=
+									$strLineToModify
+									."\n";
+							}
+						}
+						$nLine++;
+					}
+					
+					$this->SetOutputItem('LINE_MOVED','<pre>'.$strLineToModify.'</pre>');
+					$this->SetInfoMessageCode('LINEMOVEDTOWAITINGFOR');	
 				}
 			}
 
