@@ -290,6 +290,10 @@
 				$nLine = 0;
 				$nLineCount = ArrayCount($arrayLines);
 				$strSection = 'nextaction'; // the default
+				
+				$strResToolLineMoveDown = $this->LoadString('TID_WIKIPAD_TOOL_LINEMOVEDOWN');
+				$strResToolLineDelete = $this->LoadString('TID_WIKIPAD_TOOL_LINEDELETE');
+				
 				foreach ($arrayLines as $strLine)
 				{
 					if (FindString($strLine,'=WAITING FOR=') != -1)
@@ -335,7 +339,7 @@
 							$strHtmlLinkLineMoveDown = '&nbsp;'.$linkicon->RenderLinkIcon(
 								$this->GetWebsite()->MakeURL($arrayParams),
 								'hand-o-down',
-								'?TID_WIKIPAD_TOOL_LINEMOVEDOWN?');
+								/*'?TID_WIKIPAD_TOOL_LINEMOVEDOWN?'*/$strResToolLineMoveDown);
 						}
 
 						$arrayParams = array(
@@ -347,7 +351,7 @@
 						$strHtmlLinkLineDelete = '&nbsp;'.$linkicon->RenderLinkIcon(
 							$this->GetWebsite()->MakeURL($arrayParams),
 							'check-square-o',
-							'?TID_WIKIPAD_TOOL_LINEDELETE?');
+							/*'?TID_WIKIPAD_TOOL_LINEDELETE?'*/$strResToolLineDelete);
 
 						if ($strSection != 'waitingfor')
 						{
@@ -632,13 +636,10 @@
 					}
 					else
 					{
-						$this->Trace($arrayLines);
 						$strContent = '';
 						$nLine = 0;
 						foreach ($arrayLines as $strLine)
 						{
-							$this->Trace($nLine.' / '.$nLineToModify);
-							$this->Trace($strLine);
 							$strContent .=
 								$strLine  
 								."\n";
