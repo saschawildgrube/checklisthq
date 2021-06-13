@@ -214,7 +214,7 @@
 				{
 					return $this->StateRadialTidyTree();	
 				}				
-				case 'submit_line':
+				case 'submitline':
 				{
 					return $this->StateSubmitLine();	
 				}
@@ -225,7 +225,22 @@
 			}
 		}
 	
-		
+		function MakeAddTaskForm($nLine)
+		{
+			$this->m_formDef = new CFormDefinition();
+
+			$arrayParams = array(); 
+			$arrayParams[$this->GetModuleVarNameState()] = 'submitline';
+			$arrayParams[$this->GetModuleVarName('action')] = 'add';
+			$arrayParams[$this->GetModuleVarName('line')] = ''.$nLine;
+			$this->m_formDef->SetURL($this->GetWebsite()->GetRootURL(),$arrayParams);
+
+			$this->m_formDef->AddControlText('TEXT',$this->GetModuleVarName('text'),'','',60,200); 
+			$this->m_formDef->AddControlButtonSubmit('?TID_WIKIPAD_BUTTON_ADD?');
+
+			$form = new CFormElement($this->GetWebsite(),'oneline');
+			return StringRemoveControlChars($form->RenderForm($this->m_formDef,array()));
+		}
 		
 		function StateView()
 		{
@@ -269,6 +284,7 @@
 			{
 				$arrayLines = StringExplode($strContent,"\n",true);
 				
+				$bAddTaskFormAdded = false;
 				$linkicon = new CLinkIconElement($this->GetWebsite(),'default');
 				$strContent = '';
 				$nLine = 0;
@@ -289,10 +305,18 @@
 						$strSection = '';	
 					}
 					
+					$strHtmlFormAddTask = '';
 					$strHtmlLinkLineDelete = '';
 					$strHtmlLinkLineMoveDown = '';
 					$strHtmlLinkLineMoveToNextAction = ''; 
 					$strHtmlLinkLineMoveToWaitingFor = '';
+					
+					
+					if (StringSection($strLine,0,1) == '=')
+					{
+						$strHtmlFormAddTask = "\n".$this->MakeAddTaskForm($nLine+1);
+						$bAddTaskFormAdded = true;
+					}
 					
 					if (	StringSection($strLine,0,1) == '*'
 						||	StringSection($strLine,0,1) == '#')
@@ -306,7 +330,7 @@
 								$this->GetModuleVarName('line') => $nLine,
 								$this->GetModuleVarName('linehash') => $strLineHash,
 								$this->GetModuleVarName('action') => 'movedown',
-								$this->GetModuleVarNameState() => 'submit_line'
+								$this->GetModuleVarNameState() => 'submitline'
 								);
 							$strHtmlLinkLineMoveDown = '&nbsp;'.$linkicon->RenderLinkIcon(
 								$this->GetWebsite()->MakeURL($arrayParams),
@@ -318,7 +342,7 @@
 							$this->GetModuleVarName('line') => $nLine,
 							$this->GetModuleVarName('linehash') => $strLineHash,
 							$this->GetModuleVarName('action') => 'delete',
-							$this->GetModuleVarNameState() => 'submit_line'
+							$this->GetModuleVarNameState() => 'submitline'
 							);
 						$strHtmlLinkLineDelete = '&nbsp;'.$linkicon->RenderLinkIcon(
 							$this->GetWebsite()->MakeURL($arrayParams),
@@ -331,7 +355,7 @@
 								$this->GetModuleVarName('line') => $nLine,
 								$this->GetModuleVarName('linehash') => $strLineHash,
 								$this->GetModuleVarName('action') => 'movetowaitingfor',
-								$this->GetModuleVarNameState() => 'submit_line'
+								$this->GetModuleVarNameState() => 'submitline'
 								);
 							$strHtmlLinkLineMoveToWaitingFor = '&nbsp;'.$linkicon->RenderLinkIcon(
 								$this->GetWebsite()->MakeURL($arrayParams),
@@ -345,7 +369,7 @@
 								$this->GetModuleVarName('line') => $nLine,
 								$this->GetModuleVarName('linehash') => $strLineHash,
 								$this->GetModuleVarName('action') => 'movetonextaction',
-								$this->GetModuleVarNameState() => 'submit_line'
+								$this->GetModuleVarNameState() => 'submitline'
 								);
 							$strHtmlLinkLineMoveToWaitingFor = '&nbsp;'.$linkicon->RenderLinkIcon(
 								$this->GetWebsite()->MakeURL($arrayParams),
@@ -358,7 +382,7 @@
 						$arrayParams = array(
 							$this->GetModuleVarName('line') => $nLine,
 							$this->GetModuleVarName('action') => 'movetop',
-							$this->GetModuleVarNameState() => 'submit_line'
+							$this->GetModuleVarNameState() => 'submitline'
 							);
 						$strUrlLineMoveTop = $this->GetWebsite()->MakeURL($arrayParams);
 						$strHtmlLinkLineMoveTop = '&nbsp;'.$linkicon->RenderLinkIcon(
@@ -371,6 +395,7 @@
 					}
 					$strContent .=
 						$strLine
+						.$strHtmlFormAddTask
 						.$strHtmlLinkLineMoveToWaitingFor
 						.$strHtmlLinkLineMoveToNextAction
 						.$strHtmlLinkLineMoveDown
@@ -378,7 +403,14 @@
 						."\n";
 					$nLine++;
 				}
+				
+				if ($bAddTaskFormAdded == false)
+				{
+						$strContent = $this->MakeAddTaskForm(0)."\n".$strContent;
+				}
 			}
+			
+			
 
 			$wiki = new CWikiElement($this->GetWebSite(),'default');
 			$this->SetOutputItem(
@@ -392,6 +424,7 @@
 	
 		function StateSubmitLine()
 		{
+			$this->Trace('StateSubmitLine');
 			$strContent = $this->GetData($this->GetDataName());
 			if ($strContent === false)
 			{
@@ -404,11 +437,13 @@
 			$nLineToModify = GetIntegerValue($this->GetModuleVar('line'));
 			$strLineToModifyHash = $this->GetModuleVar('linehash');
 			$strAction = $this->GetModuleVar('action');
+			$strLineText = $this->GetModuleVar('text');
 	
 			$this->SetModuleVar('line','');
 			$this->SetModuleVar('linehash','');
 			$this->SetModuleVar('action','');
-			
+			$this->SetModuleVar('text','');
+						
 			if ($strAction != '')
 			{
 			
@@ -419,18 +454,27 @@
 				}
 				
 				$arrayLines = StringExplode($strContent,"\n",true);
-				if ($nLineToModify+1 > ArrayCount($arrayLines))		
+				
+				$nMaxLine = ArrayCount($arrayLines) - 1;
+				if ($strAction == 'add')
 				{
-					$this->Trace('Line+1 is > number of lines');
+					$nMaxLine++;
+				}
+				if ($nLineToModify > $nMaxLine)		
+				{
+					$this->SetErrorMessageCode('LINE');
 					return $this->StateView();
 				}
 	
-				$strLineToModify = $arrayLines[$nLineToModify];
-				$strLineHash = MakeHash($strLineToModify);
-				if ($strLineHash != $strLineToModifyHash)
+				if ($strAction != 'add')
 				{
-					$this->SetErrorMessageCode('LINEHASH');
-					return $this->StateView();
+					$strLineToModify = $arrayLines[$nLineToModify];
+					$strLineHash = MakeHash($strLineToModify);
+					if ($strLineHash != $strLineToModifyHash)
+					{
+						$this->SetErrorMessageCode('LINE');
+						return $this->StateView();
+					}
 				}
 				
 				$bHasNextAction = (FindString($strContent,'=NEXT ACTION=') != -1)?(true):(false);
@@ -439,9 +483,6 @@
 			
 				if ($strAction == 'delete')
 				{
-					$this->SetOutputItem('LINE_DELETED','<pre>'.$arrayLines[$nLineToModify].'</pre>');
-					$this->SetInfoMessageCode('LINEDELETED');
-					
 					$strContent = '';
 					$nLine = 0;
 					foreach ($arrayLines as $strLine)
@@ -454,12 +495,11 @@
 						}
 						$nLine++;
 					}
+					$this->SetOutputItem('LINE_DELETED','<pre>'.$arrayLines[$nLineToModify].'</pre>');
+					$this->SetInfoMessageCode('LINEDELETED');
 				}
 				else if ($strAction == 'movedown')
 				{
-					//$this->SetOutputItem('LINE_MOVED_DOWN','<pre>'.$arrayLines[$nLineToModify].'</pre>');
-					//$this->SetInfoMessageCode('LINEMOVEDDOWN');
-					
 					$strContent = '';
 					$nLine = 0;
 					$strLineToMove = '';
@@ -568,6 +608,51 @@
 					
 					$this->SetOutputItem('LINE_MOVED','<pre>'.$strLineToModify.'</pre>');
 					$this->SetInfoMessageCode('LINEMOVEDTOWAITINGFOR');	
+				}
+				else if ($strAction == 'add')
+				{
+					if (StringTrim($strLineText) == '')
+					{
+						return $this->StateView();
+					}
+					
+					if (	StringSection($strLineText,0,1) != '*'
+						&&	StringSection($strLineText,0,1) != '#')
+					{
+						$strLineText = '* '.$strLineText;
+					}
+					
+					if ($nLineToModify == 0)
+					{
+							$strContent =
+								$strLineText
+								."\n"
+								. $strContent;
+						
+					}
+					else
+					{
+						$this->Trace($arrayLines);
+						$strContent = '';
+						$nLine = 0;
+						foreach ($arrayLines as $strLine)
+						{
+							$this->Trace($nLine.' / '.$nLineToModify);
+							$this->Trace($strLine);
+							$strContent .=
+								$strLine  
+								."\n";
+							if ($nLine == ($nLineToModify - 1))  
+							{
+								$strContent .=
+									$strLineText
+									."\n";
+							}
+							$nLine++;
+						}
+					}
+					$this->SetOutputItem('LINE_ADDED','<pre>'.$strLineText.'</pre>');
+					$this->SetInfoMessageCode('LINEADDED');
 				}
 			}
 
