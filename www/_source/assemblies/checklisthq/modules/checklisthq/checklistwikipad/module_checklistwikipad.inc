@@ -294,7 +294,7 @@
 
 			if ($this->GetConfigIsTaskList() == true)
 			{
-				$arrayLines = StringExplode($strContent,"\n",true);
+				$arrayLines = StringExplode($strContent,"\n",false);
 				
 				$bAddTaskFormAdded = false;
 				$linkicon = new CLinkIconElement($this->GetWebsite(),'default');
@@ -436,7 +436,8 @@
 				'WIKI',
 				$wiki->RenderWiki(
 					$strContent));
-	
+					
+					
 			return 'view';
 		}
 		
@@ -472,7 +473,7 @@
 					return $this->StateView();
 				}
 				
-				$arrayLines = StringExplode($strContent,"\n",true);
+				$arrayLines = StringExplode($strContent,"\n",false);
 				
 				$nMaxLine = ArrayCount($arrayLines) - 1;
 				if ($strAction == 'add')
@@ -567,7 +568,7 @@
 					$nLine = 0;
 					foreach ($arrayLines as $strLine)
 					{
-						$this->Trace($strLine);
+						//$this->Trace($strLine);
 						if ($nLine != $nLineToModify)
 						{
 							$strContent .=
@@ -630,7 +631,8 @@
 				}
 				else if ($strAction == 'add')
 				{
-					if (StringTrim($strLineText) == '')
+					$strLineText = StringTrim($strLineText);
+					if ($strLineText == '')
 					{
 						return $this->StateView();
 					}
