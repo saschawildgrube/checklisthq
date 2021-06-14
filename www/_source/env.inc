@@ -98,7 +98,7 @@
 
 	function GetWebservicesDefaultFormat()
 	{
-		return 'xml';  
+		return 'json';  
 	}
 
 	function GetErrorLogPath()
