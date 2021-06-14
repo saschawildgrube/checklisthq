@@ -306,6 +306,7 @@
 				$strTID_ToolLineMoveDown = $this->LoadString('TID_WIKIPAD_TOOL_LINEMOVEDOWN');
 				$strTID_ToolLineDelete = $this->LoadString('TID_WIKIPAD_TOOL_LINEDELETE');
 				$strTID_LineMoveToWaitingFor = $this->LoadString('TID_WIKIPAD_TOOL_LINEMOVETOWAITINGFOR');
+				$strTID_LineMoveToNextAction = $this->LoadString('TID_WIKIPAD_TOOL_LINEMOVETONEXTACTION');
 
 				
 				foreach ($arrayLines as $strLine)
@@ -392,7 +393,7 @@
 							$strHtmlLinkLineMoveToWaitingFor = '&nbsp;'.$linkicon->RenderLinkIcon(
 								$this->GetWebsite()->MakeURL($arrayParams),
 								'rocket',
-								'?TID_WIKIPAD_TOOL_LINEMOVETONEXTACTION?');
+								$strTID_LineMoveToNextAction);
 						}
 
 
