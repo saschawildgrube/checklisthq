@@ -5,6 +5,9 @@
 
 	class CChecklistWikiPadModule extends CWikiPadModule
 	{
+		var $m_form;
+		var $m_strTID_ButtonAdd;
+		
 		function __construct(
 			CWebSite $website,
 			$strWikiPageID = 'default',
@@ -236,10 +239,19 @@
 			$this->m_formDef->SetURL($this->GetWebsite()->GetRootURL(),$arrayParams);
 
 			$this->m_formDef->AddControlText('TEXT',$this->GetModuleVarName('text'),'','',60,200); 
-			$this->m_formDef->AddControlButtonSubmit('?TID_WIKIPAD_BUTTON_ADD?');
-
-			$form = new CFormElement($this->GetWebsite(),'oneline');
-			return StringRemoveControlChars($form->RenderForm($this->m_formDef,array()));
+			
+			if ($this->m_strTID_ButtonAdd == '')
+			{
+				$this->m_strTID_ButtonAdd = $this->LoadString('TID_WIKIPAD_BUTTON_ADD');
+			}
+			
+			$this->m_formDef->AddControlButtonSubmit($this->m_strTID_ButtonAdd);
+			
+			if ($this->m_form == null)
+			{
+				$this->m_form = new CFormElement($this->GetWebsite(),'compact');		
+			}
+			return StringRemoveControlChars($this->m_form->RenderForm($this->m_formDef,array()));
 		}
 		
 		function StateView()
@@ -291,8 +303,10 @@
 				$nLineCount = ArrayCount($arrayLines);
 				$strSection = 'nextaction'; // the default
 				
-				$strResToolLineMoveDown = $this->LoadString('TID_WIKIPAD_TOOL_LINEMOVEDOWN');
-				$strResToolLineDelete = $this->LoadString('TID_WIKIPAD_TOOL_LINEDELETE');
+				$strTID_ToolLineMoveDown = $this->LoadString('TID_WIKIPAD_TOOL_LINEMOVEDOWN');
+				$strTID_ToolLineDelete = $this->LoadString('TID_WIKIPAD_TOOL_LINEDELETE');
+				$strTID_LineMoveToWaitingFor = $this->LoadString('TID_WIKIPAD_TOOL_LINEMOVETOWAITINGFOR');
+
 				
 				foreach ($arrayLines as $strLine)
 				{
@@ -339,7 +353,7 @@
 							$strHtmlLinkLineMoveDown = '&nbsp;'.$linkicon->RenderLinkIcon(
 								$this->GetWebsite()->MakeURL($arrayParams),
 								'hand-o-down',
-								/*'?TID_WIKIPAD_TOOL_LINEMOVEDOWN?'*/$strResToolLineMoveDown);
+								$strTID_ToolLineMoveDown);
 						}
 
 						$arrayParams = array(
@@ -351,7 +365,7 @@
 						$strHtmlLinkLineDelete = '&nbsp;'.$linkicon->RenderLinkIcon(
 							$this->GetWebsite()->MakeURL($arrayParams),
 							'check-square-o',
-							/*'?TID_WIKIPAD_TOOL_LINEDELETE?'*/$strResToolLineDelete);
+							$strTID_ToolLineDelete);
 
 						if ($strSection != 'waitingfor')
 						{
@@ -364,7 +378,7 @@
 							$strHtmlLinkLineMoveToWaitingFor = '&nbsp;'.$linkicon->RenderLinkIcon(
 								$this->GetWebsite()->MakeURL($arrayParams),
 								'hourglass-start',
-								'?TID_WIKIPAD_TOOL_LINEMOVETOWAITINGFOR?');
+								$strTID_LineMoveToWaitingFor);
 						}
 
 						if ($strSection != 'nextaction')   
@@ -412,7 +426,7 @@
 				{
 						$strContent = $this->MakeAddTaskForm(0)."\n".$strContent;
 				}
-			}
+			} 
 			
 			
 

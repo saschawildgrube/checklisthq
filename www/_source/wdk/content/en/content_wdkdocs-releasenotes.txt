@@ -19,6 +19,7 @@ NOT YET Baselined
 ** Added javascript function CompareString() and CompareStringIgnoreCase() to wdk.js.
 ** Added javascript function StringCutOff() to wdk.js.
 ** Added shell script filesys-cleanup.sh to free up disc space by deleting various log files and backups.
+** Added form element layout style "compact" for small compact inline forms.
 * Improvements
 ** Added CWebsitePlugin::SetOutputItem() and ::SetOutputItem() to avoid the CWebsiteSatellite default behavior.
 ** Added CWebsiteSatellite::GetContent(), ::SetCondition(), ::SetLayoutConfigItem(), ::CheckCondition(), ::GetSiteTeamEmail() and ::GetCurrentURL().
@@ -31,7 +32,7 @@ NOT YET Baselined
 ** Removed outdated shell script beanc.sh
 ** Removed shell script listcoredumps.sh
 * Quality
-** No changes
+** Extended test for HtmlEncode() to check for double quote encoding.
 * Refactoring
 ** ArrayPack() and ArrayUnpack() are now using ArraySerialize() and ArrayUnserialize() for consistent error handling.
 ** Added function ParseWiki() to start separating the concerns of parsing a wiki text vs. rendering the html representation.
