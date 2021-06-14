@@ -428,15 +428,11 @@
 						$strContent = $this->MakeAddTaskForm(0)."\n".$strContent;
 				}
 			} 
-			
-			
 
 			$wiki = new CWikiElement($this->GetWebSite(),'default');
 			$this->SetOutputItem(
 				'WIKI',
-				$wiki->RenderWiki(
-					$strContent));
-					
+				$wiki->RenderWiki($strContent));
 					
 			return 'view';
 		}
