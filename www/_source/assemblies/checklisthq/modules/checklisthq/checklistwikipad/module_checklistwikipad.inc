@@ -708,8 +708,8 @@
 					$arrayNodes[] = $arrayNode;
 				}								
 			}
-			
 			$arrayNodes = AlignListLevels($arrayNodes,'level');
+			
 			foreach ($arrayNodes as &$arrayNode2)
 			{
 				$nLevel = ArrayGetValue($arrayNode2,'level');
