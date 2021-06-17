@@ -294,6 +294,9 @@
 
 			if ($this->GetConfigIsTaskList() == true)
 			{
+				$this->GetWebsite()->MaintainScrollPosition();
+				
+				
 				$arrayLines = StringExplode($strContent,"\n",false);
 				
 				$bAddTaskFormAdded = false;
