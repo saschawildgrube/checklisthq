@@ -670,6 +670,8 @@
 				}
 			}
 
+			$strContent = StringTrim($strContent);
+
 			if ($this->SetData($this->GetDataName(),$strContent) == false)
 			{
 				$this->SetErrorMessageCode('WIKIPAD_SET');
