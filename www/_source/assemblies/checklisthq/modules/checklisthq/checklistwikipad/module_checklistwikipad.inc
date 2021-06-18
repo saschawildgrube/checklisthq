@@ -312,8 +312,48 @@
 				$strTID_LineMoveToNextAction = $this->LoadString('TID_WIKIPAD_TOOL_LINEMOVETONEXTACTION');
 
 				
+				$strMode = '';
+				
 				foreach ($arrayLines as $strLine)
 				{
+					$strPre = '';
+					switch ($strMode)
+					{
+					case 'pre':
+						$nPosPreEnd = FindString($strLine,'</pre>');
+						if ($nPosPreEnd != -1)
+						{
+							$strMode = '';
+						}
+						$strContent .= $strLine."\n";
+						$nLine++;
+						continue 2;
+
+					default:
+						$nPosPreStart = FindString($strLine,'<pre>');
+						$nPosPreEnd = FindString($strLine,'</pre>');
+						if ($nPosPreStart != -1)
+						{
+							$strPre = StringSection($strLine,$nPosPreStart)."\n";   
+							$strLine = StringSection($strLine,0,$nPosPreStart);
+							
+							if ($nPosPreEnd == -1)
+							{
+								$strMode = 'pre';
+							}
+
+/*							
+							if ($nPosPreEnd != -1)
+							{
+								$strMode = '';
+							}
+	*/
+							
+						}					
+						break;	
+					}
+					
+					
 					if (FindString($strLine,'=WAITING FOR=') != -1)
 					{
 						$strSection = 'waitingfor';
@@ -422,7 +462,7 @@
 						.$strHtmlLinkLineMoveToNextAction
 						.$strHtmlLinkLineMoveDown
 						.$strHtmlLinkLineDelete
-						."\n";
+						."\n".$strPre;
 					$nLine++;
 				}
 				
