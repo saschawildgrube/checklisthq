@@ -171,21 +171,17 @@
 			$this->SetOutputItem('USERSTATUS',$this->m_moduleLogin->RenderModule('status'));
 
 			// HEADER
-			if ($this->GetContent() != 'header')  
-			{
-			
-				$arrayConfig = array();
-				$arrayConfig['userspecific'] = true;
-				$arrayConfig['viewonly'] = true;
-				$arrayConfig['defaultcontent'] = $this->LoadString('TID_CONTENT_HEADERDEFAULT');
-	 
-				$this->IncludeModule('cms/wikipad');
-				$headerwikipad = new CWikiPadModule(
-					$this,
-					'header',
-					$arrayConfig);
-				$this->SetOutputItem('MODULE_HEADER',$headerwikipad->RenderModule());
-			}
+			$arrayConfig = array();
+			$arrayConfig['userspecific'] = true;
+			$arrayConfig['viewonly'] = true;
+			$arrayConfig['defaultcontent'] = $this->LoadString('TID_CONTENT_HEADERDEFAULT');
+ 
+			$this->IncludeModule('cms/wikipad');
+			$headerwikipad = new CWikiPadModule(
+				$this,
+				'header',
+				$arrayConfig);
+			$this->SetOutputItem('MODULE_HEADER',$headerwikipad->RenderModule());
 			
 			// FORK ME ON GITHUB
 			$this->IncludeElement('forkmeongithub');

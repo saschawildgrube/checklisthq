@@ -4,7 +4,6 @@
 	{
 		function OnRenderContent(&$arrayItems)
 		{
-
 			$arrayConfig = array();
 			$arrayConfig['columns'] = 100;    
 			$arrayConfig['lines'] = 10;
