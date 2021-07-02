@@ -306,6 +306,7 @@
 				$nLineCount = ArrayCount($arrayLines);
 				$strSection = 'nextaction'; // the default
 				
+				$strTID_LineMoveTop = $this->LoadString('TID_WIKIPAD_TOOL_LINEMOVETOP');
 				$strTID_ToolLineMoveDown = $this->LoadString('TID_WIKIPAD_TOOL_LINEMOVEDOWN');
 				$strTID_ToolLineDelete = $this->LoadString('TID_WIKIPAD_TOOL_LINEDELETE');
 				$strTID_LineMoveToWaitingFor = $this->LoadString('TID_WIKIPAD_TOOL_LINEMOVETOWAITINGFOR');
@@ -313,6 +314,7 @@
 
 				
 				$strMode = '';
+				$bFirstLineInSection = false;
 				
 				foreach ($arrayLines as $strLine)
 				{
@@ -353,6 +355,7 @@
 						break;	
 					}
 					
+					$strOldSection = $strSection;
 					
 					if (FindString($strLine,'=WAITING FOR=') != -1)
 					{
@@ -366,10 +369,16 @@
 					{
 						$strSection = '';	
 					}
+					if ($bFirstLineInSection == false)
+					{
+						$bFirstLineInSection = ($strOldSection != $strSection) ? (true) : (false);
+					}
+
 					
 					$strHtmlFormAddTask = '';
 					$strHtmlLinkLineDelete = '';
 					$strHtmlLinkLineMoveDown = '';
+					$strHtmlLinkLineMoveTop = '';
 					$strHtmlLinkLineMoveToNextAction = ''; 
 					$strHtmlLinkLineMoveToWaitingFor = '';
 					
@@ -439,6 +448,21 @@
 								$strTID_LineMoveToNextAction);
 						}
 
+						if ($strSection == 'nextaction' && $bFirstLineInSection == false)   
+						{
+							$arrayParams = array(
+								$this->GetModuleVarName('line') => $nLine,
+								$this->GetModuleVarName('linehash') => $strLineHash,
+								$this->GetModuleVarName('action') => 'movetop',
+								$this->GetModuleVarNameState() => 'submitline'
+								);
+							$strHtmlLinkLineMoveTop = '&nbsp;'.$linkicon->RenderLinkIcon(
+								$this->GetWebsite()->MakeURL($arrayParams),
+								'rocket',
+								$strTID_LineMoveTop);
+						}
+
+
 
 /*
 						$arrayParams = array(
@@ -453,17 +477,19 @@
 							'?TID_WIKIPAD_TOOL_LINEMOVETOP?');
 */
 
-
+						$bFirstLineInSection = false;
 					}
 					$strContent .=
 						$strLine
 						.$strHtmlFormAddTask
 						.$strHtmlLinkLineMoveToWaitingFor
 						.$strHtmlLinkLineMoveToNextAction
+						.$strHtmlLinkLineMoveTop
 						.$strHtmlLinkLineMoveDown
 						.$strHtmlLinkLineDelete
 						."\n".$strPre;
 					$nLine++;
+					
 				}
 				
 				if ($bAddTaskFormAdded == false)
@@ -539,6 +565,10 @@
 				$bHasNextAction = (FindString($strContent,'=NEXT ACTION=') != -1)?(true):(false);
 				$bHasWaitingFor = (FindString($strContent,'=WAITING FOR=') != -1)?(true):(false);
 				
+				if ($strAction == 'movetop') // we interpret that as 'movetonextaction'
+				{
+					$strAction = 'movetonextaction';
+				}
 			
 				if ($strAction == 'delete')
 				{
