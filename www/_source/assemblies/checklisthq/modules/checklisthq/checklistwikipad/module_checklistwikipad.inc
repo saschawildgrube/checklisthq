@@ -510,12 +510,11 @@
 		function StateSubmitLine()
 		{
 			$this->Trace('StateSubmitLine');
-			$strContent = $this->GetData($this->GetDataName());
-			if ($strContent === false)
+			$strContentOld = $this->GetData($this->GetDataName());
+			if ($strContentOld === false)
 			{
 				$this->SetErrorMessageCode('WIKIPAD_GET');
 				$this->SetOutputItem('WIKI','');
-				$strContent = '';
 				return $this->StateView();
 			}
 
@@ -538,7 +537,7 @@
 					return $this->StateView();
 				}
 				
-				$arrayLines = StringExplode($strContent,"\n",false);
+				$arrayLines = StringExplode($strContentOld,"\n",false);
 				
 				$nMaxLine = ArrayCount($arrayLines) - 1;
 				if ($strAction == 'add')
@@ -562,8 +561,8 @@
 					}
 				}
 				
-				$bHasNextAction = (FindString($strContent,'=NEXT ACTION=') != -1)?(true):(false);
-				$bHasWaitingFor = (FindString($strContent,'=WAITING FOR=') != -1)?(true):(false);
+				$bHasNextAction = (FindString($strContentOld,'=NEXT ACTION=') != -1)?(true):(false);
+				$bHasWaitingFor = (FindString($strContentOld,'=WAITING FOR=') != -1)?(true):(false);
 				
 				if ($strAction == 'movetop') // we interpret that as 'movetonextaction'
 				{
@@ -710,6 +709,13 @@
 						&&	StringSection($strLineText,0,1) != '#')
 					{
 						$strLineText = '* '.$strLineText;
+					}
+					
+					if (FindString($strContentOld,$strLineText) != -1)
+					{
+						$this->SetOutputItem('LINE_ADD','<pre>'.$strLineText.'</pre>');
+						$this->SetErrorMessageCode('DUPLICATELINE');
+						return $this->StateView();
 					}
 					
 					if ($nLineToModify == 0)
