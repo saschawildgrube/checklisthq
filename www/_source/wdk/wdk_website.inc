@@ -228,7 +228,7 @@
 			$this->RegisterGenericOutputItem('COUNTDOWN',array('datetime','timezone'));
 			
 
-			// Init Timezone Default
+			// Init Time Zone Default
 			$this->SetTimeZone('UTC');
 
 			// Initialize Meta
@@ -785,23 +785,23 @@
 			// This is because getmessage directly loads an error text and OnInit might render modules 
 
 			// Initialize "powered by"
-			$this->SetOutputItem("POWEREDBY","");
+			$this->SetOutputItem('POWEREDBY','');
 
 			// Initialize standard time items
-			$strCurrentYear = RenderDateTimeFormat(time(),"%Y",$this->GetTimeZone(),$this->GetLanguage());
+			$strCurrentYear = RenderDateTimeFormat(time(),'%Y',$this->GetTimeZone(),$this->GetLanguage());
 
 			// Initialize WDK Documentation related items
-			$this->SetOutputItem("WDK","WDK");
-			$this->SetOutputItem("WDK_AUTHOR","Sascha Wildgrube");
-			$this->SetOutputItem("WDK_COPYRIGHT_PERIOD",WDK_COPYRIGHT_SINCE."-".$strCurrentYear);
-			$this->SetOutputItem("WDK_DOCS_URL","http://www.websitedevkit.com/");
-			$this->SetOutputItem("WDK_SCAFFOLDER_URL","http://www.websitedevkit.com/scaffolder/");
-			$this->SetOutputItem("WDK_SYSTEMREQUIREMENT_PHP_VERSION",'7.2.24');
-			$this->SetOutputItem("WDK_SYSTEMREQUIREMENT_UBUNTU_VERSION",'18.04');
-			$this->SetOutputItem("WDK_SYSTEMREQUIREMENT_APACHE_VERSION",'2.4.29');
-			$this->SetOutputItem('WDK_SYSTEMREQUIREMENT_MARIADB_VERSION','10.1.38');
-			
-		
+			$this->SetOutputItem('WDK','WDK');
+			$this->SetOutputItem('WDK_AUTHOR','Sascha Wildgrube');
+			$this->SetOutputItem('WDK_COPYRIGHT_PERIOD',WDK_COPYRIGHT_SINCE.'-'.$strCurrentYear);
+			$this->SetOutputItem('WDK_DOCS_URL','http://www.websitedevkit.com/');
+			$this->SetOutputItem('WDK_SCAFFOLDER_URL','http://www.websitedevkit.com/scaffolder/');
+			$this->SetOutputItem('WDK_SYSTEMREQUIREMENT_PHP_VERSION','7.2.24');
+			$this->SetOutputItem('WDK_SYSTEMREQUIREMENT_UBUNTU_VERSION','18.04');
+			$this->SetOutputItem('WDK_SYSTEMREQUIREMENT_APACHE_VERSION','2.4.29');
+			$this->SetOutputItem('WDK_SYSTEMREQUIREMENT_MARIADB_VERSION','10.1.38');			
+
+
 			// Include standard elements
 			// The ''.' is to defuse the deprecation test
 			$this->IncludeElement(''.'icon');
@@ -814,8 +814,12 @@
 			$this->IncludeElement(''.'form');
 			$this->IncludeElement(''.'toolbar');
 			$this->IncludeElement(''.'table');
+			
 
-		
+			// Progress Indicator
+			$icon = new CIconElement($this,'spin');
+			$this->SetOutputItem('PROGRESSINDICATOR',$icon->RenderIcon('spinner'));			
+
 			// Initialize Logo
 			$linkLogo = new CLinkElement($this,'logo');
 			$this->SetOutputItem('LOGO',$linkLogo->RenderLink($this->GetRootURL(),'?TID_TITLE?'));
@@ -1835,6 +1839,11 @@
 				{
 					return $this->GetImageRootURL($strFile);	
 				}
+				$strFile = $this->MakeImageFileName($strImageID,"webp");
+				if (IsFile($this->GetImagesDir().$strFile))
+				{
+					return $this->GetImageRootURL($strFile);	
+				}
 			}
 			$strFile = $this->MakeImageFileName($strImageID,$strImageFileExtention);
 			if (IsFile($this->GetImagesDir().$strFile))
@@ -1860,6 +1869,11 @@
 					return $this->GetImageRootURL($strFile);	
 				}
 				$strFile = $this->MakeLayoutImageFileName($strImageID,$this->GetLayout(),"gif");
+				if (IsFile($this->GetImagesDir().$strFile))
+				{
+					return $this->GetImageRootURL($strFile);	
+				}
+				$strFile = $this->MakeLayoutImageFileName($strImageID,$this->GetLayout(),"webp");
 				if (IsFile($this->GetImagesDir().$strFile))
 				{
 					return $this->GetImageRootURL($strFile);	
@@ -1934,10 +1948,10 @@
 		final
 		function GetTimeZone()
 		{
-			$strTimeZone = $this->GetVar("timezone");	
-			if (!IsValidTimezoneID($strTimeZone))
+			$strTimeZone = $this->GetVar('timezone');	
+			if (!IsValidTimeZoneID($strTimeZone))
 			{
-				return "UTC";
+				return 'UTC';
 			}
 			return $strTimeZone;
 		}
@@ -1945,7 +1959,7 @@
 		final
 		function SetTimeZone($strTimeZone)
 		{
-			if (IsValidTimezoneID($strTimeZone))
+			if (IsValidTimeZoneID($strTimeZone))
 			{
 				$this->SetVar("timezone",$strTimeZone);
 			}
@@ -2486,17 +2500,18 @@
 			$strFile = $this->GetAssemblyLine()->GetResourceFilePath($strLanguage,$strID);
 			if ($strFile == false)
 			{
-				$this->Trace("Warning: Can not find resources for \"$strID\" for language \"$strLanguage\".");
+				$this->Trace("LoadStringResources: Warning: Can not find resources for \"$strID\" for language \"$strLanguage\".");
 			}
 			else
 			{
 				$bResult = $this->m_res->LoadStringResourceFile($strLanguage,$strFile);
 				if ($bResult == false)
 				{
-					$this->Trace("Warning: Failed to load resource file \"$strFile\".");
+					$this->Trace("LoadStringResources: Warning: Failed to load resource file \"$strFile\".");
 				}
 				else
 				{
+					$this->Trace('LoadStringResources: Loaded resources "'.$strID.'" for language "'.$strLanguage.'"');
 					return true;
 				}
 			}
@@ -2504,28 +2519,29 @@
 			$strFallbackLanguage = $this->GetFallbackLanguage();
 			if (!IsValidLanguageID($strFallbackLanguage))
 			{
-				$this->Trace("Warning: No fallback language configured.");
+				$this->Trace("LoadStringResources: Warning: No fallback language configured.");
 				return false;
 			}
 			else
 			{
-				$this->Trace("Warning: Trying fallback language \"$strFallbackLanguage\".");	
+				$this->Trace("LoadStringResources: Warning: Trying fallback language \"$strFallbackLanguage\".");	
 			}
 			
 			$strFile = $this->GetAssemblyLine()->GetResourceFilePath($strFallbackLanguage,$strID);
 			if ($strFile == false)
 			{
-				$this->Trace("Warning: Can not find resources for \"$strID\" for fallback language \"$strFallbackLanguage\".");
+				$this->Trace("LoadStringResources: Warning: Can not find resources for \"$strID\" for fallback language \"$strFallbackLanguage\".");
 			}
 			else
 			{
 				$bResult = $this->m_res->LoadStringResourceFile($strFallbackLanguage,$strFile);
 				if ($bResult == false)
 				{
-					$this->Trace("Warning: Failed to load resource file \"$strFile\".");
+					$this->Trace("LoadStringResources: Warning: Failed to load resource file \"$strFile\".");
 				}
 				else
 				{
+					$this->Trace('LoadStringResources: Loaded resources "'.$strID.'" for fallback language "'.$strFallbackLanguage.'"');
 					return true;
 				}
 			}
@@ -4373,6 +4389,12 @@ FileRead(GetWDKDir() . "wdk_help.txt").
 				print(FileReadBinary($strFilePath));
 				return true;
 			}
+			if (StringSection($strFilePath,-4) == "webp")
+			{
+				header('Content-type: image/webp');
+				print(FileReadBinary($strFilePath));
+				return true;
+			}
 			if (StringSection($strFilePath,-3) == "jpg")
 			{
 				header('Content-type: image/jpeg');
@@ -4583,7 +4605,7 @@ FileRead(GetWDKDir() . "wdk_help.txt").
 		{
 			/*
 			1. Check for static images dir then for assemblies
-			2. Check for png, then for jpg, then for gif
+			2. Check for png, then for jpg, then for gif, then for webp
 			*/
 
 			if ($strExtension == "")
@@ -4603,6 +4625,11 @@ FileRead(GetWDKDir() . "wdk_help.txt").
 				{
 					return $strFilePath;	
 				}
+				$strFilePath = $this->GetImageFilePath($strImageID,"webp");
+				if ($strFilePath != false)
+				{
+					return $strFilePath;	
+				}				
 				return false;
 			}
 				
@@ -4645,6 +4672,11 @@ FileRead(GetWDKDir() . "wdk_help.txt").
 					return $strFilePath;	
 				}
 				$strFilePath = $this->GetLayoutImageFilePath($strImageID, $strLayout, "gif");
+				if ($strFilePath != false)
+				{
+					return $strFilePath;	
+				}
+				$strFilePath = $this->GetLayoutImageFilePath($strImageID, $strLayout, "webp");
 				if ($strFilePath != false)
 				{
 					return $strFilePath;	
@@ -4896,7 +4928,7 @@ FileRead(GetWDKDir() . "wdk_help.txt").
 			{
 				if ($strText != '')
 				{
-					$strText = $strText.', '.$strTextDefault;   
+					$strText = $strText.' '.$strTextDefault;   
 				}
 				else
 				{

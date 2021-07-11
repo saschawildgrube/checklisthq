@@ -7,6 +7,10 @@
 	{
 		var $m_form;
 		var $m_strTID_ButtonAdd;
+		var $m_strHtmlLinkLineMoveDownTemplate;
+		var $m_strHtmlLinkLineMoveTopTemplate;
+		var $m_strHtmlLinkLineDeleteTemplate;
+		var $m_strHtmlLinkLineMoveToWaitingForTemplate;
 		
 		function __construct(
 			CWebSite $website,
@@ -254,6 +258,74 @@
 			return StringRemoveControlChars($this->m_form->RenderForm($this->m_formDef,array()));
 		}
 		
+		function MakeHtmlTemplateLinkLineAction($strAction,$strIcon,$strLabel)
+		{
+			$linkicon = new CLinkIconElement($this->GetWebsite(),'default');
+			$arrayParams = array(
+				$this->GetModuleVarName('line') => 'LINE',
+				$this->GetModuleVarName('linehash') => 'HASH',
+				$this->GetModuleVarName('action') => $strAction,
+				$this->GetModuleVarNameState() => 'submitline'
+				);
+			$strTemplate = '&nbsp;'.$linkicon->RenderLinkIcon(
+				$this->GetWebsite()->MakeURL($arrayParams),
+				$strIcon,
+				$strLabel); 
+			return $strTemplate;
+		}
+		
+		function MakeHtmlLinkMoveDown($nLine,$strLineHash)
+		{
+			if ($this->m_strHtmlLinkLineMoveDownTemplate == '')
+			{
+				$this->m_strHtmlLinkLineMoveDownTemplate = $this->MakeHtmlTemplateLinkLineAction(
+					'movedown','hand-o-down',
+					$this->LoadString('TID_WIKIPAD_TOOL_LINEMOVEDOWN'));
+			}
+			$strHtml = ReplaceString($this->m_strHtmlLinkLineMoveDownTemplate,'LINE',$nLine);
+			$strHtml = ReplaceString($strHtml,'HASH',$strLineHash);
+			return $strHtml;
+		}
+	
+		function MakeHtmlLinkMoveTop($nLine,$strLineHash)
+		{
+			if ($this->m_strHtmlLinkLineMoveTopTemplate == '')
+			{
+				$this->m_strHtmlLinkLineMoveTopTemplate = $this->MakeHtmlTemplateLinkLineAction(
+					'movetop','rocket',
+					$this->LoadString('TID_WIKIPAD_TOOL_LINEMOVETOP'));	
+			}
+			$strHtml = ReplaceString($this->m_strHtmlLinkLineMoveTopTemplate,'LINE',$nLine);
+			$strHtml = ReplaceString($strHtml,'HASH',$strLineHash);
+			return $strHtml; 
+		}	
+
+		function MakeHtmlLinkDelete($nLine,$strLineHash)
+		{
+			if ($this->m_strHtmlLinkLineDeleteTemplate == '')
+			{
+				$this->m_strHtmlLinkLineDeleteTemplate = $this->MakeHtmlTemplateLinkLineAction(
+					'delete','check-square-o',
+					$this->LoadString('TID_WIKIPAD_TOOL_LINEDELETE'));	
+			}
+			$strHtml = ReplaceString($this->m_strHtmlLinkLineDeleteTemplate,'LINE',$nLine);
+			$strHtml = ReplaceString($strHtml,'HASH',$strLineHash);
+			return $strHtml;
+		}	
+
+		function MakeHtmlLinkMoveToWaitingFor($nLine,$strLineHash)
+		{
+			if ($this->m_strHtmlLinkLineMoveToWaitingForTemplate == '')
+			{
+				$this->m_strHtmlLinkLineMoveToWaitingForTemplate = $this->MakeHtmlTemplateLinkLineAction(
+					'movetowaitingfor','hourglass-start',
+					$this->LoadString('TID_WIKIPAD_TOOL_LINEMOVETOWAITINGFOR'));	
+			}
+			$strHtml = ReplaceString($this->m_strHtmlLinkLineMoveToWaitingForTemplate,'LINE',$nLine);
+			$strHtml = ReplaceString($strHtml,'HASH',$strLineHash);
+			return $strHtml;
+		}		
+			
 		function StateView()
 		{
 			$strPreviousState = $this->GetPreviousState();
@@ -306,13 +378,10 @@
 				$nLineCount = ArrayCount($arrayLines);
 				$strSection = 'nextaction'; // the default
 				
-				$strTID_LineMoveTop = $this->LoadString('TID_WIKIPAD_TOOL_LINEMOVETOP');
-				$strTID_ToolLineMoveDown = $this->LoadString('TID_WIKIPAD_TOOL_LINEMOVEDOWN');
-				$strTID_ToolLineDelete = $this->LoadString('TID_WIKIPAD_TOOL_LINEDELETE');
 				$strTID_LineMoveToWaitingFor = $this->LoadString('TID_WIKIPAD_TOOL_LINEMOVETOWAITINGFOR');
 				$strTID_LineMoveToNextAction = $this->LoadString('TID_WIKIPAD_TOOL_LINEMOVETONEXTACTION');
 
-				
+			
 				$strMode = '';
 				$bFirstLineInSection = false;
 				
@@ -397,32 +466,15 @@
 
 						if ($nLine < $nLineCount - 1)
 						{
-							$arrayParams = array(
-								$this->GetModuleVarName('line') => $nLine,
-								$this->GetModuleVarName('linehash') => $strLineHash,
-								$this->GetModuleVarName('action') => 'movedown',
-								$this->GetModuleVarNameState() => 'submitline'
-								);
-							$strHtmlLinkLineMoveDown = '&nbsp;'.$linkicon->RenderLinkIcon(
-								$this->GetWebsite()->MakeURL($arrayParams),
-								'hand-o-down',
-								$strTID_ToolLineMoveDown);
+							$strHtmlLinkLineMoveDown = $this->MakeHtmlLinkMoveDown($nLine,$strLineHash);
 						}
-
-						$arrayParams = array(
-							$this->GetModuleVarName('line') => $nLine,
-							$this->GetModuleVarName('linehash') => $strLineHash,
-							$this->GetModuleVarName('action') => 'delete',
-							$this->GetModuleVarNameState() => 'submitline'
-							);
-						$strHtmlLinkLineDelete = '&nbsp;'.$linkicon->RenderLinkIcon(
-							$this->GetWebsite()->MakeURL($arrayParams),
-							'check-square-o',
-							$strTID_ToolLineDelete);
+						
+						$strHtmlLinkLineDelete = $this->MakeHtmlLinkDelete($nLine,$strLineHash);
 
 						if ($strSection != 'waitingfor')
 						{
-							$arrayParams = array(
+							$strHtmlLinkLineMoveToWaitingFor = $this->MakeHtmlLinkMoveToWaitingFor($nLine,$strLineHash);
+	/*						$arrayParams = array(
 								$this->GetModuleVarName('line') => $nLine,
 								$this->GetModuleVarName('linehash') => $strLineHash,
 								$this->GetModuleVarName('action') => 'movetowaitingfor',
@@ -432,6 +484,7 @@
 								$this->GetWebsite()->MakeURL($arrayParams),
 								'hourglass-start',
 								$strTID_LineMoveToWaitingFor);
+		*/
 						}
 
 						if ($strSection != 'nextaction')   
@@ -450,32 +503,8 @@
 
 						if ($strSection == 'nextaction' && $bFirstLineInSection == false)   
 						{
-							$arrayParams = array(
-								$this->GetModuleVarName('line') => $nLine,
-								$this->GetModuleVarName('linehash') => $strLineHash,
-								$this->GetModuleVarName('action') => 'movetop',
-								$this->GetModuleVarNameState() => 'submitline'
-								);
-							$strHtmlLinkLineMoveTop = '&nbsp;'.$linkicon->RenderLinkIcon(
-								$this->GetWebsite()->MakeURL($arrayParams),
-								'rocket',
-								$strTID_LineMoveTop);
+							$strHtmlLinkLineMoveTop = $this->MakeHtmlLinkMoveTop($nLine,$strLineHash);
 						}
-
-
-
-/*
-						$arrayParams = array(
-							$this->GetModuleVarName('line') => $nLine,
-							$this->GetModuleVarName('action') => 'movetop',
-							$this->GetModuleVarNameState() => 'submitline'
-							);
-						$strUrlLineMoveTop = $this->GetWebsite()->MakeURL($arrayParams);
-						$strHtmlLinkLineMoveTop = '&nbsp;'.$linkicon->RenderLinkIcon(
-							$this->GetWebsite()->MakeURL($arrayParams),
-							'check-square-o',
-							'?TID_WIKIPAD_TOOL_LINEMOVETOP?');
-*/
 
 						$bFirstLineInSection = false;
 					}

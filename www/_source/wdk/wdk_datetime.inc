@@ -200,6 +200,12 @@
 		//return strtotime(RenderDateTime($time)." $nYears year");
 	}
 
+	function GetTimeDayBegin($time, $strTimeZone = 'UTC')
+	{
+		$arrayDateTime = ParseTime($time);  
+		$strDateTime = $arrayDateTime['YEAR'].'-'.$arrayDateTime['MONTH'].'-'.$arrayDateTime['DAY'].' 00:00:00';
+		return GetTime($strDateTime);
+	}
 
 	function GetTimeWeekBegin($time)
 	{
@@ -545,12 +551,22 @@
 		return setlocale(LC_TIME,0);	
 	}
 	
-	function IsValidTimezoneID($strTimezone)
+	function GetTimeZoneOffset($strTimeZone, $time)
 	{
-		return ArrayValueExists(GetAllTimezoneIDs(),$strTimezone);	
+		if (IsValidTimeZoneID($strTimeZone) == false)
+		{
+			return 0;
+		}
+		$datetimezone = new DateTimeZone($strTimeZone);
+		return $datetimezone->getOffset(new DateTime(RenderDateTime($time)));  
 	}
 	
-	function GetAllTimezoneIDs()
+	function IsValidTimeZoneID($strTimeZone)
+	{
+		return ArrayValueExists(GetAllTimeZoneIDs(),$strTimeZone);	
+	}
+	
+	function GetAllTimeZoneIDs()
 	{
 		return array(
 			'UTC',

@@ -220,8 +220,8 @@
 		Trace('SetCookie("'+strName+'","'+strValue+'",'+nExpiryDays+')');
 		var date = new Date();
 		date.setTime(date.getTime() + (nExpiryDays*24*60*60*1000));
-		var strExpires = "expires="+date.toUTCString();
-		var strCookie = strName + "=" + strValue + "; " + strExpires + "; path={ROOTPATH}";
+		var strExpires = 'expires='+date.toUTCString();
+		var strCookie = strName + '=' + strValue + '; ' + strExpires + '; path={ROOTPATH}';
 		document.cookie = strCookie;
 	} 
 	
