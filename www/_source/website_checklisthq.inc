@@ -86,7 +86,7 @@
 
 			$this->AddHeader('<!--AVAILABILITY-CHECK-->');
 			
-			$this->SetTimezone('Europe/Berlin');
+			$this->SetTimeZone('Europe/Berlin'); 
 			
 			$this->LoadStringResources('systemadmin');
 			
