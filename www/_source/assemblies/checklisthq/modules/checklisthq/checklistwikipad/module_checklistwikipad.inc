@@ -528,7 +528,11 @@
 			$this->SetModuleVar('action','');
 			$this->SetModuleVar('text','');
 						
-			if ($strAction != '')
+			if ($strAction == '')
+			{
+				$strContent = $strContentOld;
+			}
+			else
 			{
 			
 				if ($nLineToModify < 0)
@@ -723,7 +727,7 @@
 							$strContent =
 								$strLineText
 								."\n"
-								. $strContent;
+								. $strContentOld;
 						
 					}
 					else
