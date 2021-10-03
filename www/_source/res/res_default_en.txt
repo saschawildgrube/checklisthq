@@ -28,6 +28,10 @@ TID_NAVIGATION_PROJECT
 Project
 TID_NAVIGATION_HEADER
 Header 
+TID_NAVIGATION_PERSONAL
+Personal
+TID_NAVIGATION_OFFICE
+Office
 TID_NAVIGATION_USERSETTINGS
 My Settings
 TID_NAVIGATION_ABOUT
@@ -135,7 +139,7 @@ Dashboard
 TID_TEXT_RECURRING
 Use this page to configure recurring tasks.
 
-Recurring task are added to the "Tasks" page on top or after the =NEXT ACTION= header if it exists.
+Recurring tasks are added to the "Tasks" page on top or after the =NEXT ACTION= header if it exists.
 
 Recurring tasks can be scheduled using the following headers:
 =DAILY= for daily tasks

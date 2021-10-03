@@ -76,6 +76,13 @@
 			$this->Trace('OnRenderGenericOutputItem');
 			return '';
 		}
+		
+		function OnCheckCondition($strCondition)
+		{
+			$this->Trace('OnCheckCondition');
+			return false;
+		}
+
 
 		
 	}

@@ -14,7 +14,7 @@
 			$this->GetWebsite()->IncludeModule('cms/wikipad');
 			$wikipad = new CWikiPadModule(
 				$this->GetWebsite(),
-				'recurring',
+				$this->GetWebsite()->GetPlugin('checklisthq')->GetWikiPageID('recurring'),
 				$arrayConfig);
 			$arrayItems['MODULE_WIKIPAD'] = $wikipad->RenderModule();
 

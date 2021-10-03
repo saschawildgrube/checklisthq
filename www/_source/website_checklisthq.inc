@@ -80,6 +80,17 @@
 			parent::OnInitAssemblyLine($assemblyLine);
 		}
 		
+		function OnInitPlugins()
+		{
+			$arrayPlugins = parent::OnInitPlugins();
+			
+			$this->IncludePlugin('checklisthq');
+			$plugin = new CChecklistHQPlugin($this);
+			$arrayPlugins[] = $plugin;
+
+			return $arrayPlugins;
+		}	
+		
 		function OnInit()
 		{
 			$bResult = parent::OnInit();
@@ -158,6 +169,10 @@
 					$this->SetContent('tasks');	
 				}
 			}
+			
+			$nContextID = GetIntegerValue($this->GetVar('checklisthq_context'));
+			$this->GetPlugin('checklisthq')->SetContextID($nContextID);
+			
 		}
 
 		function OnPostContent()
@@ -308,6 +323,15 @@
 				}
 			}			
 			
+			if ($strCondition == 'experimental')
+			{
+				$strUserName = $this->GetAuthUserName();
+				$this->Trace('OnCheckCondition: GetAuthUserName: '.$strUserName);
+				if ($strUserName == 'sascha' || $strUserName == 'admin')  
+				{
+					return true;
+				}
+			}
 			
 			return parent::OnCheckCondition($strCondition);	
 		}
@@ -318,6 +342,19 @@
 			{
 				$arraySegments = StringExplode($strSEOURL,'/');
 				$nSegments = ArrayCount($arraySegments);
+				$this->Trace('OnParseSEOURL');
+				$this->Trace($arraySegments);
+				if ($nSegments == 1)
+				{
+					$strSegment1 = $arraySegments[0];
+					if (FindString($strSegment1,'context') == 0)
+					{
+						$nContextID = GetIntegerValue(StringSection($strSegment1,7));
+						$this->SetContent('tasks');
+						$this->SetVar('checklisthq_context',$nContextID);
+						return;
+					}
+				}
 				if ($nSegments >= 2)
 				{
 					$strSegment1 = $arraySegments[0];

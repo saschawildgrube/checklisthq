@@ -5420,12 +5420,22 @@ FileRead(GetWDKDir() . "wdk_help.txt").
 		function CheckCondition($strCondition)
 		{
 			$bInvert = false;
-			if (StringSection($strCondition,0,1) == "!")
+			if (StringSection($strCondition,0,1) == '!')
 			{
 				$bInvert = true;
 				$strCondition	= StringSection($strCondition,1);
 			}
 			$bResult = $this->OnCheckCondition($strCondition);
+			if ($bResult == false)
+			{
+				foreach ($this->m_arrayPlugins as $plugin)
+				{
+					if ($bResult == false)
+					{
+						$bResult = $plugin->OnCheckCondition($strCondition);
+					}
+				}
+			}
 			if ($bInvert == true)
 			{
 				return !$bResult;	

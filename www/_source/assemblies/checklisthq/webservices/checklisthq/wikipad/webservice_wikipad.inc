@@ -81,10 +81,13 @@
 			return;	
 		}	
 
-		function CommandRecurringTasks()
-		{
-			$this->Trace('CommandRecurringTasks');
 
+		function DoRecurringTasksByContext($nContextID)
+		{
+			
+			$strContextPostFix = ($nContextID == 0)?(''):('_'.$nContextID);
+			$this->Trace('DoRecurringTasksByContext: "'.$strContextPostFix.'"');
+			
 			$webservice = new CWebServiceConsumerWebApplication($this);
 			$nOffset = -1;
 			$nMaxOffset = 0;
@@ -100,7 +103,7 @@
 				$arrayParams['offset'] = ''.$nOffset;    
 				$arrayParams['filter1'] = 'data_name';
 				$arrayParams['filter1_operator'] = '=';
-				$arrayParams['filter1_value'] = 'wikipad_recurring';
+				$arrayParams['filter1_value'] = 'wikipad_recurring'.$strContextPostFix;
 				$webservice->ConsumeWebService('system/data',$arrayParams);
 				if ($webservice->GetError() != '')
 				{
@@ -142,7 +145,7 @@
 									$arrayParams['command'] = 'get';
 									$arrayParams['data_context_type'] = 'USER';
 									$arrayParams['data_context_id'] = $strUserID;
-									$arrayParams['data_name'] = 'wikipad_tasks';
+									$arrayParams['data_name'] = 'wikipad_tasks'.$strContextPostFix;
 									$webservice->ConsumeWebService('system/data',$arrayParams);
 									if ($webservice->GetError() == '')
 									{
@@ -177,13 +180,13 @@
 										$this->Trace('New Task content:');
 										$this->Trace($strTasks);
 										
-										$this->Trace('Search for "&": '.FindString($strTasks,'&'));
+										$this->Trace('Search for "&": '.FindString($strTasks,'&'));  
 										
 										$arrayParams = array();
 										$arrayParams['command'] = 'set';
 										$arrayParams['data_context_type'] = 'USER';
 										$arrayParams['data_context_id'] = $strUserID;
-										$arrayParams['data_name'] = 'wikipad_tasks';
+										$arrayParams['data_name'] = 'wikipad_tasks'.$strContextPostFix;
 										$arrayParams['data_content'] = $strTasks;
 										$webservice->ConsumeWebService('system/data',$arrayParams);
 										if ($webservice->GetError() != '')
@@ -200,7 +203,15 @@
 				$this->Trace('Max offset: '.$nMaxOffset);
 			}
 			while ($nOffset < $nMaxOffset);
-			return;	
+			
+			return;			
+		}
+
+		function CommandRecurringTasks()
+		{
+			$this->Trace('CommandRecurringTasks');
+			$this->DoRecurringTasksByContext(0);
+			$this->DoRecurringTasksByContext(1);
 		}
 		
 		function GetSupportedHeaders()

@@ -13,10 +13,7 @@
 			{
 				$arrayItems["MODULE_LOGIN"] = "";
 				$arrayItems["MODULE_SIGNIN"] = "";
-				
 			}
-			
-		
 		}
 	}
 	

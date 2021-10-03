@@ -18,7 +18,7 @@
 			$this->GetWebsite()->IncludeModule('checklisthq/checklistwikipad');
 			$wikipad = new CChecklistWikiPadModule(
 				$this->GetWebsite(),
-				'project',
+				$this->GetWebsite()->GetPlugin('checklisthq')->GetWikiPageID('project'),
 				$arrayConfig);
 			$arrayItems['MODULE_WIKIPAD'] = $wikipad->RenderModule();
 
