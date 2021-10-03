@@ -103,6 +103,17 @@
 			
 			$this->SetFramework('fullwidth');
 			
+			switch ($this->GetPlugin('checklisthq')->GetContextID())
+			{
+			case 1:
+				$this->SetLayoutVariant('green');
+				break;
+			default:
+				$this->SetLayoutVariant('');
+				break;
+			}
+
+
 			$this->RegisterGenericOutputItem('GOOGLEAPPURL',array('app','email'));			
 			
 			$passwordpolicy = new CPasswordPolicy();

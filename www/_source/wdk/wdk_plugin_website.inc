@@ -82,10 +82,5 @@
 			$this->Trace('OnCheckCondition');
 			return false;
 		}
-
-
 		
 	}
-
-
-

@@ -8,7 +8,6 @@
 		function __construct(
 			$website)
 		{
-			$this->m_nContextID = 1;   
 			parent::__construct(
 				$website,
 				'checklisthq');
@@ -21,12 +20,12 @@
 		
 		function SetContextID($nContextID)
 		{
-			$this->m_nContextID = GetIntegerValue($nContextID);
+			$this->SetVar('checklisthq_context',$nContextID);
 		}
 		
 		function GetContextID()
 		{
-			return $this->m_nContextID;
+			return GetIntegerValue($this->GetVar('checklisthq_context'));
 		}
 
 		function GetWikiPageID($strWikiPageID)
@@ -43,12 +42,10 @@
 		
 		function OnCheckCondition($strCondition)
 		{
-			$this->Trace("OnCheckCondition($strCondition)");  
 			$nPos = FindString($strCondition,'context');
 			if ($nPos != -1)
 			{
 				$nContextID = GetIntegerValue(StringSection($strCondition,7+$nPos));
-				$this->Trace("OnCheckCondition($strCondition): ".$nContextID);
 				if ($this->GetContextID() == $nContextID)
 				{
 					return true;

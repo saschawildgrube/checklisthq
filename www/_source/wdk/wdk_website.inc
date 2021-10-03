@@ -703,9 +703,9 @@
 
 			// Manage Layout
 			$strLayout = $this->GetLayout();
-			if ($strLayout == "")
+			if ($strLayout == '')
 			{
-				$strLayout = "default";
+				$strLayout = 'default';
 			}
 			$this->SetLayout($strLayout);
 			
@@ -2166,18 +2166,30 @@
 
 		
 		final
+		function GetLayoutVariant()
+		{
+			return $this->GetVar('layout_variant');	
+		}
+		final
+		function SetLayoutVariant($strLayoutVariant)
+		{
+			$this->SetVar('layout_variant',$strLayoutVariant);	
+		}
+
+
+		final
 		function GetLayout()
 		{
-			return $this->GetVar("layout");	
+			return $this->GetVar('layout');	
 		}
 		final
 		function SetLayout($strLayout)
 		{
 			if (ArrayValueExists($this->GetSupportedLayouts(),$strLayout) == false)
 			{
-				$strLayout = "default";	
+				$strLayout = 'default';	
 			}
-			$this->SetVar("layout",$strLayout);	
+			$this->SetVar('layout',$strLayout);	
 		}
 		
 		final
@@ -2188,7 +2200,7 @@
 			{
 				return $arrayLayouts;
 			}
-			return array("default");				
+			return array('default');				
 		}
 		
 		function OnGetSupportedLayouts()
@@ -2995,23 +3007,27 @@ FileRead(GetWDKDir() . "wdk_help.txt").
 			$strHeader = '';
 
 
-			// Load layout configuration
-			
+			// Load layout configuration file
 			$strLayoutConfigFile = $this->GetAssemblyLine()->GetLayoutConfigFilePath($this->GetLayout());
-						
-			$arrayLayoutConfig = array();			
 			if ($strLayoutConfigFile != '')
 			{
 				$this->SetLayoutConfigItems(LoadNamedArrayFromTextFile($strLayoutConfigFile));	
-				//$this->Trace('Layout config items:');
-				//$this->Trace($this->GetAllLayoutConfigItems());
 			}
+
+			// Load layout variant configuration file
+			if ($this->GetLayoutVariant() != '')
+			{
+				$strLayoutVariantConfigFile = $this->GetAssemblyLine()->GetLayoutConfigFilePath($this->GetLayout().'_'.$this->GetLayoutVariant());
+				if ($strLayoutVariantConfigFile != '')
+				{
+					$this->SetLayoutConfigItems(LoadNamedArrayFromTextFile($strLayoutVariantConfigFile));	
+				}
+			}
+
 	
 			// Add additional CSS files to be included
 			foreach ($this->m_arrayStyleSheets as $strTitle => $arrayStyleSheet)
 			{
-				//$this->Trace('RenderHeaderStyleSheets: Adding style sheet: '.$strTitle.':');
-				//$this->Trace($arrayStyleSheet);
 				$strURL = ArrayGetValue($arrayStyleSheet,'url');
 				if ($strURL != '')
 				{
