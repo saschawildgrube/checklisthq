@@ -205,7 +205,7 @@
 			$this->IncludeModule('cms/wikipad');
 			$headerwikipad = new CWikiPadModule(
 				$this,
-				'header',
+				$this->GetPlugin('checklisthq')->GetWikiPageID('header'),
 				$arrayConfig);
 			$this->SetOutputItem('MODULE_HEADER',$headerwikipad->RenderModule());
 			
