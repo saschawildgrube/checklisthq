@@ -8,7 +8,7 @@ LEVEL	;CONTEXT							;LABEL															;CONDITIONS
 0			;project							;?TID_NAVIGATION_PROJECT?						;login
 0			;recurring						;?TID_NAVIGATION_RECURRING?					;login 
 0			;header								;?TID_NAVIGATION_HEADER?						;login
-0			;context0							;?TID_NAVIGATION_PERSONAL?					;login,experimental,!context0  
-0			;context1							;?TID_NAVIGATION_OFFICE?						;login,experimental,!context1  
+0			;context0							;?TID_NAVIGATION_PERSONAL?					;login,!context0  
+0			;context1							;?TID_NAVIGATION_OFFICE?						;login,!context1  
 0			;include:systemadmin	;																		;
 0			;usersettings					;?TID_NAVIGATION_USERSETTINGS?			;login

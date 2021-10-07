@@ -333,7 +333,8 @@
 					return true;
 				}
 			}			
-			
+
+			/*			
 			if ($strCondition == 'experimental')
 			{
 				$strUserName = $this->GetAuthUserName();
@@ -343,6 +344,7 @@
 					return true;
 				}
 			}
+			*/
 			
 			return parent::OnCheckCondition($strCondition);	
 		}
