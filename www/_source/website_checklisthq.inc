@@ -360,6 +360,17 @@
 				if ($nSegments == 1)
 				{
 					$strSegment1 = $arraySegments[0];
+					
+					if ($strSegment1 == 'office')
+					{
+						$strSegment1 = 'context1';
+					}
+					elseif ($strSegment1 == 'personal')
+					{
+						$strSegment1 = 'context0';
+					}
+					
+					
 					if (FindString($strSegment1,'context') == 0)
 					{
 						$nContextID = GetIntegerValue(StringSection($strSegment1,7));
