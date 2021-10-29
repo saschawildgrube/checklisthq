@@ -32,7 +32,7 @@
 			$arrayConfig = $config->GetDataArray();
 			
 			$arrayConfig['session_mode'] = SESSION_MODE_SERVER_COOKIE;
-			$arrayConfig['session_duration'] = 60 * 60 * 24 * 5; // 5 days
+			$arrayConfig['session_duration'] = 60 * 60 * 24 * 6; // 6 days
 			
 			$arrayConfig['csrf_defuse'] = true;      
 			
