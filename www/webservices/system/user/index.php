@@ -14,7 +14,8 @@
 	$arrayConfig["protocols"] = array("http","https");
 	$arrayConfig["admin_email"] = GetAdminEmail();
 	$arrayConfig["webservices"] = GetWebservicesDirectory();
-	$arrayConfig["blacklist"] = $strServiceSourceDir."blacklist.txt";
+	//$arrayConfig["blacklist"] = $strServiceSourceDir."blacklist.txt";
+	$arrayConfig["blacklist"] = GetSourceDir()."username_blacklist.txt";
 	
 	$arrayParams = array();
 	//$arrayParams ["trace"] = "1";
