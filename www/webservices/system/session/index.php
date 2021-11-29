@@ -14,7 +14,7 @@
 	$arrayConfig["protocols"] = array("http","https");
 	$arrayConfig["admin_email"] = GetAdminEmail();
 	$arrayConfig["webservices"] = GetWebservicesDirectory();
-	$arrayConfig["duration_max"] = intval(5 * 60 * 60 * 24); // Sessions may last 5 days
+	$arrayConfig["duration_max"] = intval(60 * 60 * 24 * 6); // 6 days
 	$arrayConfig["data_maxlen"] = 65535; // Each session can handle 64 K bytes
 	
 	
