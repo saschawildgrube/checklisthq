@@ -24,8 +24,8 @@ TID_NAVIGATION_NOTES
 Notes
 TID_NAVIGATION_RECURRING
 Recurring
-TID_NAVIGATION_PROJECT
-Project
+TID_NAVIGATION_VISUAL
+Visual
 TID_NAVIGATION_HEADER
 Header 
 TID_NAVIGATION_PERSONAL
@@ -120,7 +120,7 @@ If you don't have a NEXT ACTION section on your task page, the tasks will be jus
 * Clean up the mess after new years eve party
 =DECEMBER=
 * Buy christmas gifts
-TID_CONTENT_PROJECTDEFAULT
+TID_CONTENT_VISUALDEFAULT
 =Project 1=
 * Epic Alpha
 ** Story One

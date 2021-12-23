@@ -9,7 +9,7 @@
 			$arrayConfig['lines'] = 15;
 			$arrayConfig['userspecific'] = true;
 			$arrayConfig['showsubmitbuttonsaveandstay'] = true;
-			$arrayConfig['defaultcontent'] = $this->GetWebsite()->LoadString('TID_CONTENT_PROJECTDEFAULT');
+			$arrayConfig['defaultcontent'] = $this->GetWebsite()->LoadString('TID_CONTENT_VISUALDEFAULT');
 			$arrayConfig['network'] = true;
 			$arrayConfig['zoomablesunburst'] = true;
 			$arrayConfig['radialtidytree'] = true;
@@ -18,7 +18,7 @@
 			$this->GetWebsite()->IncludeModule('checklisthq/checklistwikipad');
 			$wikipad = new CChecklistWikiPadModule(
 				$this->GetWebsite(),
-				$this->GetWebsite()->GetPlugin('checklisthq')->GetWikiPageID('project'),
+				$this->GetWebsite()->GetPlugin('checklisthq')->GetWikiPageID('visual'),
 				$arrayConfig);
 			$arrayItems['MODULE_WIKIPAD'] = $wikipad->RenderModule();
 

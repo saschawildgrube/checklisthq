@@ -5,7 +5,7 @@ LEVEL	;CONTEXT							;LABEL															;CONDITIONS
 0			;tasks								;?TID_NAVIGATION_TASKS?							;login
 0			;links								;?TID_NAVIGATION_LINKS?							;login
 0			;notes								;?TID_NAVIGATION_NOTES?							;login
-0			;project							;?TID_NAVIGATION_PROJECT?						;login
+0			;visual								;?TID_NAVIGATION_VISUAL?						;login
 0			;recurring						;?TID_NAVIGATION_RECURRING?					;login 
 0			;header								;?TID_NAVIGATION_HEADER?						;login
 0			;personal							;?TID_NAVIGATION_PERSONAL?					;login,!context0  
