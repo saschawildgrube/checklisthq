@@ -31,7 +31,7 @@ NOT YET Baselined
 * Improvements
 ** Added CWebsitePlugin::SetOutputItem() and ::SetOutputItem() to avoid the CWebsiteSatellite default behavior.
 ** Added CWebsiteSatellite::GetContent(), ::SetCondition(), ::SetLayoutConfigItem(), ::CheckCondition(), ::GetSiteTeamEmail() and ::GetCurrentURL().
-** Updated IsValidURL() to cover cases with brackets in the get parameter part of URLs, the exclamation mark in the path and question mark at the end.
+** Updated IsValidURL() to cover cases with brackets in the get parameter part of URLs, the exclamation mark, semi-colon and ampersand in the path and question mark at the end.
 ** IsValidURL() is now entirely based on one regular expression.
 ** IsValidURL() can now deal with anchors that start with a number.
 ** CReactElement uses css styles to improve the integration of a react component into an existing layout.
