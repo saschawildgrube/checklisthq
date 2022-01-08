@@ -11,6 +11,7 @@
 		var $m_strHtmlLinkLineMoveTopTemplate;
 		var $m_strHtmlLinkLineDeleteTemplate;
 		var $m_strHtmlLinkLineMoveToWaitingForTemplate;
+		var $m_strHtmlLinkLineMoveToNextActionOtherAreaTemplate;
 		
 		function __construct(
 			CWebSite $website,
@@ -325,6 +326,21 @@
 			$strHtml = ReplaceString($strHtml,'HASH',$strLineHash);
 			return $strHtml;
 		}		
+	
+		function MakeHtmlLinkMoveToNextActionOtherArea($nLine,$strLineHash)
+		{
+			if ($this->m_strHtmlLinkLineMoveToNextActionOtherAreaTemplate == '')
+			{
+				$this->m_strHtmlLinkLineMoveToNextActionOtherAreaTemplate = $this->MakeHtmlTemplateLinkLineAction(
+					'movetonextactionotherarea','exchange',
+					$this->LoadString('TID_WIKIPAD_TOOL_LINEMOVETONEXTACTIONOTHERAREA'));	
+			}
+			$strHtml = ReplaceString($this->m_strHtmlLinkLineMoveToNextActionOtherAreaTemplate,'LINE',$nLine);
+			$strHtml = ReplaceString($strHtml,'HASH',$strLineHash);
+			return $strHtml;
+		}	
+
+			
 			
 		function StateView()
 		{
@@ -450,6 +466,7 @@
 					$strHtmlLinkLineMoveTop = '';
 					$strHtmlLinkLineMoveToNextAction = ''; 
 					$strHtmlLinkLineMoveToWaitingFor = '';
+					$strHtmlLinkLineMoveToNextActionOtherArea = '';
 					
 					
 					if (StringSection($strLine,0,1) == '=')
@@ -468,6 +485,8 @@
 						{
 							$strHtmlLinkLineMoveDown = $this->MakeHtmlLinkMoveDown($nLine,$strLineHash);
 						}
+						
+						$strHtmlLinkLineMoveToNextActionOtherArea = $this->MakeHtmlLinkMoveToNextActionOtherArea($nLine,$strLineHash);
 						
 						$strHtmlLinkLineDelete = $this->MakeHtmlLinkDelete($nLine,$strLineHash);
 
@@ -513,6 +532,7 @@
 						.$strHtmlFormAddTask
 						.$strHtmlLinkLineMoveToWaitingFor
 						.$strHtmlLinkLineMoveToNextAction
+						//.$strHtmlLinkLineMoveToNextActionOtherArea
 						.$strHtmlLinkLineMoveTop
 						.$strHtmlLinkLineMoveDown
 						.$strHtmlLinkLineDelete
@@ -780,6 +800,13 @@
 					$this->SetOutputItem('LINE_ADDED','<pre>'.$strLineText.'</pre>');
 					$this->SetInfoMessageCode('LINEADDED');
 				}
+				else // unknown line action
+				{
+					$this->SetErrorMessageCode('LINEACTIONUNKNOWN');
+					$strContent = $strContentOld;
+				}
+
+
 			}
 
 			$strContent = StringTrim($strContent);

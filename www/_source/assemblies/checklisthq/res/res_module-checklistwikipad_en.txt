@@ -6,6 +6,8 @@ TID_WIKIPAD_TAB_RADIALTIDYTREE
 Radial Tidy Tree
 TID_WIKIPAD_ERROR_LINE
 Something went wrong. Maybe the page was reloaded or the the text was changed in the meantime? Please retry!
+TID_WIKIPAD_ERROR_LINEACTIONUNKNOWN
+An unknown operation was requested. Maybe someone is playing around with the URL?
 TID_WIKIPAD_ERROR_DUPLICATELINE
 The task already exists: {LINE_ADD}
 TID_WIKIPAD_TOOL_LINEDELETE
