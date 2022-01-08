@@ -181,8 +181,8 @@
 				}
 			}
 			
-			$nContextID = GetIntegerValue($this->GetVar('checklisthq_context'));
-			$this->GetPlugin('checklisthq')->SetContextID($nContextID);
+			//$nContextID = GetIntegerValue($this->GetVar('checklisthq_context'));
+			//$this->GetPlugin('checklisthq')->SetContextID($nContextID);
 			
 		}
 

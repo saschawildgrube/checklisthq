@@ -20,12 +20,26 @@
 		
 		function SetContextID($nContextID)
 		{
-			$this->SetVar('checklisthq_context',$nContextID);
+			$this->SetVar('checklisthq_context',GetIntegerValue($nContextID));
 		}
 		
 		function GetContextID()
 		{
 			return GetIntegerValue($this->GetVar('checklisthq_context'));
+		}
+		
+		function GetContextName($nContext)
+		{
+			$nContext = GetIntegerValue($nContext);
+			switch ($nContext)
+			{
+			case 0:
+				return $this->GetWebsite()->LoadString('TID_CONTEXT_PERSONAL');
+			case 1:
+				return $this->GetWebsite()->LoadString('TID_CONTEXT_OFFICE');
+			default:
+				return 'UNKNOWN';
+			}
 		}
 
 		function GetWikiPageID($strWikiPageID)

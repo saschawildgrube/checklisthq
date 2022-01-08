@@ -11,7 +11,7 @@
 		var $m_strHtmlLinkLineMoveTopTemplate;
 		var $m_strHtmlLinkLineDeleteTemplate;
 		var $m_strHtmlLinkLineMoveToWaitingForTemplate;
-		var $m_strHtmlLinkLineMoveToNextActionOtherAreaTemplate;
+		var $m_strHtmlLinkLineMoveToOtherContextTemplate;
 		
 		function __construct(
 			CWebSite $website,
@@ -327,16 +327,22 @@
 			return $strHtml;
 		}		
 	
-		function MakeHtmlLinkMoveToNextActionOtherArea($nLine,$strLineHash)
+		function MakeHtmlLinkMoveToOtherContext($nLine,$strLineHash)
 		{
-			if ($this->m_strHtmlLinkLineMoveToNextActionOtherAreaTemplate == '')
+			if ($this->m_strHtmlLinkLineMoveToOtherContextTemplate == '')
 			{
-				$this->m_strHtmlLinkLineMoveToNextActionOtherAreaTemplate = $this->MakeHtmlTemplateLinkLineAction(
-					'movetonextactionotherarea','exchange',
-					$this->LoadString('TID_WIKIPAD_TOOL_LINEMOVETONEXTACTIONOTHERAREA'));	
+				$this->m_strHtmlLinkLineMoveToOtherContextTemplate = $this->MakeHtmlTemplateLinkLineAction(
+					'movetoothercontext','exchange',
+					$this->LoadString('TID_WIKIPAD_TOOL_LINEMOVETOOTHERCONTEXT'));	
 			}
-			$strHtml = ReplaceString($this->m_strHtmlLinkLineMoveToNextActionOtherAreaTemplate,'LINE',$nLine);
+			$strHtml = ReplaceString($this->m_strHtmlLinkLineMoveToOtherContextTemplate,'LINE',$nLine);
 			$strHtml = ReplaceString($strHtml,'HASH',$strLineHash);
+	
+			$nContext = $this->GetWebsite()->GetPlugin('checklisthq')->GetContextID();
+			$nOtherContext = 1-$nContext;
+			$strOtherContextName = $this->GetWebsite()->GetPlugin('checklisthq')->GetContextName($nOtherContext);
+			$strHtml = ReplaceString($strHtml,'{CONTEXT}',$strOtherContextName);
+	
 			return $strHtml;
 		}	
 
@@ -466,7 +472,7 @@
 					$strHtmlLinkLineMoveTop = '';
 					$strHtmlLinkLineMoveToNextAction = ''; 
 					$strHtmlLinkLineMoveToWaitingFor = '';
-					$strHtmlLinkLineMoveToNextActionOtherArea = '';
+					$strHtmlLinkLineMoveToOtherContext = '';
 					
 					
 					if (StringSection($strLine,0,1) == '=')
@@ -486,7 +492,7 @@
 							$strHtmlLinkLineMoveDown = $this->MakeHtmlLinkMoveDown($nLine,$strLineHash);
 						}
 						
-						$strHtmlLinkLineMoveToNextActionOtherArea = $this->MakeHtmlLinkMoveToNextActionOtherArea($nLine,$strLineHash);
+						$strHtmlLinkLineMoveToOtherContext = $this->MakeHtmlLinkMoveToOtherContext($nLine,$strLineHash);
 						
 						$strHtmlLinkLineDelete = $this->MakeHtmlLinkDelete($nLine,$strLineHash);
 
@@ -532,9 +538,9 @@
 						.$strHtmlFormAddTask
 						.$strHtmlLinkLineMoveToWaitingFor
 						.$strHtmlLinkLineMoveToNextAction
-						//.$strHtmlLinkLineMoveToNextActionOtherArea
 						.$strHtmlLinkLineMoveTop
-						.$strHtmlLinkLineMoveDown
+						.$strHtmlLinkLineMoveToOtherContext
+						.$strHtmlLinkLineMoveDown 
 						.$strHtmlLinkLineDelete
 						."\n".$strPre;
 					$nLine++;
@@ -576,7 +582,9 @@
 			$this->SetModuleVar('linehash','');
 			$this->SetModuleVar('action','');
 			$this->SetModuleVar('text','');
-						
+			
+			$strLineToBeMovedToNextActionOtherContext = '';
+			
 			if ($strAction == '')
 			{
 				$strContent = $strContentOld;
@@ -586,8 +594,11 @@
 			
 				if ($nLineToModify < 0)
 				{
-					$this->Trace('Line is < 0');
-					return $this->StateView();
+					if ($strAction != 'add')
+					{
+						$this->Trace('Line is < 0');
+						return $this->StateView();
+					}
 				}
 				
 				$arrayLines = StringExplode($strContentOld,"\n",false);
@@ -800,6 +811,25 @@
 					$this->SetOutputItem('LINE_ADDED','<pre>'.$strLineText.'</pre>');
 					$this->SetInfoMessageCode('LINEADDED');
 				}
+				else if ($strAction == 'movetoothercontext')
+				{
+					$strContent = '';
+					$nLine = 0;
+					foreach ($arrayLines as $strLine)
+					{
+						if ($nLine != $nLineToModify)
+						{
+							$strContent .=
+								$strLine
+								."\n";
+						}
+						else
+						{
+							$strLineToBeMovedToNextActionOtherContext = $strLine;
+						}
+						$nLine++;
+					}
+				}
 				else // unknown line action
 				{
 					$this->SetErrorMessageCode('LINEACTIONUNKNOWN');
@@ -814,6 +844,35 @@
 			if ($this->SetData($this->GetDataName(),$strContent) == false)
 			{
 				$this->SetErrorMessageCode('WIKIPAD_SET');
+			}
+			else
+			{
+				if ($strLineToBeMovedToNextActionOtherContext != '')
+				{
+					// TODO: It does not make sense to display a message directly before redirecting.
+					// This should be refactored to avoid the additional round-trip
+					//$this->SetOutputItem('LINE_MOVED','<pre>'.$arrayLines[$nLineToModify].'</pre>');
+					//$this->SetInfoMessageCode('LINEMOVEDTOOTHERCONTEXT');
+
+					$nOtherContext = 1 - $this->GetWebsite()->GetPlugin('checklisthq')->GetContextID();
+
+					$strModuleVarNamePrefix = 'wikipad_tasks_';
+					if ($nOtherContext > 0)
+					{
+						$strModuleVarNamePrefix .= $nOtherContext.'_'; 
+					}
+
+					$arrayParams = array(); 
+					$arrayParams[$strModuleVarNamePrefix.'state'] = 'submitline';
+					$arrayParams[$strModuleVarNamePrefix.'action'] = 'add';
+					$arrayParams[$strModuleVarNamePrefix.'line'] = '';
+					$arrayParams[$strModuleVarNamePrefix.'text'] = $strLineToBeMovedToNextActionOtherContext; 
+					$arrayParams['content'] = 'tasks'; 
+					$arrayParams['checklisthq_context'] = ''.$nOtherContext; 
+
+					$strUrl = $this->GetWebsite()->MakeURL($arrayParams);
+					$this->GetWebsite()->Redirect($strUrl);
+				}
 			}
 			
 			return $this->StateView();

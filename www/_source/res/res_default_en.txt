@@ -14,6 +14,10 @@ TID_TOOLTIP_SSL
 This page has been transferred using HTTPS.
 TID_COPYRIGHT
 Copyright &copy; {COPYRIGHT_PERIOD} by Sascha Wildgrube
+TID_CONTEXT_PERSONAL
+Personal
+TID_CONTEXT_OFFICE
+Office
 TID_NAVIGATION_START
 Welcome
 TID_NAVIGATION_TASKS
