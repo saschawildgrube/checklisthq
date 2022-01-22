@@ -219,6 +219,8 @@
 			$arraySupportedHeaders = array(
 				'DAILY',
 				
+				'WORKDAY',
+				
 				'MONDAY',
 				'TUESDAY',
 				'WEDNESDAY',
@@ -310,11 +312,20 @@
 			$arrayTasks = ArrayAppend($arrayTasks,ArrayGetValue($arrayRecurringTasks,'DAILY'));
 			$this->Trace('GetMatchingRecurringTasks: After daily:');
 			$this->Trace($arrayTasks);
+
+			// Workday
+			$nWeekDay = ArrayGetValue($arrayTimeNow,'WEEKDAY');
+			if ($nWeekDay <= 5)   
+			{
+				$arrayTasks = ArrayAppend($arrayTasks,ArrayGetValue($arrayRecurringTasks,'WORKDAY'));
+			}
+			$this->Trace('GetMatchingRecurringTasks: After workday:');
+			$this->Trace($arrayTasks);
 						
 			// Weekly
 			$nWeekDay = ArrayGetValue($arrayTimeNow,'WEEKDAY');
 			$this->Trace('Weekyday: '.$nWeekDay);
-			$strWeekdayHeader = $arraySupportedHeaders[$nWeekDay+0];  
+			$strWeekdayHeader = $arraySupportedHeaders[$nWeekDay+1];  
 			$this->Trace('Weekday header: '.$strWeekdayHeader);
 			$arrayTasks = ArrayAppend($arrayTasks,ArrayGetValue($arrayRecurringTasks,$strWeekdayHeader));
 			$this->Trace('GetMatchingRecurringTasks: After weekly:');
@@ -345,7 +356,7 @@
 			if ($nDay == 1)
 			{
 				$nMonth = ArrayGetValue($arrayTimeNow,'MONTH');
-				$strMonthHeader = $arraySupportedHeaders[$nMonth+9];
+				$strMonthHeader = $arraySupportedHeaders[$nMonth+10];
 				$this->Trace('Month header: '.$strMonthHeader);
 				$arrayTasks = ArrayAppend($arrayTasks,ArrayGetValue($arrayRecurringTasks,$strMonthHeader));
 			}

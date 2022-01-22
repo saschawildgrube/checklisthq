@@ -112,6 +112,8 @@ Use the format below to set up task lists that should be added to your NEXT ACTI
 If you don't have a NEXT ACTION section on your task page, the tasks will be just added on top of the page.
 =DAILY=
 * Drink 1 liter of water
+=WORKDAY=
+* Check mails once a day
 =MONDAY=
 * Prepare for the week
 =FRIDAY=
@@ -147,6 +149,7 @@ Recurring tasks are added to the "Tasks" page on top or after the =NEXT ACTION= 
 
 Recurring tasks can be scheduled using the following headers:
 =DAILY= for daily tasks
+=WORKDAY= for daily tasks to be done from Monday to Friday
 =MONDAY= to =SUNDAY= for weekly tasks on a specific day of the week
 =MONTHLY= tasks are added on the first day of each month
 =QUARTERLY= tasks are added on the first day of a new quarter
