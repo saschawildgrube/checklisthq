@@ -2397,14 +2397,14 @@
 		}
 
 		final
-		function AddJavaScript($strTitle,$strID = "")
+		function AddJavaScript($strTitle,$strID = '')
 		{
-			if ($strID == "")
+			if ($strID == '')
 			{
 				$strID = $strTitle;	
 			}
 			$this->m_arrayJavaScripts[$strTitle] = array(
-				"id" => $strID);	
+				'id' => $strID);	
 		}
 
 		final
@@ -2893,15 +2893,15 @@
 		}
 		
 		final
-		function MakeImageFileName($strImageID,$strExtention="png")
+		function MakeImageFileName($strImageID,$strExtention='png')
 		{
-			return $strImageID.".".$strExtention;
+			return $strImageID.'.'.$strExtention;
 		}
 
 		final
-		function MakeFontFileName($strFontID)
+		function MakeFontFileName($strFontID,$strExtention='woff2')  
 		{
-			return $strFontID;
+			return $strFontID.'.'.$strExtention;
 		}
 
 		final
@@ -4192,10 +4192,16 @@ FileRead(GetWDKDir() . "wdk_help.txt").
 		final
 		function RenderFont()
 		{
-			$strFontID = $this->GetParam("id");
+			$strFontID = $this->GetParam('id');
+			$strFontExt = $this->GetParam('ext');
+			
+			if ($strFontExt == '')
+			{
+				$strFontEx = 'woff2';
+			}
 			
 			$strBinary = null;
-			if ($strFontID == "")
+			if ($strFontID == '')
 			{
 				exit();	
 			}
@@ -4240,13 +4246,13 @@ FileRead(GetWDKDir() . "wdk_help.txt").
 			{
 				header('Content-type: application/font-sfnt');
 			}				
-			else if (StringSection($strFilePath,-4) == "woff")
+			else if (StringSection($strFilePath,-4) == 'woff')
 			{
 				header('Content-type: application/font-woff');
 			}
-			else if (StringSection($strFilePath,-5) == "woff2")
+			else if (StringSection($strFilePath,-5) == 'woff2')
 			{
-				header('Content-type: application/font-woff');
+				header('Content-type: font/woff2');
 			}
 			else
 			{
@@ -4736,15 +4742,16 @@ FileRead(GetWDKDir() . "wdk_help.txt").
 
 
 		final
-		function GetFontFilePath($strFontID)
+		function GetFontFilePath($strFontID, $strExt = 'woff2')
 		{
-			$strFilePath = $this->GetFontsDir() . $this->MakeFontFileName($strFontID);
+			$strFontFileName = $this->MakeFontFileName($strFontID,$strExt);
+			$strFilePath = $this->GetFontsDir() . $strFontFileName;
 			if (IsFile($strFilePath))
 			{
 				return $strFilePath;	
 			}
 			
-			$strFilePath = $this->GetAssemblyLine()->GetFontFilePath($strFontID);
+			$strFilePath = $this->GetAssemblyLine()->GetFontFilePath($strFontFileName);
 			if (IsFile($strFilePath))
 			{
 				return $strFilePath;
@@ -4755,7 +4762,7 @@ FileRead(GetWDKDir() . "wdk_help.txt").
 		final
 		function GetVideoFilePath($strVideoID)
 		{
-			$strFilePath = $this->GetVideosDir() . $this->MakeFontFileName($strVideoID);
+			$strFilePath = $this->GetVideosDir() . $this->MakeVideoFileName($strVideoID);
 			if (IsFile($strFilePath))
 			{
 				return $strFilePath;	
@@ -5596,17 +5603,18 @@ FileRead(GetWDKDir() . "wdk_help.txt").
 		{
 			//$this->AddJavaScriptURL('jquery','https://code.jquery.com/jquery-1.12.4.min.js','sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=');
 			//$this->AddJavaScriptURL('jquery','https://code.jquery.com/jquery-3.5.1.slim.min.js','sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj');
-			$this->AddJavaScriptURL('jquery','https://code.jquery.com/jquery-3.5.1.min.js','sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==');
-		
-		
-		
+			//$this->AddJavaScriptURL('jquery','https://code.jquery.com/jquery-3.5.1.min.js','sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==');
+			$this->AddJavaScript('jquery','jquery-3.5.1.min');
+
 		}		
 
 		function ActivateBootstrap3()
 		{
 			$this->ActivateJQuery();
-			$this->AddStyleSheetURL('bootstrap','https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css','sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u');
-			$this->AddJavaScriptURL('bootstrap','https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js','sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa');
+			//$this->AddStyleSheetURL('bootstrap','https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css','sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u');
+			$this->AddStyleSheet('bootstrap','bootstrap-3.3.7.min');
+			//$this->AddJavaScriptURL('bootstrap','https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js','sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa');
+			$this->AddJavaScript('bootstrap','bootstrap-3.3.7.min');
 		}
 
 		function ActivateBootstrap4()
@@ -5618,7 +5626,8 @@ FileRead(GetWDKDir() . "wdk_help.txt").
 		
 		function ActivateFontAwesome4()
 		{ 
-			$this->AddStyleSheetURL('fontawesome4','https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');	
+			//$this->AddStyleSheetURL('fontawesome4','https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');	
+			$this->AddStyleSheet('fontawesome4','fontawesome-4.7.0');	
 		}
 
 		function ActivateFontAwesome5()

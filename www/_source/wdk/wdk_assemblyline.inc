@@ -43,7 +43,7 @@
 		function GetAssetFilePath(
 			$strAssetType,
 			$arrayParams = array(),
-			$strFallbackParam = "")
+			$strFallbackParam = '')
 		{
 			foreach ($this->m_arrayAssemblies as $assembly)
 			{
@@ -55,7 +55,7 @@
 					return $strFile;
 				}
 			}
-			if ($strFallbackParam == "")
+			if ($strFallbackParam == '')
 			{
 				return false;
 			}
@@ -367,9 +367,9 @@
 		function GetFontFilePath($strFontFileName)
 		{
 			return $this->GetAssetFilePath(
-				"font",
+				'font',
 				array(
-					"fontfilename" => $strFontFileName
+					'fontfilename' => $strFontFileName
 					)
 				);				
 		}		

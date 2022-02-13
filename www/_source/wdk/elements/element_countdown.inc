@@ -13,7 +13,8 @@
 				false,
 				true);
 
-			$this->GetWebsite()->AddJavaScript('jquery','jquery-1.11.2.min');
+			//$this->GetWebsite()->AddJavaScript('jquery','jquery-1.11.2.min');
+			$this->GetWebsite()->ActivateJQuery();
 			$this->GetWebsite()->AddJavaScript('jquery-countdown','jquery.countdown.min');
 			$this->GetWebsite()->AddJavaScript('wdk-element-countdown','wdk-element-countdown');			
 		}

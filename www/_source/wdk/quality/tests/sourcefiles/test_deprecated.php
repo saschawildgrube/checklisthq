@@ -139,7 +139,9 @@
 						'/::Callback/',
 						'/m_bCallback/',
 						'/Timezone/',
-						'/GetIconIDByFileCategory/'
+						'/GetIconIDByFileCategory/',
+						'/CDisclaimerModule/',
+						'/disclaimerconfirmed/'
 					);
 					
 				if ($strFileName != 'wdk_url.inc')

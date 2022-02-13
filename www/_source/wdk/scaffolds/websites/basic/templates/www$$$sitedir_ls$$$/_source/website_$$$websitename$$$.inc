@@ -283,11 +283,11 @@
 				The following code demonstrates a way to override the loading of content
 				based on given parameters.
 			*/
-			if ($this->GetVar('disclaimerconfirmed') != '1')
+			if ($this->GetVar('consent') != '1')
 			{
-				$this->IncludeModule('compliance/disclaimer');
-				$disclaimer = new CDisclaimerModule($this);
-				return $disclaimer->RenderModule('default');
+				$this->IncludeModule('compliance/consent');
+				$consent = new CConsentModule($this);
+				return $consent->RenderModule('default');
 			}
 			return parent::OnRenderSpecialContent($strContentID); 
 		}

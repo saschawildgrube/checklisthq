@@ -355,7 +355,7 @@
 				break;					
 			case "font":
 				$strFilePath = $this->MakeFontFilePath(
-					ArrayGetValue($arrayParams,"fontfilename")
+					ArrayGetValue($arrayParams,'fontfilename')
 					);
 				break;					
 			case "video":
@@ -376,7 +376,7 @@
 			default:
 				$this->Error("GetAssetFilePath() has been called with an unsupported asset type: \"$strAssetType\"");
 				break;				
-			}
+			}  
 			
 			if (IsFile($strFilePath))
 			{
