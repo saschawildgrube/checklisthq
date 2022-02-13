@@ -5640,8 +5640,10 @@ FileRead(GetWDKDir() . "wdk_help.txt").
 		{
 			$this->ActivateJQuery();
 			
-			$this->AddJavaScriptURL('react','https://unpkg.com/react@16/umd/react.development.js'); 
-			$this->AddJavaScriptURL('react-dom','https://unpkg.com/react-dom@16/umd/react-dom.development.js'); 
+			//$this->AddJavaScriptURL('react','https://unpkg.com/react@16/umd/react.development.js'); 
+			$this->AddJavaScript('react','react-16.14.0.development');
+			//$this->AddJavaScriptURL('react-dom','https://unpkg.com/react-dom@16/umd/react-dom.development.js'); 
+			$this->AddJavaScript('react-dom','react-dom-16.14.0.development');
 
 			$this->AddJavaScript('wdk');
 			$this->AddJavaScript('wdk-react');
@@ -5651,7 +5653,9 @@ FileRead(GetWDKDir() . "wdk_help.txt").
 
 		function ActivateD3v5()
 		{
-			$this->AddJavaScriptURL('d3v5','https://d3js.org/d3.v5.min.js'); 
+			//$this->AddJavaScriptURL('d3v5','https://d3js.org/d3.v5.min.js'); 
+			$this->AddJavaScript('d3v5','d3-5.16.0.min'); 
+		
 			return true;
 		}		
 		
