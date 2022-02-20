@@ -18,6 +18,7 @@ NOT YET Baselined
 ** Integrated FontAwesome 4.7.0 into the WDK to avoid having to load it from a CDN.
 ** Integrated React 16.14.0 into the WDK to avoid having to load it from a CDN.
 ** Integrated D3 5.16.0 into the WDK to avoid having to load it from a CDN.
+** Added function CWebsite::MakeCommandURL().
 ** Added CWebsitePlugin::OnCheckCondition(), CWebsitePlugin::OnGetWebsiteTitle(), ::OnGetWebsiteDescription() and ::OnGetOpenGraphImageURL() functions and corresponding support in CWebsite functions to override default behavior via plugins.
 ** Added functions ObjectSerialize() and ObjectUnserialize() to provide proper error handling for serialize() and unserialize() php functions.
 ** Added functions ArraySerialize() and ArrayUnserialize() to wrap ObjectSerialize() and ObjectDeserialize() and verify that input and output are arrays. 

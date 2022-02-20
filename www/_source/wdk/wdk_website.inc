@@ -2854,30 +2854,37 @@
 		}
 
 		final		
-		function MakeSelfURL()
+		function MakeSelfURL($bEncoded=true)
 		{
-				return $this->MakeURL(array());
+				return $this->MakeURL(array(),$bEncoded=true);
 		}
 		
 		final		
-		function MakeIndexURL()
+		function MakeIndexURL($bEncoded=true)
 		{
 			$arrayParams["content"] = "index";
-			return $this->MakeURL($arrayParams);
+			return $this->MakeURL($arrayParams,$bEncoded=true);
 		}
 		
 		final		
-		function MakeLanguageURL($strLanguage)
+		function MakeLanguageURL($strLanguage,$bEncoded=true)
 		{
 			$arrayParams["language"] = $strLanguage;
-			return $this->MakeURL($arrayParams);
+			return $this->MakeURL($arrayParams,$bEncoded=true);
 		}
 		
 		final		
-		function MakeContentURL($strNewContent)
+		function MakeContentURL($strNewContent,$bEncoded=true)
 		{
 			$arrayParams["content"] = $strNewContent;
-			return $this->MakeURL($arrayParams);
+			return $this->MakeURL($arrayParams,$bEncoded=true);
+		}
+
+		final		
+		function MakeCommandURL($strCommand,$arrayParams,$bEncoded=true)
+		{
+			$arrayParams["command"] = $strCommand;
+			return $this->MakeURL($arrayParams,$bEncoded);
 		}
 
 		final
@@ -5628,6 +5635,15 @@ FileRead(GetWDKDir() . "wdk_help.txt").
 		{ 
 			//$this->AddStyleSheetURL('fontawesome4','https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');	
 			$this->AddStyleSheet('fontawesome4','fontawesome-4.7.0');	
+			$this->SetLayoutConfigItem(
+				'FONTAWESOMEURL',
+				$this->MakeCommandURL(
+					'font',
+					array(
+						'id' => 'fontawesome-4.7.0'
+						),
+					false
+					));
 		}
 
 		function ActivateFontAwesome5()
