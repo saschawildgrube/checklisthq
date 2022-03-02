@@ -159,7 +159,7 @@
 										foreach ($arrayNewTasks as $strNewTask)
 										{
 											$this->Trace('New task: '.$strNewTask);
-											if (FindString($strTasks,$strNewTask) == -1)
+											if (FindStringIgnoreCase($strTasks,$strNewTask) == -1)
 											{
 												$strNewTasks .= $strNewTask . "\n";
 											}
