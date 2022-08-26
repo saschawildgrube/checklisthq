@@ -477,7 +477,23 @@
 					
 					if (StringSection($strLine,0,1) == '=')
 					{
-						$strHtmlFormAddTask = "\n".$this->MakeAddTaskForm($nLine+1);
+						$nLineToAdd = $nLine+1;
+						
+						for ($nLineSearch = $nLine+1; $nLineSearch < ArrayCount($arrayLines); $nLineSearch++)
+						{
+							$strLineSearch = $arrayLines[$nLineSearch];
+							if (StringSection($strLineSearch,0,1) == '=')
+							{
+								break;
+							}
+							if (StringSection($strLineSearch,0,4) == '----')
+							{
+								break;
+							}
+						}
+						$nLineToAdd = $nLineSearch;
+						
+						$strHtmlFormAddTask = "\n".$this->MakeAddTaskForm($nLineToAdd);
 						$bAddTaskFormAdded = true;
 					}
 					
