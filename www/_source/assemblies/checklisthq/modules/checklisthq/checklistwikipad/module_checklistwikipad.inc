@@ -7,6 +7,7 @@
 	{
 		var $m_form;
 		var $m_strTID_ButtonAdd;
+		var $m_strTID_ButtonAddPriority;
 		var $m_strHtmlLinkLineMoveDownTemplate;
 		var $m_strHtmlLinkLineMoveTopTemplate;
 		var $m_strHtmlLinkLineDeleteTemplate;
@@ -233,7 +234,7 @@
 			}
 		}
 	
-		function MakeAddTaskForm($nLine)
+		function MakeAddTaskForm($nLine,$nLinePriority = 0)
 		{
 			$this->m_formDef = new CFormDefinition();
 
@@ -241,6 +242,10 @@
 			$arrayParams[$this->GetModuleVarNameState()] = 'submitline';
 			$arrayParams[$this->GetModuleVarName('action')] = 'add';
 			$arrayParams[$this->GetModuleVarName('line')] = ''.$nLine;
+			if ($nLinePriority > 0)
+			{
+				$arrayParams[$this->GetModuleVarName('line_priority')] = ''.$nLinePriority;
+			}
 			$this->m_formDef->SetURL($this->GetWebsite()->GetRootURL(),$arrayParams);
 
 			$this->m_formDef->AddControlText('TEXT',$this->GetModuleVarName('text'),'','',60,200); 
@@ -249,9 +254,16 @@
 			{
 				$this->m_strTID_ButtonAdd = $this->LoadString('TID_WIKIPAD_BUTTON_ADD');
 			}
+			if ($this->m_strTID_ButtonAddPriority == '')
+			{
+				$this->m_strTID_ButtonAddPriority = $this->LoadString('TID_WIKIPAD_BUTTON_ADD_PRIORITY');
+			}
 			
-			$this->m_formDef->AddControlButtonSubmit($this->m_strTID_ButtonAdd);
-			
+			$this->m_formDef->AddControlButtonSubmit($this->m_strTID_ButtonAdd,'SUBMIT');
+			if ($nLinePriority > 0)
+			{			
+				$this->m_formDef->AddControlButtonSubmit($this->m_strTID_ButtonAddPriority,'SUBMIT_PRIORITY','priority');
+			}
 			if ($this->m_form == null)
 			{
 				$this->m_form = new CFormElement($this->GetWebsite(),'compact');		
@@ -493,7 +505,7 @@
 						}
 						$nLineToAdd = $nLineSearch;
 						
-						$strHtmlFormAddTask = "\n".$this->MakeAddTaskForm($nLineToAdd);
+						$strHtmlFormAddTask = "\n".$this->MakeAddTaskForm($nLineToAdd,$nLine+1);
 						$bAddTaskFormAdded = true;
 					}
 					
@@ -590,9 +602,14 @@
 			}
 
 			$nLineToModify = GetIntegerValue($this->GetModuleVar('line'));
+			$nLineToModifyPriority = GetIntegerValue($this->GetModuleVar('line_priority'));
 			$strLineToModifyHash = $this->GetModuleVar('linehash');
 			$strAction = $this->GetModuleVar('action');
 			$strLineText = $this->GetModuleVar('text');
+			$strSubmit = $this->GetParam('submit');
+			
+			$this->Debug($nLineToModifyPriority);
+			$this->Debug($strSubmit);
 	
 			$this->SetModuleVar('line','');
 			$this->SetModuleVar('linehash','');
@@ -798,7 +815,13 @@
 						return $this->StateView();
 					}
 					
-					if ($nLineToModify == 0)
+					$nLineToAdd = $nLineToModify;
+					if ($strSubmit == 'priority')
+					{
+						$nLineToAdd = $nLineToModifyPriority;
+					}
+					
+					if ($nLineToAdd == 0)
 					{
 							$strContent =
 								$strLineText
@@ -815,7 +838,7 @@
 							$strContent .=
 								$strLine  
 								."\n";
-							if ($nLine == ($nLineToModify - 1))  
+							if ($nLine == ($nLineToAdd - 1))  
 							{
 								$strContent .=
 									$strLineText
