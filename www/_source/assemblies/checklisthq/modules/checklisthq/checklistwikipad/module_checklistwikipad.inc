@@ -912,7 +912,20 @@
 
 			}
 
+
+			// Clean up content
 			$strContent = StringTrim($strContent);
+
+/*
+			$this->Debug('Cleanup content does not work');
+			$this->Debug($strContent);
+			
+			$nFind = FindString($strContent,"\r----\r----\r");   
+			$this->Debug($nFind);
+			$strContent = ReplaceString($strContent,"\r----\r----\r","\r----\r");    
+			$strContent = ReplaceString($strContent,"=\n----\n","=\n");
+			$this->Debug($strContent);
+*/
 
 			if ($this->SetData($this->GetDataName(),$strContent) == false)
 			{
