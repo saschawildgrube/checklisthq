@@ -511,15 +511,27 @@
 						for ($nLineSearch = $nLine+1; $nLineSearch < ArrayCount($arrayLines); $nLineSearch++)
 						{
 							$strLineSearch = $arrayLines[$nLineSearch];
-							if (StringSection($strLineSearch,0,1) == '=')
+							if ($bFoundNextHeader == false)
 							{
-								$nLineToAddLow = $nLineSearch;
-								$bFoundNextHeader = true;
+								if (StringSection($strLineSearch,0,1) == '=')
+								{
+									$nLineToAddLow = $nLineSearch;
+									$bFoundNextHeader = true;
+
+									if ($bFoundNextSection == false)
+									{
+										$nLineToAddMedium = $nLineSearch;
+										$bFoundNextSection = true;
+									}
+								}
 							}
-							if (StringSection($strLineSearch,0,4) == '----')
+							if ($bFoundNextSection == false)
 							{
-								$nLineToAddMedium = $nLineSearch;
-								$bFoundNextSection = true;
+								if (StringSection($strLineSearch,0,4) == '----')
+								{
+									$nLineToAddMedium = $nLineSearch;
+									$bFoundNextSection = true;
+								}
 							}
 							if ($bFoundNextSection && $bFoundNextHeader)
 							{
@@ -630,7 +642,7 @@
 				$this->SetOutputItem('WIKI','');
 				return $this->StateView();
 			}
-
+			
 			$nLineToModify = GetIntegerValue($this->GetModuleVar('line'));
 			$nLineToAddPriorityLow = GetIntegerValue($this->GetModuleVar('line_priority_low'));
 			$nLineToAddPriorityMedium = GetIntegerValue($this->GetModuleVar('line_priority_medium'));
@@ -642,6 +654,9 @@
 			
 
 			$this->SetModuleVar('line','');
+			$this->SetModuleVar('line_priority_low','');
+			$this->SetModuleVar('line_priority_medium','');
+			$this->SetModuleVar('line_priority_high','');
 			$this->SetModuleVar('linehash','');
 			$this->SetModuleVar('action','');
 			$this->SetModuleVar('text','');
@@ -671,7 +686,10 @@
 				{
 					$nMaxLine++;
 				}
-				if ($nLineToModify > $nMaxLine)		
+				if ($nLineToModify > $nMaxLine
+					|| $nLineToAddPriorityLow > $nMaxLine
+					|| $nLineToAddPriorityMedium > $nMaxLine
+					|| $nLineToAddPriorityHigh > $nMaxLine)		
 				{
 					$this->SetErrorMessageCode('LINE');
 					return $this->StateView();
@@ -914,18 +932,10 @@
 
 
 			// Clean up content
+			$strContent = ReplaceString($strContent,"\r\n","\n");  
 			$strContent = StringTrim($strContent);
-
-/*
-			$this->Debug('Cleanup content does not work');
-			$this->Debug($strContent);
-			
-			$nFind = FindString($strContent,"\r----\r----\r");   
-			$this->Debug($nFind);
-			$strContent = ReplaceString($strContent,"\r----\r----\r","\r----\r");    
+			$strContent = ReplaceString($strContent,"\n----\n----\n","\n----\n");    
 			$strContent = ReplaceString($strContent,"=\n----\n","=\n");
-			$this->Debug($strContent);
-*/
 
 			if ($this->SetData($this->GetDataName(),$strContent) == false)
 			{
@@ -951,7 +961,7 @@
 					$arrayParams = array(); 
 					$arrayParams[$strModuleVarNamePrefix.'state'] = 'submitline';
 					$arrayParams[$strModuleVarNamePrefix.'action'] = 'add';
-					$arrayParams[$strModuleVarNamePrefix.'line'] = '';
+					//$arrayParams[$strModuleVarNamePrefix.'line_priority_low'] = '0';
 					$arrayParams[$strModuleVarNamePrefix.'text'] = $strLineToBeMovedToNextActionOtherContext; 
 					$arrayParams['content'] = 'tasks'; 
 					$arrayParams['checklisthq_context'] = ''.$nOtherContext; 
