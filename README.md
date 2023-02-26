@@ -15,7 +15,7 @@ Checklist HQ is the new home for your personal todo list and checklists.
 * Go to the Test Center and run all tests
 
 ## Licence
-Copyright 2020-2022 by Sascha Wildgrube
+Copyright 2020-2023 by Sascha Wildgrube
 
 Licensed under the Apache License, Version 2.0 (the "License");
 
