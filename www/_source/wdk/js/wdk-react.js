@@ -18,19 +18,22 @@ class WDKReactComponent extends React.Component
   	{
   		this.m_strId = 'react_'+GetRandomToken(5); 
   	}
+  	BindAllFunctionsToThis(this);
   }
   
   componentDidMount()
   {
   	this.m_bIsMounted = true;  
-  	//super.componentDidMount();
   }
 
   componentWillUnmount()
   {
   	this.m_bIsMounted = false;
-  	//super.componentWillUnmount();
   }
+  
+	componentDidUpdate(prevProps)
+ 	{
+	}  
   
   Log(vValue)
   {
@@ -73,7 +76,7 @@ class WDKReactComponent extends React.Component
 
 	OnTimer()
 	{
-		Trace('OnTimer'); 
+		//Trace('OnTimer'); 
 	}
 	
 	GetID()
@@ -81,7 +84,4 @@ class WDKReactComponent extends React.Component
 		return this.m_strId;
 	}
 
-	
-	
-	
 }

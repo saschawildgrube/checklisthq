@@ -192,17 +192,18 @@
 			// Init Generic Output Items
 			$this->m_arrayGenericOutputItems = array();
 			$this->RegisterGenericOutputItem('URL',array('content','language'));
+			$this->RegisterGenericOutputItem('DOWNLOADURL',array('filepath'));
+			$this->RegisterGenericOutputItem('YOUTUBE',array('id'));
 			$this->RegisterGenericOutputItem('ICON',array('id'));
 			$this->RegisterGenericOutputItem('IMAGEURL',array('id','ext','context'));
 			$this->RegisterGenericOutputItem('FONTURL',array('id','context'));
 			$this->RegisterGenericOutputItem('VIDEOURL',array('id','context'));
+			$this->RegisterGenericOutputItem('PHONE',array('tel','text'));
 			$this->RegisterGenericOutputItem('IMAGE',array('id','ext','style','text'));
+			$this->RegisterGenericOutputItem('LINK',array('url','content','text','style','externallink'));
 			$this->RegisterGenericOutputItem('TEASER',array('title','text','style','linkurl','linktext','externallink'));
 			$this->RegisterGenericOutputItem('IMAGETEASER',array('title','text','style','linkurl','linktext','imageurl','externallink'));
-			$this->RegisterGenericOutputItem('LINK',array('url','content','text','style','externallink'));
-			$this->RegisterGenericOutputItem('PHONE',array('tel','text'));
-			$this->RegisterGenericOutputItem('DOWNLOADURL',array('filepath'));
-			$this->RegisterGenericOutputItem('YOUTUBE',array('id'));
+			$this->RegisterGenericOutputItem('ICONTEASER',array('title','text','style','linkurl','linktext','iconid','externallink'));
 			$this->RegisterGenericOutputItem('PORTFOLIO',array(
 				'payload1','title1','text1','linktext1','linkurl1','imageurl1','external1',
 				'payload2','title2','text2','linktext2','linkurl2','imageurl2','external2',
@@ -1940,7 +1941,8 @@
 		{
 			if (IsFile($this->GetDownloadDir().$strFilePath))
 			{
-				return $this->GetDownloadRootURL().StringURLEncode($strFilePath);
+				$strFilePath = ReplaceString($strFilePath,' ','%20');
+				return $this->GetDownloadRootURL().$strFilePath;
 			}
 			return $this->MakeDownloadURL($strFilePath);
 		}
@@ -3570,8 +3572,8 @@ FileRead(GetWDKDir() . "wdk_help.txt").
 					$strStyle = "default";
 				}
 				$this->IncludeElement("imageteaser");
-				$teaser = new CImageTeaserElement($this,$strStyle);
-				return $teaser->RenderImageTeaser(
+				$imageteaser = new CImageTeaserElement($this,$strStyle);
+				return $imageteaser->RenderImageTeaser(
 					ArrayGetValue($arrayAttributes,"imageurl"),
 					ArrayGetValue($arrayAttributes,"title"),
 					ArrayGetValue($arrayAttributes,"text"),
@@ -3579,6 +3581,24 @@ FileRead(GetWDKDir() . "wdk_help.txt").
 					ArrayGetValue($arrayAttributes,"linktext"),
 					GetBoolValue(ArrayGetValue($arrayAttributes,"externallink"))
 					);
+
+			case 'ICONTEASER':
+				$strStyle = ArrayGetValue($arrayAttributes,'style');
+				if ($strStyle == '')
+				{
+					$strStyle = 'default';
+				}
+				$this->IncludeElement("iconteaser");
+				$iconteaser = new CIconTeaserElement($this,$strStyle);
+				return $iconteaser->RenderIconTeaser(
+					ArrayGetValue($arrayAttributes,"iconid"),
+					ArrayGetValue($arrayAttributes,"title"),
+					ArrayGetValue($arrayAttributes,"text"),
+					ArrayGetValue($arrayAttributes,"linkurl"),
+					ArrayGetValue($arrayAttributes,"linktext"),
+					GetBoolValue(ArrayGetValue($arrayAttributes,"externallink"))
+					);
+
 
 			case "LINK":
 				$strStyle = ArrayGetValue($arrayAttributes,'style');

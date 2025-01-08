@@ -23,6 +23,7 @@
 			
 			$this->m_formDef->SetURL($this->GetWebsite()->GetRootURL(),$arrayParams);
 			
+			$this->m_formDef->AddControlStatic('TEXT','?TID_TEXT_CONSENT?');
 			$this->m_formDef->AddControlCheckbox('CONSENT','consent','?TID_CHECKBOX_CONSENT?',false);
 			$this->m_formDef->AddControlButtonSubmit('?TID_BUTTON_NEXT?');
 

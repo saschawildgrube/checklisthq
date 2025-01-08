@@ -317,6 +317,8 @@
 		final
 		function GetDataFilePath($strFilePath)
 		{
+			$this->Trace('GetDataFilePath');
+			$this->Trace($strFilePath);
 			return $this->GetAssetFilePath(
 				"data",
 				array(

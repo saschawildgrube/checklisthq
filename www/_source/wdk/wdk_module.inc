@@ -114,7 +114,7 @@
 		
 		function GetDataFilePath($strFilePath)
 		{
-			return parent::GetDataFilePath($this->m_strModuleID."/".$strFilePath);
+			return parent::GetDataFilePath($this->m_strModuleID.'/'.$strFilePath);
 		}
 		
 		final

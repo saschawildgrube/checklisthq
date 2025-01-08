@@ -614,7 +614,7 @@
 				$nTimeoutSeconds,
 				false,
 				false,
-				14);
+				4);
 		}
 
 		
