@@ -14,6 +14,7 @@
 	$arrayConfig["protocols"] = array("http","https");
 	$arrayConfig["webservices"] = GetWebservicesDirectory();
 	$arrayConfig["admin_email"] = GetAdminEmail();
+	$arrayConfig['disable_log'] = true;
 	
 	$arrayConfig["load_tolerance"] = array("testrun" => 3.0);
 

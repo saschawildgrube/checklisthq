@@ -9,6 +9,7 @@
 		private $m_bOnInit;
 		private $m_bInit;
 		private $m_strInitialState;
+		private $m_strPreviousState;
 		private $m_strFinalState;
 		private $m_strStyleID;
 		private $m_strInstanceID;

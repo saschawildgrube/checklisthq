@@ -41,7 +41,7 @@
 	class CWebSite extends CWebApplication
 	{
 		private $m_strSourceDir;
-		private $m_strWWWRootDir;
+		private $m_strWWWDir;
 		private $m_strStyleSheetsDir;
 		private $m_strJavaScriptsDir;
 		private $m_strImagesDir;
@@ -49,7 +49,7 @@
 		private $m_strVideosDir;
 		private $m_strDownloadDir;
 		
-		private $m_strRootURLnoprotocol;
+		private $m_strRootURLnoProtocol; 
 		private $m_strRootURL;
 		private $m_strCurrentURL;
 		private $m_strProtocol;
@@ -130,7 +130,7 @@
 		private $m_elementYouTube;
 		private $m_elementCountDown;
 		
-		private $m_arrayDynamicNavigationTrees;
+		private $m_arrayDynamicNavigationTree;
 		
 		function __construct(
 			$strRootURL,
@@ -789,7 +789,7 @@
 			$this->SetOutputItem('POWEREDBY','');
 
 			// Initialize standard time items
-			$strCurrentYear = RenderDateTimeFormat(time(),'%Y',$this->GetTimeZone(),$this->GetLanguage());
+			$strCurrentYear = RenderDateTimeFormat(time(),'Y',$this->GetTimeZone(),$this->GetLanguage());
 
 			// Initialize WDK Documentation related items
 			$this->SetOutputItem('WDK','WDK');

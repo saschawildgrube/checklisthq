@@ -102,7 +102,7 @@
     . '(\:[0-9]{2,5})?' // PORT
     . '(\/([a-zA-Z0-9!$%&\/()=@+~,:;\-_]\.?)+)*\/?' // PATH allowing double slashes and commas, equal signs...
     . '(\?([a-zA-Z\:+&$_.-][a-zA-Z0-9;:@&%=+\/$_,.\!\?\{\}\(\)\-]*)?)?' // GET Query      
-		. '(#([a-zA-Z0-9!_\.\-\/][a-zA-Z0-9:&%!+\/=$_\.\?\-]*)?)?' // ANCHOR 
+		. '(#([a-zA-Z0-9!_\.\-\/][a-zA-Z0-9:&%!+\/=$_\~\.\?\-]*)?)?' // ANCHOR 
 		;
 		
 		$strURLregex = '/^'.$strURLregex.'$/';

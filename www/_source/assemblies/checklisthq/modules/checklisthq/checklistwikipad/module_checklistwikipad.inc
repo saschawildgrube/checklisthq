@@ -229,6 +229,10 @@
 				{
 					return $this->StateSubmitLine();	
 				}
+				case 'submit':
+				{
+					return $this->StateSubmit();	
+				}
 				default:	
 				{
 					return parent::OnRenderModule($strState);
@@ -619,7 +623,7 @@
 				
 				if ($bAddTaskFormAdded == false)
 				{
-						$strContent = $this->MakeAddTaskForm(0)."\n".$strContent;
+						$strContent = $this->MakeAddTaskForm(0,0,0)."\n".$strContent;
 				}
 			} 
 
@@ -631,6 +635,21 @@
 			return 'view';
 		}
 		
+		
+		function StateSubmit()
+		{	
+			$this->Trace('CChecklistWikiPadModule::StateSubmit');
+			
+			$strModuleVarNamePrefix = $this->GetWebsite()->GetPlugin('checklisthq')->GetContextID();
+			
+			$arrayParams = array(); 
+			$arrayParams[$this->GetModuleVarName('state')] = 'view';
+			$arrayParams[$this->GetModuleVarName('action')] = '';
+			$strUrl = $this->GetWebsite()->MakeURL($arrayParams);
+			$this->GetWebsite()->Redirect($strUrl);
+			
+			return parent::StateSubmit();
+		}
 	
 		function StateSubmitLine()
 		{

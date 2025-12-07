@@ -391,7 +391,7 @@
 			switch ($strCountryID)
 			{
 			case 'USA':
-				return '%Y-%m-%d';
+				return 'Y-m-d';
 			default:
 				return '';
 			}
@@ -409,9 +409,9 @@
 			switch ($strCountryID)
 			{
 				case 'USA':				
-					return '%H:%M:%S';
+					return 'H:i:s';
 				default:
-					return '%I:%M:%S%P';
+					return 'h:i:sa';
 			}
 		}
 		

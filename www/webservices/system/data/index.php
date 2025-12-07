@@ -15,6 +15,7 @@
 	$arrayConfig["admin_email"] = GetAdminEmail();
 	$arrayConfig["webservices"] = GetWebservicesDirectory();
 	$arrayConfig["max_content_size"] = ENTITY_STRINGLENGTH_MAX;
+	$arrayConfig['disable_log'] = true;
 	
 	 
 	$arrayParams = array();

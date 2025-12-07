@@ -25,7 +25,6 @@
 
 
 			// How to configure the countdown: http://hilios.github.io/jQuery.countdown/documentation.html -->
-			//$arrayItems['CONFIG'] = RenderDateTimeFormat($time, '%Y/%m/%d %H:%M:%S'/*,$this->GetWebsite()->GetTimeZone()*/);
 			$arrayItems['CONFIG'] = ''.round($time*1000);
 			$arrayItems['DATETIME_COMMENT'] = 'UTC: '.RenderDateTime($time).' / '.$this->GetWebsite()->GetTimeZone().': '.RenderDateTime($time,$this->GetWebsite()->GetTimeZone());
 						 

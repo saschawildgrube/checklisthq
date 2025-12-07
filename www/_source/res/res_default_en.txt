@@ -26,6 +26,8 @@ TID_NAVIGATION_LINKS
 Links
 TID_NAVIGATION_NOTES
 Notes
+TID_NAVIGATION_PROJECTS
+Projects
 TID_NAVIGATION_RECURRING
 Recurring
 TID_NAVIGATION_VISUAL
@@ -69,6 +71,7 @@ See you soon!
 TID_TEXT_LOGOUT
 Looking forward to see you again at Checklist HQ!
 TID_CONTENT_WIKIPADDEFAULT
+__TOC__
 =This is your wikipad=
 You can edit it by clicking on the 'edit' tab.
 
@@ -92,6 +95,9 @@ And Tables:
 |Cell 1
 |Cell 2
 |}
+=Use sections=
+==Use Subsections==
+===And Sub sub sections===
 TID_CONTENT_TASKSDEFAULT
 =WAITING FOR=
 * add tasks that you have delegated to others or you are awaiting a response
@@ -99,6 +105,12 @@ TID_CONTENT_TASKSDEFAULT
 * This is the next task on your task list. Do it now!
 =MAYBE=
 * Add fancy ideas here.
+TID_CONTENT_PROJECTSDEFAULT
+__TOC__
+=PROJECT 1=
+* add tasks related to one project
+=PROJECT 2=
+* add tasks related to another project
 TID_CONTENT_LINKSDEFAULT
 Add your favorites links here:
 * [http://www.example.com example.com]

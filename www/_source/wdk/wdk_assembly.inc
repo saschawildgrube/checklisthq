@@ -19,7 +19,7 @@
 
 	final class CAssembly extends CWebsiteSatellite
 	{
-		private $m_strRoorDir;
+		private $m_strRootDir;
 		private $m_bPluginsDir;
 		private $m_bLayoutDir;
 		private $m_bStyleSheetsDir;

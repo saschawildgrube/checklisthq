@@ -16,6 +16,7 @@
 	$arrayConfig["webservices"] = GetWebservicesDirectory();
 	$arrayConfig["duration_max"] = intval(60 * 60 * 24 * 6); // 6 days
 	$arrayConfig["data_maxlen"] = 65535; // Each session can handle 64 K bytes
+	$arrayConfig['disable_log'] = true;
 	
 	
 	$arrayParams = array();

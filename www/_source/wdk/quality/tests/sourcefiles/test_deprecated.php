@@ -141,7 +141,21 @@
 						'/Timezone/',
 						'/GetIconIDByFileCategory/',
 						'/CDisclaimerModule/',
-						'/disclaimerconfirmed/'
+						'/disclaimerconfirmed/',
+						'/strftime/',
+						'/\%Y/',
+						'/\%H/',
+						'/\%h/',						
+						'/\%M/',
+						'/\%A/',
+						'/\%B/',
+						'/\%S/',
+						'/\%I/',
+						'/\%P/',		
+						'/\%e/',
+						'/\%m/',
+						'/\%d/',										
+						
 					);
 					
 				if ($strFileName != 'wdk_url.inc')

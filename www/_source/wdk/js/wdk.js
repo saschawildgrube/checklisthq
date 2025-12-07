@@ -163,7 +163,7 @@
 		return parseInt(GetNumberValue(value));	
 	}
 	
-	function GetArrayValue(vValue)
+	function GetArrayValue(vValue,strSplit)
 	{
 		if (vValue == undefined)
 		{
@@ -181,6 +181,10 @@
 		{
 			return vValue;
 		}
+		if (strSplit == '')
+		{
+			strSplit = ',';
+		}
 		var strType = GetType(vValue);
 		if (strType == 'string' || strType == 'String')
 		{
@@ -188,7 +192,7 @@
 			{
 				return [];
 			}
-			return vValue.split(',');
+			return vValue.split(strSplit);
 		}
 		return [vValue];
 	}	
