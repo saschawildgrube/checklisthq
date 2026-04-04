@@ -125,14 +125,11 @@
 						if ($strUserID != '')
 						{
 							$strRecurringTasks = ArrayGetValue($arrayRecurringTaskDataItem,'DATA_CONTENT');
-							//$strRecurringTasks = StringURLDecode($strRecurringTasks);
 							$arrayRecurringTasks = $this->ParseRecurringTasks($strRecurringTasks);
 							$this->Trace($arrayRecurringTasks);
 						
 							if (ArrayCount($arrayRecurringTasks) > 0)
 							{
-								//$arrayNewTasks = $this->GetMatchingRecurringTasks($arrayRecurringTasks,'2020-12-01 00:00:00');   
-
 								$arrayNewTasks = $this->GetMatchingRecurringTasks($arrayRecurringTasks,RenderDateTimeNow());
 
 								if (ArrayCount($arrayNewTasks) > 0)
@@ -151,20 +148,30 @@
 									{
 										$this->Trace('The user actually has a task data item.');
 										$strTasks = $webservice->GetResultValueInsecure('DATA','DATA_CONTENT');
+										$strTasks = ReplaceString($strTasks,"\r\n","\n");
 										$this->Trace('Old Task content: '.$strTasks);
-										//$strTasks = StringURLDecode($strTasks);
-										$this->Trace('Search for "&": '.FindString($strTasks,'&'));
+										//$this->Trace('Search for "&": '.FindString($strTasks,'&'));
 
 										$strNewTasks = '';
 										foreach ($arrayNewTasks as $strNewTask)
 										{
 											$this->Trace('New task: '.$strNewTask);
-											if (FindStringIgnoreCase($strTasks,$strNewTask) == -1)
-											{
-												$strNewTasks .= $strNewTask . "\n";
-											}
-										}
 
+											/*
+											if (FindStringIgnoreCase($strTasks,$strNewTask + '\n') == -1)
+											{
+												$strNewTasks .= $strNewTask . '\n';   
+											}
+											*/
+											$strTasks = ReplaceStringIgnoreCase($strTasks,$strNewTask . "\n",'');
+
+											if ($strNewTasks != '')
+											{
+												$strNewTasks .= "\n";
+											}
+											$strNewTasks .= $strNewTask;
+										}
+										
 										if ($strNewTasks != '')
 										{
 											if (FindString($strTasks,'=NEXT ACTION=') == -1)
@@ -180,7 +187,7 @@
 										$this->Trace('New Task content:');
 										$this->Trace($strTasks);
 										
-										$this->Trace('Search for "&": '.FindString($strTasks,'&'));  
+										//$this->Trace('Search for "&": '.FindString($strTasks,'&'));  
 										
 										$arrayParams = array();
 										$arrayParams['command'] = 'set';
