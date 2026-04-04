@@ -10,6 +10,7 @@
 		var $m_strTID_ButtonAddPriorityHigh;
 		var $m_strTID_ButtonAddPriorityMedium;
 		var $m_strTID_ButtonAddPriorityLow;
+		var $m_strTID_ButtonAddChecklist;
 		var $m_strHtmlLinkLineMoveDownTemplate;
 		var $m_strHtmlLinkLineMoveTopTemplate;
 		var $m_strHtmlLinkLineDeleteTemplate;
@@ -40,6 +41,16 @@
 			return $this->GetModuleConfigBoolean('tasklist');	
 		}	
 	
+		function GetConfigGetChecklistTarget()
+		{
+			return $this->GetModuleConfig('checklists');	
+		}		
+		
+		function GetConfigIsChecklists()
+		{
+			return ($this->GetConfigGetChecklistTarget() != '');
+		}		
+			
 		function GetConfigIsHideTabNav()
 		{
 			return $this->GetModuleConfigBoolean('hidetabnav');	
@@ -233,11 +244,71 @@
 				{
 					return $this->StateSubmit();	
 				}
+				case 'submitchecklist':
+				{
+					return $this->StateSubmitChecklist();	
+				}
 				default:	
 				{
 					return parent::OnRenderModule($strState);
 				}
 			}
+		}
+	
+	
+		function WikiEncode($strWiki)
+		{
+			$strEncoded = StringTrim($strWiki);
+			$strEncoded = HtmlEncode($strEncoded);
+			$strEncoded = ReplaceString($strEncoded,"\n",'___NEWLINE___');
+			$strEncoded = ReplaceString($strEncoded,'[','___BRACKET_OPEN___');
+			$strEncoded = ReplaceString($strEncoded,']','___BRACKET_CLOSE___');
+			$strEncoded = ReplaceString($strEncoded,'*','___ASTERIX___');
+			return $strEncoded;
+		}			
+
+		function WikiDecode($strEncoded)
+		{
+			$strWiki = StringTrim($strEncoded);
+			$strWiki = ReplaceString($strWiki,'___ASTERIX___','*');
+			$strWiki = ReplaceString($strWiki,'___BRACKET_CLOSE___',']');
+			$strWiki = ReplaceString($strWiki,'___BRACKET_OPEN___','[');
+			$strWiki = ReplaceString($strWiki,'___NEWLINE___',"\n");
+			$strWiki = HtmlDecode($strWiki);
+
+			return $strWiki;
+		}			
+
+
+		function MakeAddChecklistForm($strChecklistTitle,$strChecklistContent)
+		{
+			$this->m_formDef = new CFormDefinition();
+
+			$arrayParams = array(); 
+			
+			//$arrayParams[$this->GetModuleVarNameState()] = 'submitchecklist';
+			$arrayParams[$this->GetModuleVarName('checklist_title')] = $this->WikiEncode($strChecklistTitle);
+			$arrayParams[$this->GetModuleVarName('checklist_content')] = $this->WikiEncode($strChecklistContent);
+			$this->m_formDef->SetURL($this->GetWebsite()->GetRootURL(),$arrayParams); 
+
+			$this->m_formDef->SetHiddenValue($this->GetModuleVarNameState(),'submitchecklist');
+
+			
+			if ($this->m_strTID_ButtonAddChecklist == '')
+			{
+				$this->m_strTID_ButtonAddChecklist = $this->LoadString('TID_WIKIPAD_BUTTON_ADD_CHECKLIST');
+			}
+			
+			$this->m_formDef->AddControlButtonSubmit($this->m_strTID_ButtonAddChecklist,'SUBMIT_CHECKLIST','add_checklist');
+			if ($this->m_form == null)
+			{
+				$this->m_form = new CFormElement($this->GetWebsite(),'compact');		
+			}
+	
+			$this->m_formDef->AddControlText('TEXT',$this->GetModuleVarName('checklist_prefix'),'','',30,30); 
+
+
+			return StringRemoveControlChars($this->m_form->RenderForm($this->m_formDef,array()));
 		}
 	
 		function MakeAddTaskForm($nLinePriorityLow,$nLinePriorityMedium,$nLinePriorityHigh)
@@ -626,6 +697,56 @@
 						$strContent = $this->MakeAddTaskForm(0,0,0)."\n".$strContent;
 				}
 			} 
+			
+			if ($this->GetConfigIsChecklists() == true)
+			{
+				$arrayLines = StringExplode($strContent,"\n",false);
+				$strContent = "__TOC__\n"; 
+				$strChecklistHeader = '';
+				$strChecklistContent = '';
+				foreach ($arrayLines as $strLine)
+				{
+					if ($strChecklistHeader == '')
+					{
+						if (StringSection($strLine,0,1) != '=')
+						{
+							$strContent .= $strLine;
+						}
+						else
+						{
+							$strChecklistHeader = $strLine; 
+							$strChecklistContent = '';
+						}
+					}
+					else // checklist header is set
+					{
+						if (StringSection($strLine,0,1) != '=')
+						{
+							$strChecklistContent .= $strLine . "\n";
+						}
+						else
+						{
+							$strContent .= $strChecklistHeader . "\n";
+							$strContent .= $this->MakeAddChecklistForm(
+								ReplaceString($strChecklistHeader,'=',''),
+								$strChecklistContent);
+							$strContent .= "\n";
+							$strContent .= $strChecklistContent;
+							$strChecklistHeader = $strLine;
+							$strChecklistContent = '';
+						}
+					}
+				}
+				if ($strChecklistHeader != '')
+				{
+					$strContent .= $strChecklistHeader . "\n";
+					$strContent .= $this->MakeAddChecklistForm(
+						ReplaceString($strChecklistHeader,'=',''),
+						$strChecklistContent);
+					$strContent .= "\n";
+					$strContent .= $strChecklistContent;
+				}
+			}
 
 			$wiki = new CWikiElement($this->GetWebSite(),'default');
 			$this->SetOutputItem(
@@ -650,7 +771,8 @@
 			
 			return parent::StateSubmit();
 		}
-	
+		
+
 		function StateSubmitLine()
 		{
 			$this->Trace('StateSubmitLine');
@@ -992,6 +1114,72 @@
 			
 			return $this->StateView();
 		}
+		
+		function StateSubmitChecklist()
+		{	
+			$this->Trace('CChecklistWikiPadModule::StateSubmitChecklist');
+			
+			$strChecklistTarget = $this->GetModuleConfig('checklists');
+			if ($strChecklistTarget == '')
+			{
+				$this->SetErrorMessageCode('CHECKLIST_TARGET_NOT_SPECIFIED'); 
+				$this->SetState('');
+				return $this->StateView();
+			}
+			
+			
+			
+			$strChecklistTitle = $this->WikiDecode($this->GetModuleVar('checklist_title'));
+			$strChecklistContent = $this->WikiDecode($this->GetModuleVar('checklist_content'));
+			$strChecklistPrefix = $this->GetModuleVar('checklist_prefix');
+			
+			if ($strChecklistContent == '')
+			{
+				$this->SetErrorMessageCode('CHECKLIST_EMPTY'); 
+				$this->SetState('');
+				return $this->StateView();			
+			}
+			
+			if ($strChecklistPrefix != '')
+			{
+				$aLines = StringExplode(StringTrim($strChecklistContent),"\n");
+				$strChecklistContent = '';
+				foreach ($aLines as $strLine)
+				{
+					if (FindString($strLine,'* ') == 0)
+					{
+						$strLine = ReplaceString($strLine,'* ', '* '.$strChecklistPrefix.' ');
+					}
+					else
+					{
+						$strLine = '* ' . $strChecklistPrefix . ' ' . $strLine;
+					}
+					$strChecklistContent .= $strLine . "\n";
+				}
+			}
+			
+
+			$strTaskList = $this->GetData('wikipad_' . $strChecklistTarget);
+			
+			$strNextAction = '=NEXT ACTION=';
+			if (FindString($strTaskList,$strNextAction) != -1)
+			{
+				$strTaskList = ReplaceString($strTaskList,$strNextAction, $strNextAction . "\n".  $strChecklistContent . "\n");
+			}
+			else
+			{
+				$strTaskList = $strNextAction . "\n" . $strChecklistContent . "\n" . $strTaskList;
+			}
+
+
+			$this->SetData('wikipad_' . $strChecklistTarget,$strTaskList);
+
+			$this->SetOutputItem('CHECKLIST_ADDED',$strChecklistTitle);
+			$this->SetInfoMessageCode('CHECKLIST_ADDED'); 
+			$this->SetState('');
+			
+			return $this->StateView();
+		}		
 		
 		
 		function StateNetwork()

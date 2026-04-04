@@ -10,6 +10,12 @@ TID_WIKIPAD_ERROR_LINEACTIONUNKNOWN
 An unknown operation was requested. Maybe someone is playing around with the URL?
 TID_WIKIPAD_ERROR_DUPLICATELINE
 The task already exists: {LINE_ADD}
+TID_WIKIPAD_ERROR_CHECKLIST_TARGET_NOT_SPECIFIED
+No task list is specified to add the checklist to.
+TID_WIKIPAD_ERROR_CHECKLIST_EMPTY
+The checklist is empty.
+TID_WIKIPAD_INFO_CHECKLIST_ADDED
+The checklist "{CHECKLIST_ADDED}" has been added to the task list.
 TID_WIKIPAD_TOOL_LINEDELETE
 Check this task off the list
 TID_WIKIPAD_INFO_LINEDELETED
@@ -44,3 +50,5 @@ TID_WIKIPAD_BUTTON_ADD_PRIORITY_MEDIUM
 Add (medium)
 TID_WIKIPAD_BUTTON_ADD_PRIORITY_HIGH
 Add (high)
+TID_WIKIPAD_BUTTON_ADD_CHECKLIST
+Add Checklist to "Next Action" with prefix:

@@ -17,23 +17,6 @@
 				$this->GetWebsite()->GetPlugin('checklisthq')->GetWikiPageID('recurring'),
 				$arrayConfig);
 			$arrayItems['MODULE_WIKIPAD'] = $wikipad->RenderModule();
-
-/*		
-			// only in case of post
-			if ($this->GetWebsite()->GetRequestMethod() == 'post')
-			{
-				// when the user tried to save data
-				if ($wikipad->GetInitialState() == 'submit')
-				{
-					// and no messages are on the stack
-					if ($this->GetWebsite()->CountAllMessages() == 0)
-					{
-						// redirect to itself to prevent the message in stupid Safari mobile browser
-						$this->GetWebsite()->Redirect($this->GetWebsite()->GetCurrentURL());
-					}
-				}
-			}
-	*/		
-		
+			
 		}
 	}

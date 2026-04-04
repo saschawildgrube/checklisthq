@@ -26,6 +26,8 @@ TID_NAVIGATION_LINKS
 Links
 TID_NAVIGATION_NOTES
 Notes
+TID_NAVIGATION_CHECKLISTS
+Checklists
 TID_NAVIGATION_PROJECTS
 Projects
 TID_NAVIGATION_RECURRING
@@ -105,6 +107,14 @@ TID_CONTENT_TASKSDEFAULT
 * This is the next task on your task list. Do it now!
 =MAYBE=
 * Add fancy ideas here.
+TID_CONTENT_CHECKLISTSDEFAULT
+=CHECKLIST 1=
+* do this
+* do that
+=CHECKLIST 2=
+* add one
+* add another
+* mix the two
 TID_CONTENT_PROJECTSDEFAULT
 __TOC__
 =PROJECT 1=
