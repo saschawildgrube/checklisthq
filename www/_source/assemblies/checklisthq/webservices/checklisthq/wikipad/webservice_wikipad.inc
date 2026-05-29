@@ -157,12 +157,6 @@
 										{
 											$this->Trace('New task: '.$strNewTask);
 
-											/*
-											if (FindStringIgnoreCase($strTasks,$strNewTask + '\n') == -1)
-											{
-												$strNewTasks .= $strNewTask . '\n';   
-											}
-											*/
 											$strTasks = ReplaceStringIgnoreCase($strTasks,$strNewTask . "\n",'');
 
 											if ($strNewTasks != '')
