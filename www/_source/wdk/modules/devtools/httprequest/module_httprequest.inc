@@ -240,7 +240,7 @@
 				$strURL,
 				$arrayParams,
 				$strMethod,
-				10,
+				30,
 				$arrayCookies,
 				$arrayHeaders,
 				true);

@@ -158,6 +158,7 @@
 	}
 */
 
+/*
 	function ReplaceString($strString,$strFrom,$strTo,$bIgnoreCase = false)
 	{
 		if ($bIgnoreCase == true)
@@ -185,7 +186,30 @@
 			return str_replace($strFrom,$strTo,$strString);	
 		}
 	}
-		
+*/
+
+	function ReplaceString($strString,$strFrom,$strTo,$bIgnoreCase = false)
+	{
+		if ($bIgnoreCase == true)
+		{
+			if (IsStringUTF8($strString) || IsStringUTF8($strFrom) || IsStringUTF8($strTo))
+			{
+				return preg_replace(
+					'/' . preg_quote($strFrom, '/') . '/ui',
+					$strTo,
+					$strString
+				);
+			}
+			else
+			{
+				return str_ireplace($strFrom,$strTo,$strString);
+			}
+		}
+		else
+		{
+			return str_replace($strFrom,$strTo,$strString);	
+		}
+	}
 
 
 	function ReplaceStringIgnoreCase($strString,$strFrom,$strTo)

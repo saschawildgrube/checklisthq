@@ -227,6 +227,7 @@
 				'payload20','title20','text20','linktext20','linkurl20','imageurl20','external20',				
 				'style'));
 			$this->RegisterGenericOutputItem('COUNTDOWN',array('datetime','timezone'));
+			$this->RegisterGenericOutputItem('TOC');
 			
 
 			// Init Time Zone Default
@@ -393,6 +394,7 @@
 			$this->m_elementTel = null;
 			$this->m_elementSourceCode = null;
 			$this->m_elementYouTube = null;
+			$this->m_elementTableOfContents = null;
 
 
 
@@ -815,6 +817,7 @@
 			$this->IncludeElement(''.'form');
 			$this->IncludeElement(''.'toolbar');
 			$this->IncludeElement(''.'table');
+			$this->IncludeElement(''.'tableofcontents');
 			
 
 			// Progress Indicator
@@ -3463,7 +3466,7 @@ FileRead(GetWDKDir() . "wdk_help.txt").
 				}
 				return $this->MakeURL($arrayParams);
 			
-			case "ICON":
+			case 'ICON':
 				if ($this->m_elementIcon == null)
 				{
 					$this->m_elementIcon = new CIconElement($this,'default');	
@@ -3709,7 +3712,7 @@ FileRead(GetWDKDir() . "wdk_help.txt").
 				}
 				return "";								
 
-			case "COUNTDOWN":
+			case 'COUNTDOWN':
 				if ($this->m_elementCountDown == null) 
 				{
 					$this->IncludeElement('countdown');
@@ -3719,6 +3722,13 @@ FileRead(GetWDKDir() . "wdk_help.txt").
 				$strTimeZone = ArrayGetValue($arrayAttributes,'timezone');
 				$time = GetTime($strDateTime,$strTimeZone);
 				return $this->m_elementCountDown->RenderCountDown($time);   
+
+			case 'TOC':
+				if ($this->m_elementTableOfContents == null)
+				{
+					$this->m_elementTableOfContents = new CTableOfContentsElement($this,'default');	
+				}
+				return $this->m_elementTableOfContents->RenderTableOfContents();
 						
 			default:
 				$this->Error('OnRenderGenericOutputItem: No function handles item id: '.$strItem);

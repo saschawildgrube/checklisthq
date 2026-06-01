@@ -35,6 +35,7 @@ NOT YET Baselined
 ** Introduced the javascript class WDKReactComponent to establish a place for common behavior of react components.
 ** Added react components Button, ButtonSelection, InfoMessage and ErrorMessage
 ** Added javascript function ArrayKeyExists() to wdk.js.
+** Added javascript function ArrayValueExists() to wdk.js.
 ** Added javascript function GetArrayValue() to wdk.js.
 ** Added javascript function IsArray() to wdk.js.
 ** Added javascript function GetBoolValue() to wdk.js.
@@ -44,7 +45,13 @@ NOT YET Baselined
 ** Added javascript function GetType() to wdk.js.
 ** Added javascript function GetProperties() to wdk.js.
 ** Added javascript function GetFunctions() to wdk.js.
+** Added javascript function MakeTableOfContents() to wdk-maketableofcontents.js
 ** Added shell script filesys-cleanup.sh to free up disc space by deleting various log files and backups.
+** Added shell script traffic-by-ip.sh to list traffic over all sites by source IPs.
+** Added shell script traffic-by-domain.sh to list traffic over all sites by target domain.
+** Added shell script traffic-by-agent.sh to list traffic over all sites by source agent.
+** Added shell script traffic.sh to analyse traffic by ip, by domain, and by agent in one go.
+** Added CTableOfContentsElement and corresponding generic output item "TOC"
 ** Added CIconTeaserElement and corresponding generic output item.
 ** Added form element layout style "compact" for small compact inline forms.
 ** CIconElement has a new layout "spin" for spinning icons.
@@ -63,6 +70,7 @@ NOT YET Baselined
 ** Reduced the threshold for alerting on exiring SSL certificates in CMonitoringUnitTest::TestCase_MonitorURL() to 4 days.
 ** CServerWebService has been updated to reflect the disappearance of the "mail.warn" log file and instead considers the "maillog" file.
 ** CServerManagerModule now also shows the Plesk link if the Server is reported to be down.
+** Simplified the implementation of ReplaceString() to increase performance.
 * Discontinued
 ** Removed the GOOGLEMAPS generic output item from CWebsite. The underlying element has already been removed in an earlier release.
 ** Removed outdated shell script beanc.sh
