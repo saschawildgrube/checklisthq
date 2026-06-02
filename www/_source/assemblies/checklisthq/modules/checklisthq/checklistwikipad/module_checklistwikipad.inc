@@ -447,6 +447,37 @@
 
 			
 			
+		function ComputeTaskListInsertPositions($arrayLines)
+		{
+			$nLineCount = ArrayCount($arrayLines);
+			$arrayPositions = array();
+			$nNextHeader = -1;
+			$nNextSection = -1;
+
+			for ($nLine = $nLineCount - 1; $nLine >= 0; $nLine--)
+			{
+				$strLine = $arrayLines[$nLine];
+				if (StringSection($strLine,0,4) == '----')
+				{
+					$nNextSection = $nLine;
+				}
+				if (StringSection($strLine,0,1) == '=')
+				{
+					$nLineToAddHigh = $nLine + 1;
+					$nLineToAddLow = ($nNextHeader != -1) ? $nNextHeader : $nLineCount;
+					$nLineToAddMedium = ($nNextSection != -1) ? $nNextSection : (($nNextHeader != -1) ? $nNextHeader : $nLineCount);
+					$arrayPositions[$nLine] = array(
+						'low' => $nLineToAddLow,
+						'medium' => $nLineToAddMedium,
+						'high' => $nLineToAddHigh
+					);
+					$nNextHeader = $nLine;
+				}
+			}
+
+			return $arrayPositions;
+		}
+
 		function StateView()
 		{
 			$strPreviousState = $this->GetPreviousState();
@@ -494,10 +525,10 @@
 				
 				$bAddTaskFormAdded = false;
 				$linkicon = new CLinkIconElement($this->GetWebsite(),'default');
-				$strContent = '';
-				$nLine = 0;
 				$nLineCount = ArrayCount($arrayLines);
+				$arrayInsertPositions = $this->ComputeTaskListInsertPositions($arrayLines);
 				$strSection = 'nextaction'; // the default
+				$arrayOutput = array();
 				
 				$strTID_LineMoveToWaitingFor = $this->LoadString('TID_WIKIPAD_TOOL_LINEMOVETOWAITINGFOR');
 				$strTID_LineMoveToNextAction = $this->LoadString('TID_WIKIPAD_TOOL_LINEMOVETONEXTACTION');
@@ -506,7 +537,7 @@
 				$strMode = '';
 				$bFirstLineInSection = false;
 				
-				foreach ($arrayLines as $strLine)
+				foreach ($arrayLines as $nLine => $strLine)
 				{
 					$strPre = '';
 					switch ($strMode)
@@ -517,16 +548,15 @@
 						{
 							$strMode = '';
 						}
-						$strContent .= $strLine."\n";
-						$nLine++;
-						continue 2;
+						$arrayOutput[] = $strLine."\n";
+						continue;
 
 					default:
 						$nPosPreStart = FindString($strLine,'<pre>');
 						$nPosPreEnd = FindString($strLine,'</pre>');
 						if ($nPosPreStart != -1)
 						{
-							$strPre = StringSection($strLine,$nPosPreStart)."\n";   
+							$strPre = StringSection($strLine,$nPosPreStart);
 							$strLine = StringSection($strLine,0,$nPosPreStart);
 							
 							if ($nPosPreEnd == -1)
@@ -576,56 +606,15 @@
 					
 					if (StringSection($strLine,0,1) == '=')
 					{
-						$nLineToAddLow = $nLine+1;
-						$nLineToAddMedium = $nLine+1;
-						$nLineToAddHigh = $nLine+1;
-						
-						$bFoundNextHeader = false;
-						$bFoundNextSection = false;
-						
-						for ($nLineSearch = $nLine+1; $nLineSearch < ArrayCount($arrayLines); $nLineSearch++)
+						if (isset($arrayInsertPositions[$nLine]))
 						{
-							$strLineSearch = $arrayLines[$nLineSearch];
-							if ($bFoundNextHeader == false)
-							{
-								if (StringSection($strLineSearch,0,1) == '=')
-								{
-									$nLineToAddLow = $nLineSearch;
-									$bFoundNextHeader = true;
-
-									if ($bFoundNextSection == false)
-									{
-										$nLineToAddMedium = $nLineSearch;
-										$bFoundNextSection = true;
-									}
-								}
-							}
-							if ($bFoundNextSection == false)
-							{
-								if (StringSection($strLineSearch,0,4) == '----')
-								{
-									$nLineToAddMedium = $nLineSearch;
-									$bFoundNextSection = true;
-								}
-							}
-							if ($bFoundNextSection && $bFoundNextHeader)
-							{
-								break;
-							}
+							$strHtmlFormAddTask = "\n".$this->MakeAddTaskForm(
+								$arrayInsertPositions[$nLine]['low'], 
+								$arrayInsertPositions[$nLine]['medium'], 
+								$arrayInsertPositions[$nLine]['high']);
+							$bAddTaskFormAdded = true;
 						}
-						if ($bFoundNextSection == false)
-						{
-							$nLineToAddMedium = $nLineSearch;
-						}
-						if ($bFoundNextHeader == false)
-						{
-							$nLineToAddLow = $nLineSearch;
-						}
-						
-						$strHtmlFormAddTask = "\n".$this->MakeAddTaskForm($nLineToAddLow,$nLineToAddMedium,$nLineToAddHigh);
-						$bAddTaskFormAdded = true;
 					}
-					
 					if (	StringSection($strLine,0,1) == '*'
 						||	StringSection($strLine,0,1) == '#')
 					{
@@ -678,7 +667,7 @@
 
 						$bFirstLineInSection = false;
 					}
-					$strContent .=
+					$arrayOutput[] =
 						$strLine
 						.$strHtmlFormAddTask
 						.$strHtmlLinkLineMoveToWaitingFor
@@ -688,15 +677,15 @@
 						.$strHtmlLinkLineMoveDown 
 						.$strHtmlLinkLineDelete
 						."\n".$strPre;
-					$nLine++;
 					
 				}
 				
 				if ($bAddTaskFormAdded == false)
 				{
-						$strContent = $this->MakeAddTaskForm(0,0,0)."\n".$strContent;
+					array_unshift($arrayOutput, $this->MakeAddTaskForm(0,0,0)."\n");
 				}
-			} 
+				$strContent = implode('',$arrayOutput);
+			}
 			
 			if ($this->GetConfigIsChecklists() == true)
 			{
