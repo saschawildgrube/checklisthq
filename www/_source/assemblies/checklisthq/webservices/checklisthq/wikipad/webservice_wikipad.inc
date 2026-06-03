@@ -155,10 +155,7 @@
 										$strNewTasks = '';
 										foreach ($arrayNewTasks as $strNewTask)
 										{
-											$this->Trace('New task: '.$strNewTask);
-
 											$strTasks = ReplaceStringIgnoreCase($strTasks,$strNewTask . "\n",'');
-
 											if ($strNewTasks != '')
 											{
 												$strNewTasks .= "\n";
@@ -168,20 +165,17 @@
 										
 										if ($strNewTasks != '')
 										{
+											$strNewTasks = StringTrim($strNewTasks);
+											$strTasks = StringTrim($strTasks);
 											if (FindString($strTasks,'=NEXT ACTION=') == -1)
 											{
-												$strTasks = $strNewTasks . $strTasks;
+												$strTasks = '=NEXT ACTION=' . "\n" . $strNewTasks . "\n" . $strTasks;
 											}
 											else
 											{
 												$strTasks = ReplaceString($strTasks,'=NEXT ACTION=',"=NEXT ACTION=\n".$strNewTasks);
 											}											
 										}
-										
-										$this->Trace('New Task content:');
-										$this->Trace($strTasks);
-										
-										//$this->Trace('Search for "&": '.FindString($strTasks,'&'));  
 										
 										$arrayParams = array();
 										$arrayParams['command'] = 'set';
