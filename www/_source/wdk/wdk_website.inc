@@ -2276,7 +2276,7 @@
 			}
 		}
 		
-		final		
+		final
 		function SetWarningMessageCode($strMessageCode,$strPrefix="")
 		{
 			if ($strMessageCode != "")
@@ -2289,7 +2289,7 @@
 			}
 		}
 		
-		final		
+		final
 		function SetInfoMessageCode($strMessageCode,$strPrefix="")
 		{
 			if ($strMessageCode != "")
@@ -2313,7 +2313,7 @@
 			}
 		}
 		
-		final		
+		final
 		function SetWarningMessageText($strMessageText)
 		{
 			$this->m_arrayMessages["warning"] = array();
@@ -2324,7 +2324,7 @@
 			}
 		}
 		
-		final		
+		final
 		function SetInfoMessageText($strMessageText)
 		{
 			$this->m_arrayMessages["info"] = array();
@@ -3352,13 +3352,15 @@ FileRead(GetWDKDir() . "wdk_help.txt").
 			$strOutput = $this->ReplaceGenericOutputItems($strOutput);
 			return $strOutput;
 		}
-		
+
+
+		/*
 		final
 		function ReplaceGenericOutputItems($strOutput)
 		{
 			$nFirstTagStartPos = 0;
 
-			$nOutputLen = StringLength($strOutput);			
+			$nOutputLen = StringLength($strOutput);            
 			$arrayTags = array();
 			foreach ($this->m_arrayGenericOutputItems as $strItemID => $arrayAttributeList)
 			{
@@ -3387,7 +3389,7 @@ FileRead(GetWDKDir() . "wdk_help.txt").
 							$strFound,
 							false,
 							$nNextTagStartPos);
-	
+
 						if ($nNextTagStartPos != -1)
 						{
 							
@@ -3398,7 +3400,7 @@ FileRead(GetWDKDir() . "wdk_help.txt").
 							}
 							if ($nNextTagEndPos < $nNextTagStartPos)
 							{
-								$this->Error("nNextTagEndPos($nNextTagEndPos) < nNextTagStartPos($nNextTagStartPos)");	
+								$this->Error("nNextTagEndPos($nNextTagEndPos) < nNextTagStartPos($nNextTagStartPos)");    
 							}
 							
 							$strItemTag = StringSection(
@@ -3427,6 +3429,85 @@ FileRead(GetWDKDir() . "wdk_help.txt").
 			}
 			return ReplaceTags($strOutput,$arrayTags,'',''); 
 		}
+		*/
+			
+
+		final
+		function ReplaceGenericOutputItems($strOutput)
+		{
+			$nFirstTagStartPos = 0;
+
+			$nOutputLen = StringLength($strOutput);            
+			$arrayTags = array();
+			foreach ($this->m_arrayGenericOutputItems as $strItemID => $arrayAttributeList)
+			{
+				$nNextTagStartPos = $nFirstTagStartPos-1;
+				
+				$strTagStart = "{".$strItemID;
+				$strTagEnd = "}";
+				
+				do
+				{
+					$nNextTagStartPos++;
+
+					$nNextTagStartPos = FindString($strOutput,$strTagStart,false,$nNextTagStartPos);
+					if ($nNextTagStartPos != -1)
+					{
+						$strFound = "";
+						$nNextTagStartPos = FindStringMultiple(
+							$strOutput, 
+							array(
+								$strTagStart.$strTagEnd,
+								$strTagStart." ",
+								$strTagStart."\t",
+								$strTagStart."\n",
+								$strTagStart."\r\n"
+								),
+							$strFound,
+							false,
+							$nNextTagStartPos);
+
+						if ($nNextTagStartPos != -1)
+						{
+							
+							$nNextTagEndPos = FindString($strOutput, $strTagEnd, false, $nNextTagStartPos);
+							if ($nNextTagEndPos == -1)
+							{
+								$this->Error("Syntax Error after \"{".$strItemID."\": Missing end tag \"$strTagEnd\". nNextTagStartPos=$nNextTagStartPos. nNextTagEndPos=$nNextTagEndPos.");
+							}
+							if ($nNextTagEndPos < $nNextTagStartPos)
+							{
+								$this->Error("nNextTagEndPos($nNextTagEndPos) < nNextTagStartPos($nNextTagStartPos)");    
+							}
+							
+							$strItemTag = StringSection(
+								$strOutput,
+								$nNextTagStartPos,
+								$nNextTagEndPos - $nNextTagStartPos + StringLength($strTagEnd)
+								);
+								
+							$arrayAttributes = array();
+							foreach ($arrayAttributeList as $strAttributeName)
+							{
+								$arrayAttributes[$strAttributeName] = GetAttributeFromXMLTag($strItemTag,$strAttributeName);
+							} 
+							
+							$strOutputItem = $this->OnRenderGenericOutputItem(
+								$strItemID,
+								$arrayAttributes);
+								
+							if ($strOutputItem != '')
+							{
+								$arrayTags[$strItemTag] = $strOutputItem;
+							}
+						}
+					}
+				} while ($nNextTagStartPos != -1);
+			}
+			return ReplaceTags($strOutput,$arrayTags,'',''); 
+		}
+	
+
 
 
 		
@@ -5123,7 +5204,7 @@ FileRead(GetWDKDir() . "wdk_help.txt").
 			return true;
 		}
 
-		function OnUserSignin($strUsername,$strPassword,$arrayParams=array(),&$strError='',&$arrayResults=array())
+		function OnUserSignin($strUserName,$strPassword,$arrayParams=array(),&$strError='',&$arrayResults=array())
 		{
 			$this->Error('OnUserSignin() is not implemented.');
 			return false;
@@ -5789,4 +5870,4 @@ FileRead(GetWDKDir() . "wdk_help.txt").
 		}
 
 	}
-	
+
