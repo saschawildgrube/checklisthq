@@ -71,7 +71,7 @@ NOT YET Baselined
 ** CServerWebService has been updated to reflect the disappearance of the "mail.warn" log file and instead considers the "maillog" file.
 ** CServerManagerModule now also shows the Plesk link if the Server is reported to be down.
 ** Simplified the implementation of ReplaceString() to increase performance.
-** Optimized ReplaceGenericOutputItemTags() for performance.
+** Optimized ReplaceGenericOutputItems() for performance.
 * Discontinued
 ** Removed the GOOGLEMAPS generic output item from CWebsite. The underlying element has already been removed in an earlier release.
 ** Removed outdated shell script beanc.sh
