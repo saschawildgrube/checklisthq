@@ -3352,6 +3352,107 @@
 			return $strOutput;
 		}
 
+		/*
+		final
+		function ReplaceGenericOutputItems($strOutput)
+		{
+			if (count($this->m_arrayGenericOutputItems) == 0)
+			{
+				return $strOutput;
+			}
+			if (FindString($strOutput,'{') == -1)
+			{
+				return $strOutput;
+			}
+			
+			$arrayTagStarts = array();
+			$arrayTagStartItems = array();
+			foreach ($this->m_arrayGenericOutputItems as $strItemID => $arrayAttributeList)
+			{
+				$strTagStart = "{".$strItemID;
+				$arrayItemTagStarts = array(
+					$strTagStart."}",
+					$strTagStart." ",
+					$strTagStart."\t",
+					$strTagStart."\n",
+					$strTagStart."\r\n");
+				foreach ($arrayItemTagStarts as $strItemTagStart)
+				{
+					$arrayTagStarts[] = $strItemTagStart;
+					$arrayTagStartItems[$strItemTagStart] = $strItemID;
+				}
+			}
+			
+			$nNextTagStartPos = 0;
+			$arrayTagsByItem = array();
+			do
+			{
+				$strFound = "";
+				$nNextTagStartPos = FindStringMultiple(
+					$strOutput,
+					$arrayTagStarts,
+					$strFound,
+					false,
+					$nNextTagStartPos);
+				if ($nNextTagStartPos == -1)
+				{
+					break;
+				}
+				
+				$strItemID = $arrayTagStartItems[$strFound];
+				$strTagEnd = "}";
+				$nNextTagEndPos = FindString($strOutput, $strTagEnd, false, $nNextTagStartPos);
+				if ($nNextTagEndPos == -1)
+				{
+					$this->Error("Syntax Error after \"{".$strItemID."\": Missing end tag \"$strTagEnd\". nNextTagStartPos=$nNextTagStartPos. nNextTagEndPos=$nNextTagEndPos.");
+				}
+				if ($nNextTagEndPos < $nNextTagStartPos)
+				{
+					$this->Error("nNextTagEndPos($nNextTagEndPos) < nNextTagStartPos($nNextTagStartPos)");    
+				}
+				
+				$strItemTag = StringSection(
+					$strOutput,
+					$nNextTagStartPos,
+					$nNextTagEndPos - $nNextTagStartPos + StringLength($strTagEnd)
+					);
+					
+				$arrayAttributes = array();
+				foreach ($this->m_arrayGenericOutputItems[$strItemID] as $strAttributeName)
+				{
+					$arrayAttributes[$strAttributeName] = GetAttributeFromXMLTag($strItemTag,$strAttributeName);
+				} 
+				
+				$strOutputItem = $this->OnRenderGenericOutputItem(
+					$strItemID,
+					$arrayAttributes);
+					
+				if ($strOutputItem != '')
+				{
+					if (!isset($arrayTagsByItem[$strItemID]))
+					{
+						$arrayTagsByItem[$strItemID] = array();
+					}
+					$arrayTagsByItem[$strItemID][$strItemTag] = $strOutputItem;
+				}
+				$nNextTagStartPos++;
+			} while ($nNextTagStartPos != -1);
+			
+			$arrayTags = array();
+			foreach ($this->m_arrayGenericOutputItems as $strItemID => $arrayAttributeList)
+			{
+				if (isset($arrayTagsByItem[$strItemID]))
+				{
+					foreach ($arrayTagsByItem[$strItemID] as $strItemTag => $strOutputItem)
+					{
+						$arrayTags[$strItemTag] = $strOutputItem;
+					}
+				}
+			}
+			return ReplaceTags($strOutput,$arrayTags,'',''); 
+		}
+		*/
+
 
 		final
 		function ReplaceGenericOutputItems($strOutput)
@@ -3427,7 +3528,6 @@
 			}
 			return ReplaceTags($strOutput,$arrayTags,'',''); 
 		}
-
 
 		
 		final
