@@ -129,6 +129,7 @@
 		private $m_elementSourceCode;
 		private $m_elementYouTube;
 		private $m_elementCountDown;
+		private $m_elementTableOfContents;
 		
 		private $m_arrayDynamicNavigationTree;
 		
@@ -1005,7 +1006,7 @@
 				}
 				else
 				{
-					$strOutput .= $this->RenderTrace();
+					$strOutput .= $this->RenderTraceLog();
 				}
 			}
 			else
@@ -3358,7 +3359,6 @@
 		{
 			$nFirstTagStartPos = 0;
 
-			$nOutputLen = StringLength($strOutput);            
 			$arrayTags = array();
 			foreach ($this->m_arrayGenericOutputItems as $strItemID => $arrayAttributeList)
 			{
@@ -3985,7 +3985,7 @@
 			$this->Trace("PrepareMessages END");
 			$this->ProfilingTrace();
 			
-			// Prepare OpenGrapg
+			// Prepare OpenGraph
 			$this->Trace("PrepareOpenGraph START");
 			$this->PrepareOpenGraph();
 			$this->Trace("PrepareOpenGraph END");
@@ -4077,10 +4077,12 @@
 				$strOutput = $this->ReplaceGenericOutputItems($strOutput);
 				$stopwatchReplaceGenericOutputItems->Stop();
 				
-				$this->ProfilingTrace();
-				$this->Trace("Rendering: RenderJavaScripts()"); 
-				$strOutput = $this->RenderJavaScripts($strOutput);
-
+				if ($nIteration > 2)
+				{
+					$this->ProfilingTrace();
+					$this->Trace("Rendering: RenderJavaScripts()"); 
+					$strOutput = $this->RenderJavaScripts($strOutput);
+				}
 				
 				$nIteration--;
    	      
@@ -4089,7 +4091,8 @@
 					$nNewOutputStrLen = StringLength($strOutput);
 					$this->Trace("Rendering: Old length: $nOldOutputStrLen");
 					$this->Trace("Rendering: New length: $nNewOutputStrLen");
-					if ($nNewOutputStrLen == $nOldOutputStrLen)
+					if (	$nNewOutputStrLen == $nOldOutputStrLen
+						&&	ArrayCount($this->m_arrayJavaScripts) == 0)
 					{
 						$nIteration = 0;
 					}
@@ -4218,8 +4221,6 @@
 				header('Content-type: image/png');
 				imagepng($image);
 			}
-		
-			imagedestroy($image);
 			exit;	
 		}
 
@@ -4607,7 +4608,7 @@
 			2. Check for static css dir then for assemblies
 			*/
 						
-			$strFilePath = $this->GetCssDir() . $this->MakeLayoutCssFileName($strLayout);
+			$strFilePath = $this->GetStyleSheetsDir() . $this->MakeLayoutCssFileName($strLayout);
 			$this->Trace($strFilePath);
 			if (IsFile($strFilePath))
 			{
@@ -4621,7 +4622,7 @@
 				return $strFilePath;	 
 			}			
 
-			$strFilePath = $this->GetCssDir() . $this->MakeLayoutCssFileName("default");
+			$strFilePath = $this->GetStyleSheetsDir() . $this->MakeLayoutCssFileName("default");
 			$this->Trace($strFilePath);
 			if (IsFile($strFilePath))
 			{
@@ -5140,6 +5141,12 @@
 				}
 			}
 			return true;
+		}
+
+		function OnUserLoadSettings()
+		{
+			$this->Error('OnUserLoadSettings() is not implemented.');
+			return false;
 		}
 
 
