@@ -6,6 +6,7 @@
 	class CChecklistWikiPadModule extends CWikiPadModule
 	{
 		var $m_form;
+		var $m_linkicon;
 		var $m_strTID_ButtonAdd;
 		var $m_strTID_ButtonAddPriorityHigh;
 		var $m_strTID_ButtonAddPriorityMedium;
@@ -361,14 +362,17 @@
 		
 		function MakeHtmlTemplateLinkLineAction($strAction,$strIcon,$strLabel)
 		{
-			$linkicon = new CLinkIconElement($this->GetWebsite(),'default');
+			if ($this->m_linkicon == null)
+			{
+				$this->m_linkicon = new CLinkIconElement($this->GetWebsite(),'default');
+			}
 			$arrayParams = array(
 				$this->GetModuleVarName('line') => 'LINE',
 				$this->GetModuleVarName('linehash') => 'HASH',
 				$this->GetModuleVarName('action') => $strAction,
 				$this->GetModuleVarNameState() => 'submitline'
 				);
-			$strTemplate = '&nbsp;'.$linkicon->RenderLinkIcon(
+			$strTemplate = '&nbsp;'.$this->m_linkicon->RenderLinkIcon(
 				$this->GetWebsite()->MakeURL($arrayParams),
 				$strIcon,
 				$strLabel); 
