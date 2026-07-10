@@ -696,51 +696,54 @@
 			if ($this->GetConfigIsChecklists() == true)
 			{
 				$arrayLines = StringExplode($strContent,"\n",false);
-				$strContent = "__TOC__\n"; 
+				$arrayOutput = array("__TOC__\n");
 				$strChecklistHeader = '';
-				$strChecklistContent = '';
+				$arrayChecklistContent = array();
 				foreach ($arrayLines as $strLine)
 				{
 					if ($strChecklistHeader == '')
 					{
 						if (StringSection($strLine,0,1) != '=')
 						{
-							$strContent .= $strLine;
+							$arrayOutput[] = $strLine;
 						}
 						else
 						{
-							$strChecklistHeader = $strLine; 
-							$strChecklistContent = '';
+							$strChecklistHeader = $strLine;
+							$arrayChecklistContent = array();
 						}
 					}
 					else // checklist header is set
 					{
 						if (StringSection($strLine,0,1) != '=')
 						{
-							$strChecklistContent .= $strLine . "\n";
+							$arrayChecklistContent[] = $strLine . "\n";
 						}
 						else
 						{
-							$strContent .= $strChecklistHeader . "\n";
-							$strContent .= $this->MakeAddChecklistForm(
+							$strChecklistContent = implode('',$arrayChecklistContent);
+							$arrayOutput[] = $strChecklistHeader . "\n";
+							$arrayOutput[] = $this->MakeAddChecklistForm(
 								ReplaceString($strChecklistHeader,'=',''),
 								$strChecklistContent);
-							$strContent .= "\n";
-							$strContent .= $strChecklistContent;
+							$arrayOutput[] = "\n";
+							$arrayOutput[] = $strChecklistContent;
 							$strChecklistHeader = $strLine;
-							$strChecklistContent = '';
+							$arrayChecklistContent = array();
 						}
 					}
 				}
 				if ($strChecklistHeader != '')
 				{
-					$strContent .= $strChecklistHeader . "\n";
-					$strContent .= $this->MakeAddChecklistForm(
+					$strChecklistContent = implode('',$arrayChecklistContent);
+					$arrayOutput[] = $strChecklistHeader . "\n";
+					$arrayOutput[] = $this->MakeAddChecklistForm(
 						ReplaceString($strChecklistHeader,'=',''),
 						$strChecklistContent);
-					$strContent .= "\n";
-					$strContent .= $strChecklistContent;
+					$arrayOutput[] = "\n";
+					$arrayOutput[] = $strChecklistContent;
 				}
+				$strContent = implode('',$arrayOutput);
 			}
 
 			$wiki = new CWikiElement($this->GetWebSite(),'default');
