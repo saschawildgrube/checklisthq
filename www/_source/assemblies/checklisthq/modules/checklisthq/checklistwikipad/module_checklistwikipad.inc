@@ -447,14 +447,17 @@
 				$this->m_strHtmlLinkLineMoveToOtherContextTemplate = $this->MakeHtmlTemplateLinkLineAction(
 					'movetoothercontext','exchange',
 					$this->LoadString('TID_WIKIPAD_TOOL_LINEMOVETOOTHERCONTEXT'));	
+
+				$checklisthq = $this->GetWebsite()->GetPlugin('checklisthq');
+				$nOtherContext = 1-$checklisthq->GetContextID();
+				$strOtherContextName = $checklisthq->GetContextName($nOtherContext);
+				$this->m_strHtmlLinkLineMoveToOtherContextTemplate = ReplaceString(
+					$this->m_strHtmlLinkLineMoveToOtherContextTemplate,
+					'{CONTEXT}',
+					$strOtherContextName);
 			}
 			$strHtml = ReplaceString($this->m_strHtmlLinkLineMoveToOtherContextTemplate,'LINE',$nLine);
 			$strHtml = ReplaceString($strHtml,'HASH',$strLineHash);
-	
-			$nContext = $this->GetWebsite()->GetPlugin('checklisthq')->GetContextID();
-			$nOtherContext = 1-$nContext;
-			$strOtherContextName = $this->GetWebsite()->GetPlugin('checklisthq')->GetContextName($nOtherContext);
-			$strHtml = ReplaceString($strHtml,'{CONTEXT}',$strOtherContextName);
 	
 			return $strHtml;
 		}	
