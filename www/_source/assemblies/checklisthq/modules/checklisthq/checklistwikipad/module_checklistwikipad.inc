@@ -654,7 +654,7 @@
 								$this->GetModuleVarName('action') => 'movetonextaction',
 								$this->GetModuleVarNameState() => 'submitline'
 								);
-							$strHtmlLinkLineMoveToWaitingFor = '&nbsp;'.$linkicon->RenderLinkIcon(
+							$strHtmlLinkLineMoveToNextAction = '&nbsp;'.$linkicon->RenderLinkIcon(
 								$this->GetWebsite()->MakeURL($arrayParams),
 								'rocket',
 								$strTID_LineMoveToNextAction);
