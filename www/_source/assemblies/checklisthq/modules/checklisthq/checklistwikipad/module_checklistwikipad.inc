@@ -15,6 +15,7 @@
 		var $m_strHtmlLinkLineMoveTopTemplate;
 		var $m_strHtmlLinkLineDeleteTemplate;
 		var $m_strHtmlLinkLineMoveToWaitingForTemplate;
+		var $m_strHtmlLinkLineMoveToNextActionTemplate;
 		var $m_strHtmlLinkLineMoveToOtherContextTemplate;
 		
 		function __construct(
@@ -282,16 +283,16 @@
 
 		function MakeAddChecklistForm($strChecklistTitle,$strChecklistContent)
 		{
-			$this->m_formDef = new CFormDefinition();
+			$formDef = new CFormDefinition();
 
 			$arrayParams = array(); 
 			
 			//$arrayParams[$this->GetModuleVarNameState()] = 'submitchecklist';
 			$arrayParams[$this->GetModuleVarName('checklist_title')] = $this->WikiEncode($strChecklistTitle);
 			$arrayParams[$this->GetModuleVarName('checklist_content')] = $this->WikiEncode($strChecklistContent);
-			$this->m_formDef->SetURL($this->GetWebsite()->GetRootURL(),$arrayParams); 
+			$formDef->SetURL($this->GetWebsite()->GetRootURL(),$arrayParams); 
 
-			$this->m_formDef->SetHiddenValue($this->GetModuleVarNameState(),'submitchecklist');
+			$formDef->SetHiddenValue($this->GetModuleVarNameState(),'submitchecklist');
 
 			
 			if ($this->m_strTID_ButtonAddChecklist == '')
@@ -299,21 +300,21 @@
 				$this->m_strTID_ButtonAddChecklist = $this->LoadString('TID_WIKIPAD_BUTTON_ADD_CHECKLIST');
 			}
 			
-			$this->m_formDef->AddControlButtonSubmit($this->m_strTID_ButtonAddChecklist,'SUBMIT_CHECKLIST','add_checklist');
+			$formDef->AddControlButtonSubmit($this->m_strTID_ButtonAddChecklist,'SUBMIT_CHECKLIST','add_checklist');
 			if ($this->m_form == null)
 			{
 				$this->m_form = new CFormElement($this->GetWebsite(),'compact');		
 			}
 	
-			$this->m_formDef->AddControlText('TEXT',$this->GetModuleVarName('checklist_prefix'),'','',30,30); 
+			$formDef->AddControlText('TEXT',$this->GetModuleVarName('checklist_prefix'),'','',30,30); 
 
 
-			return StringRemoveControlChars($this->m_form->RenderForm($this->m_formDef,array()));
+			return StringRemoveControlChars($this->m_form->RenderForm($formDef,array()));
 		}
 	
 		function MakeAddTaskForm($nLinePriorityLow,$nLinePriorityMedium,$nLinePriorityHigh)
 		{
-			$this->m_formDef = new CFormDefinition();
+			$formDef = new CFormDefinition();
 
 			$arrayParams = array(); 
 			$arrayParams[$this->GetModuleVarNameState()] = 'submitline';
@@ -321,9 +322,9 @@
 			$arrayParams[$this->GetModuleVarName('line_priority_low')] = ''.$nLinePriorityLow;
 			$arrayParams[$this->GetModuleVarName('line_priority_medium')] = ''.$nLinePriorityMedium;
 			$arrayParams[$this->GetModuleVarName('line_priority_high')] = ''.$nLinePriorityHigh;
-			$this->m_formDef->SetURL($this->GetWebsite()->GetRootURL(),$arrayParams);
+			$formDef->SetURL($this->GetWebsite()->GetRootURL(),$arrayParams);
 
-			$this->m_formDef->AddControlText('TEXT',$this->GetModuleVarName('text'),'','',60,200); 
+			$formDef->AddControlText('TEXT',$this->GetModuleVarName('text'),'','',60,200); 
 			
 			/*if ($this->m_strTID_ButtonAdd == '')
 			{
@@ -342,20 +343,20 @@
 				$this->m_strTID_ButtonAddPriorityLow = $this->LoadString('TID_WIKIPAD_BUTTON_ADD_PRIORITY_LOW');
 			}
 			
-			$this->m_formDef->AddControlButtonSubmit($this->m_strTID_ButtonAddPriorityLow,'SUBMIT_PRIORITY_LOW','add_low');
+			$formDef->AddControlButtonSubmit($this->m_strTID_ButtonAddPriorityLow,'SUBMIT_PRIORITY_LOW','add_low');
 			if ($nLinePriorityMedium > 0)
 			{			
-				$this->m_formDef->AddControlButtonSubmit($this->m_strTID_ButtonAddPriorityMedium,'SUBMIT_PRIORITY_MEDIUM','add_medium');
+				$formDef->AddControlButtonSubmit($this->m_strTID_ButtonAddPriorityMedium,'SUBMIT_PRIORITY_MEDIUM','add_medium');
 			}
 			if ($nLinePriorityHigh > 0)
 			{			
-				$this->m_formDef->AddControlButtonSubmit($this->m_strTID_ButtonAddPriorityHigh,'SUBMIT_PRIORITY_HIGH','add_high');
+				$formDef->AddControlButtonSubmit($this->m_strTID_ButtonAddPriorityHigh,'SUBMIT_PRIORITY_HIGH','add_high');
 			}
 			if ($this->m_form == null)
 			{
 				$this->m_form = new CFormElement($this->GetWebsite(),'compact');		
 			}
-			return StringRemoveControlChars($this->m_form->RenderForm($this->m_formDef,array()));
+			return StringRemoveControlChars($this->m_form->RenderForm($formDef,array()));
 		}
 		
 		function MakeHtmlTemplateLinkLineAction($strAction,$strIcon,$strLabel)
@@ -426,6 +427,19 @@
 			return $strHtml;
 		}		
 	
+		function MakeHtmlLinkMoveToNextAction($nLine,$strLineHash)
+		{
+			if ($this->m_strHtmlLinkLineMoveToNextActionTemplate == '')
+			{
+				$this->m_strHtmlLinkLineMoveToNextActionTemplate = $this->MakeHtmlTemplateLinkLineAction(
+					'movetonextaction','rocket',
+					$this->LoadString('TID_WIKIPAD_TOOL_LINEMOVETONEXTACTION'));
+			}
+			$strHtml = ReplaceString($this->m_strHtmlLinkLineMoveToNextActionTemplate,'LINE',$nLine);
+			$strHtml = ReplaceString($strHtml,'HASH',$strLineHash);
+			return $strHtml;
+		}
+
 		function MakeHtmlLinkMoveToOtherContext($nLine,$strLineHash)
 		{
 			if ($this->m_strHtmlLinkLineMoveToOtherContextTemplate == '')
@@ -524,14 +538,12 @@
 				$arrayLines = StringExplode($strContent,"\n",false);
 				
 				$bAddTaskFormAdded = false;
-				$linkicon = new CLinkIconElement($this->GetWebsite(),'default');
 				$nLineCount = ArrayCount($arrayLines);
 				$arrayInsertPositions = $this->ComputeTaskListInsertPositions($arrayLines);
 				$strSection = 'nextaction'; // the default
 				$arrayOutput = array();
 				
 				$strTID_LineMoveToWaitingFor = $this->LoadString('TID_WIKIPAD_TOOL_LINEMOVETOWAITINGFOR');
-				$strTID_LineMoveToNextAction = $this->LoadString('TID_WIKIPAD_TOOL_LINEMOVETONEXTACTION');
 
 			
 				$strMode = '';
@@ -648,16 +660,7 @@
 
 						if ($strSection != 'nextaction')   
 						{
-							$arrayParams = array(
-								$this->GetModuleVarName('line') => $nLine,
-								$this->GetModuleVarName('linehash') => $strLineHash,
-								$this->GetModuleVarName('action') => 'movetonextaction',
-								$this->GetModuleVarNameState() => 'submitline'
-								);
-							$strHtmlLinkLineMoveToNextAction = '&nbsp;'.$linkicon->RenderLinkIcon(
-								$this->GetWebsite()->MakeURL($arrayParams),
-								'rocket',
-								$strTID_LineMoveToNextAction);
+							$strHtmlLinkLineMoveToNextAction = $this->MakeHtmlLinkMoveToNextAction($nLine,$strLineHash);
 						}
 
 						if ($strSection == 'nextaction' && $bFirstLineInSection == false)   
