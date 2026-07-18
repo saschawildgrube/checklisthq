@@ -486,7 +486,7 @@
 				{
 					$nLineToAddHigh = $nLine + 1;
 					$nLineToAddLow = ($nNextHeader != -1) ? $nNextHeader : $nLineCount;
-					$nLineToAddMedium = ($nNextSection != -1) ? $nNextSection : (($nNextHeader != -1) ? $nNextHeader : $nLineCount);
+					$nLineToAddMedium = ($nNextSection != -1) ? $nNextSection : 0;
 					$arrayPositions[$nLine] = array(
 						'low' => $nLineToAddLow,
 						'medium' => $nLineToAddMedium,

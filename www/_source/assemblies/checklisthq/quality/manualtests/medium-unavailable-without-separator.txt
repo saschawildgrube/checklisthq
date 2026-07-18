@@ -1,0 +1,14 @@
+=Hiding medium priority when a section has no separator=
+# Use test: "login"
+# Navigate to tasks page: /tasks/
+# Select "Edit"
+# Replace the content as follows:
+<pre>
+=WAITING FOR=
+* waiting item
+=NEXT ACTION=
+* next item
+</pre>
+# Select "Save"
+# Validate that the "Waiting For" add form offers "low" and "high", but does not offer "medium" - if not fail the test
+# Validate that the "Next Action" add form offers "low" and "high", but does not offer "medium" - if not fail the test

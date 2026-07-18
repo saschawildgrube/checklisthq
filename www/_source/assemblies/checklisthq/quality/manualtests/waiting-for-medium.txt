@@ -5,6 +5,9 @@
 # Replace the content as follows:
 <pre>
 =WAITING FOR=
+* waiting line 1
+----
+* waiting line 2
 =NEXT ACTION=
 * line 1
 ----
@@ -12,4 +15,4 @@
 </pre>
 # Select "Save"
 # Add a new item to the "Waiting For" section as "medium"
-# Validate that the new item is added to the end of the "Waiting For" section - if not fail the test
+# Validate that the new item is added immediately before the separator in the "Waiting For" section - if not fail the test
