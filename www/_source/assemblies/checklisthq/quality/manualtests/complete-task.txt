@@ -1,0 +1,20 @@
+=Completing a task without affecting neighboring tasks=
+# Use test: "login"
+# Navigate to tasks page: /tasks/
+# Select "Edit"
+# Replace the content as follows:
+<pre>
+=NEXT ACTION=
+* keep this task
+* finish this task
+* keep this task too
+</pre>
+# Select "Save"
+# For the item "finish this task", select "Check this task off the list"
+# Select "Edit"
+# Validate that only the completed item was removed and that the remaining task order is unchanged as follows - if not fail the test
+<pre>
+=NEXT ACTION=
+* keep this task
+* keep this task too
+</pre>

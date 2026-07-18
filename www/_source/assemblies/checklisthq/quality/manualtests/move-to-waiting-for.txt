@@ -1,0 +1,23 @@
+=Moving a Next Action item to Waiting For=
+# Use test: "login"
+# Navigate to tasks page: /tasks/
+# Select "Edit"
+# Replace the content as follows:
+<pre>
+=WAITING FOR=
+* already waiting
+=NEXT ACTION=
+* ask supplier for delivery date
+* prepare weekly report
+</pre>
+# Select "Save"
+# For the item "ask supplier for delivery date", select "Move to 'WAITING FOR'"
+# Select "Edit"
+# Validate that the moved item was removed from "Next Action" and added directly after the "Waiting For" heading as follows - if not fail the test
+<pre>
+=WAITING FOR=
+* ask supplier for delivery date
+* already waiting
+=NEXT ACTION=
+* prepare weekly report
+</pre>

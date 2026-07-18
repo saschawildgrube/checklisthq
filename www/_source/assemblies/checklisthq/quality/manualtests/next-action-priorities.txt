@@ -1,0 +1,26 @@
+=Adding Next Action items with high, medium, and low priority=
+# Use test: "login"
+# Navigate to tasks page: /tasks/
+# Select "Edit"
+# Replace the content as follows:
+<pre>
+=NEXT ACTION=
+* existing high-priority area
+----
+* existing low-priority area
+</pre>
+# Select "Save"
+# Add the item "new low priority" to the "Next Action" section as "low"
+# Add the item "new medium priority" to the "Next Action" section as "medium"
+# Add the item "new high priority" to the "Next Action" section as "high"
+# Select "Edit"
+# Validate that the content is ordered exactly as follows - if not fail the test
+<pre>
+=NEXT ACTION=
+* new high priority
+* existing high-priority area
+* new medium priority
+----
+* existing low-priority area
+* new low priority
+</pre>
