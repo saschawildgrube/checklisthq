@@ -1,0 +1,4 @@
+=Login=
+# Navigate to login page: /login/
+# Login as: user "testuser", password "test123"
+# Validate that login was successful - fail the test if not

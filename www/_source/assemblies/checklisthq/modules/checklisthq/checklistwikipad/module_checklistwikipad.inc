@@ -493,6 +493,7 @@
 						'high' => $nLineToAddHigh
 					);
 					$nNextHeader = $nLine;
+					$nNextSection = -1;
 				}
 			}
 
