@@ -569,7 +569,7 @@
 							$strMode = '';
 						}
 						$arrayOutput[] = $strLine."\n";
-						continue;
+						continue 2;
 
 					default:
 						$nPosPreStart = FindString($strLine,'<pre>');
