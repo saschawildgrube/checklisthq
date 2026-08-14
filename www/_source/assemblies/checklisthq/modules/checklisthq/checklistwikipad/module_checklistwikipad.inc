@@ -860,17 +860,31 @@
 			
 				if ($strAction == 'delete')
 				{
-					$strContent = '';
-					$nLine = 0;
-					foreach ($arrayLines as $strLine)
+					$nDeleteStart = $nLineToModify;
+					$nDeleteEnd = $nLineToModify;
+					$nPreStart = $nLineToModify + 1;
+					// A preformatted section belongs to the task only if it follows immediately.
+					if (ArrayKeyExists($arrayLines,$nPreStart)
+						&& StringSection(trim($arrayLines[$nPreStart]),0,5) == '<pre>')
 					{
-						if ($nLine != $nLineToModify)
+						for ($nPreLine = $nPreStart; $nPreLine < ArrayCount($arrayLines); $nPreLine++)
+						{
+							if (FindString($arrayLines[$nPreLine],'</pre>') != -1)
+							{
+								$nDeleteEnd = $nPreLine;
+								break;
+							}
+						}
+					}
+					$strContent = '';
+					foreach ($arrayLines as $nLine => $strLine)
+					{
+						if ($nLine < $nDeleteStart || $nLine > $nDeleteEnd)
 						{
 							$strContent .=
 								$strLine
 								."\n";
 						}
-						$nLine++;
 					}
 					$this->SetOutputItem('LINE_DELETED','<pre>'.$arrayLines[$nLineToModify].'</pre>');
 					$this->SetInfoMessageCode('LINEDELETED');

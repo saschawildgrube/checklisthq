@@ -1,0 +1,20 @@
+=Completing a task removes its following preformatted section=
+# Use test: "login"
+# Navigate to tasks page: /tasks/
+# Select "Edit"
+# Replace the content as follows:
+
+=NEXT ACTION=
+* finish this task
+<pre>
+details belonging to the task
+</pre>
+* keep this task
+# Select "Save"
+# For the item "finish this task", select "Check this task off the list"
+# Select "Edit"
+# Validate that the completed item and its following preformatted section were removed, while the next task was preserved, as follows - if not fail the test
+<pre>
+=NEXT ACTION=
+* keep this task
+</pre>

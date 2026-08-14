@@ -1,0 +1,21 @@
+=Completing a task preserves a preformatted section after a separator=
+# Use test: "login"
+# Navigate to tasks page: /tasks/
+# Select "Edit"
+# Replace the content as follows:
+
+=NEXT ACTION=
+* finish this task
+----
+<pre>
+details after the separator
+</pre>
+# Select "Save"
+# For the item "finish this task", select "Check this task off the list"
+# Select "Edit"
+# Validate that only the completed item was removed and that the separator and following preformatted section were preserved unchanged, as follows - if not fail the test
+
+=NEXT ACTION=
+<pre>
+details after the separator
+</pre>
