@@ -2,19 +2,19 @@
 # Use test: "login"
 # Navigate to tasks page: /tasks/
 # Select "Edit"
-# Replace the content as follows:
-<pre>
+# Replace the entire content with exactly the following wikitext:
+<syntaxhighlight lang="text">
 =NEXT ACTION=
 * keep this task
 * finish this task
 * keep this task too
-</pre>
+</syntaxhighlight>
 # Select "Save"
 # For the item "finish this task", select "Check this task off the list"
 # Select "Edit"
-# Validate that only the completed item was removed and that the remaining task order is unchanged as follows - if not fail the test
-<pre>
+# Validate that the content exactly matches the following wikitext, with only the completed item removed and the remaining task order unchanged - if not fail the test
+<syntaxhighlight lang="text">
 =NEXT ACTION=
 * keep this task
 * keep this task too
-</pre>
+</syntaxhighlight>

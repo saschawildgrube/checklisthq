@@ -2,20 +2,20 @@
 # Use test: "login"
 # Navigate to tasks page: /tasks/
 # Select "Edit"
-# Replace the content as follows:
-<pre>
+# Replace the entire content with exactly the following wikitext:
+<syntaxhighlight lang="text">
 =NEXT ACTION=
 * existing high-priority area
 ----
 * existing low-priority area
-</pre>
+</syntaxhighlight>
 # Select "Save"
 # Add the item "new low priority" to the "Next Action" section as "low"
 # Add the item "new medium priority" to the "Next Action" section as "medium"
 # Add the item "new high priority" to the "Next Action" section as "high"
 # Select "Edit"
-# Validate that the content is ordered exactly as follows - if not fail the test
-<pre>
+# Validate that the content exactly matches the following wikitext - if not fail the test
+<syntaxhighlight lang="text">
 =NEXT ACTION=
 * new high priority
 * existing high-priority area
@@ -23,4 +23,4 @@
 ----
 * existing low-priority area
 * new low priority
-</pre>
+</syntaxhighlight>

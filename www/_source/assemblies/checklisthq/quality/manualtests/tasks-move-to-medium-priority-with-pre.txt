@@ -1,0 +1,29 @@
+=Moving a task and its preformatted section to medium priority=
+# Use test: "login"
+# Navigate to tasks page: /tasks/
+# Select "Edit"
+# Replace the entire content with exactly the following wikitext:
+<syntaxhighlight lang="text">
+=NEXT ACTION=
+* move this task to medium priority
+<pre>
+details belonging to the task moved to medium priority
+</pre>
+* existing high-priority task
+----
+* existing low-priority task
+</syntaxhighlight>
+# Select "Save"
+# For the item "move this task to medium priority", select "Do it later"
+# Select "Edit"
+# Validate that the content exactly matches the following wikitext, with the moved item and its following preformatted section together immediately before the next separator - if not fail the test
+<syntaxhighlight lang="text">
+=NEXT ACTION=
+* existing high-priority task
+* move this task to medium priority
+<pre>
+details belonging to the task moved to medium priority
+</pre>
+----
+* existing low-priority task
+</syntaxhighlight>

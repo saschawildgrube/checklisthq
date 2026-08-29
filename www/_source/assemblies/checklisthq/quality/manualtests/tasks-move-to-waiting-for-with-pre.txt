@@ -1,0 +1,29 @@
+=Moving a task and its preformatted section to Waiting For=
+# Use test: "login"
+# Navigate to tasks page: /tasks/
+# Select "Edit"
+# Replace the entire content with exactly the following wikitext:
+<syntaxhighlight lang="text">
+=WAITING FOR=
+* already waiting
+=NEXT ACTION=
+* move this task to waiting for
+<pre>
+details belonging to the task moved to waiting for
+</pre>
+* keep this next action
+</syntaxhighlight>
+# Select "Save"
+# For the item "move this task to waiting for", select "Move to 'WAITING FOR'"
+# Select "Edit"
+# Validate that the content exactly matches the following wikitext, with the moved item and its following preformatted section together directly after the "Waiting For" heading - if not fail the test
+<syntaxhighlight lang="text">
+=WAITING FOR=
+* move this task to waiting for
+<pre>
+details belonging to the task moved to waiting for
+</pre>
+* already waiting
+=NEXT ACTION=
+* keep this next action
+</syntaxhighlight>

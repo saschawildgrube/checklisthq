@@ -2,33 +2,33 @@
 # Use test: "login"
 # Navigate to tasks page: /tasks/
 # Select "Edit"
-# Replace the content as follows:
-<pre>
+# Replace the entire content with exactly the following wikitext:
+<syntaxhighlight lang="text">
 =NEXT ACTION=
 * existing task
-</pre>
+</syntaxhighlight>
 # Select "Save"
 # Navigate to checklists page: /checklists/
 # Select "Edit"
-# Replace the content as follows:
-<pre>
+# Replace the entire content with exactly the following wikitext:
+<syntaxhighlight lang="text">
 =Morning startup=
 * Review today's calendar
 * Check the team inbox
 * Choose the day's most important task
-</pre>
+</syntaxhighlight>
 # Select "Save"
 # Validate that the checklist "Morning startup" and all three checklist items are displayed - if not fail the test
 # In the "Morning startup" checklist, enter "Startup:" in the prefix field
 # Select "Add Checklist to 'Next Action' with prefix:"
 # Navigate to tasks page: /tasks/
 # Select "Edit"
-# Validate that the checklist items were added at the beginning of "Next Action" with the prefix, and that the existing task was preserved, as follows - if not fail the test
-<pre>
+# Validate that the content exactly matches the following wikitext, with the checklist items at the beginning of "Next Action" and the existing task preserved - if not fail the test
+<syntaxhighlight lang="text">
 =NEXT ACTION=
 * Startup: Review today's calendar
 * Startup: Check the team inbox
 * Startup: Choose the day's most important task
 
 * existing task
-</pre>
+</syntaxhighlight>

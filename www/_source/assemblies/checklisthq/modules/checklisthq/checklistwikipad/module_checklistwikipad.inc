@@ -805,7 +805,7 @@
 			$this->SetModuleVar('action','');
 			$this->SetModuleVar('text','');
 			
-			$strLineToBeMovedToNextActionOtherContext = '';
+			$strTaskBlockToBeMovedToNextActionOtherContext = '';
 			
 			if ($strAction == '')
 			{
@@ -848,6 +848,33 @@
 						$this->SetErrorMessageCode('LINE');
 						return $this->StateView();
 					}
+
+					$nLineToModifyEnd = $nLineToModify;
+					$nPreStart = $nLineToModify + 1;
+					// A preformatted section belongs to the task only if it follows immediately
+					// and has a closing tag.
+					if (ArrayKeyExists($arrayLines,$nPreStart)
+						&& StringSection(trim($arrayLines[$nPreStart]),0,5) == '<pre>')
+					{
+						for ($nPreLine = $nPreStart; $nPreLine < ArrayCount($arrayLines); $nPreLine++)
+						{
+							if (FindString($arrayLines[$nPreLine],'</pre>') != -1)
+							{
+								$nLineToModifyEnd = $nPreLine;
+								break;
+							}
+						}
+					}
+
+					$strTaskBlockToModify = '';
+					for ($nTaskBlockLine = $nLineToModify; $nTaskBlockLine <= $nLineToModifyEnd; $nTaskBlockLine++)
+					{
+						if ($strTaskBlockToModify != '')
+						{
+							$strTaskBlockToModify .= "\n";
+						}
+						$strTaskBlockToModify .= $arrayLines[$nTaskBlockLine];
+					}
 				}
 				
 				$bHasNextAction = (FindString($strContentOld,'=NEXT ACTION=') != -1)?(true):(false);
@@ -861,21 +888,7 @@
 				if ($strAction == 'delete')
 				{
 					$nDeleteStart = $nLineToModify;
-					$nDeleteEnd = $nLineToModify;
-					$nPreStart = $nLineToModify + 1;
-					// A preformatted section belongs to the task only if it follows immediately.
-					if (ArrayKeyExists($arrayLines,$nPreStart)
-						&& StringSection(trim($arrayLines[$nPreStart]),0,5) == '<pre>')
-					{
-						for ($nPreLine = $nPreStart; $nPreLine < ArrayCount($arrayLines); $nPreLine++)
-						{
-							if (FindString($arrayLines[$nPreLine],'</pre>') != -1)
-							{
-								$nDeleteEnd = $nPreLine;
-								break;
-							}
-						}
-					}
+					$nDeleteEnd = $nLineToModifyEnd;
 					$strContent = '';
 					foreach ($arrayLines as $nLine => $strLine)
 					{
@@ -893,39 +906,40 @@
 				{
 					$strContent = '';
 					$nLine = 0;
-					$strLineToMove = '';
+					$strTaskBlockToMove = '';
 					foreach ($arrayLines as $strLine)
 					{
-						if ($strLineToMove != '')
+						$bIsLineToModify = ($nLine >= $nLineToModify && $nLine <= $nLineToModifyEnd);
+						if ($strTaskBlockToMove != '' && $bIsLineToModify == false)
 						{
 							if (	StringSection($strLine,0,1) == '='
 								||	StringSection($strLine,0,3) == '---')
 							{
 								$strContent .=
-									$strLineToMove
+									$strTaskBlockToMove
 									."\n"
 									.$strLine
 									."\n";
-								$strLineToMove = '';
+								$strTaskBlockToMove = '';
 								$nLine++;
 								continue;
 							}
 						}
-						if ($nLine != $nLineToModify)
+						if ($bIsLineToModify == false)
 						{
 							$strContent .=
 								$strLine
 								."\n";
 						}
-						else
+						else if ($nLine == $nLineToModify)
 						{
-							$strLineToMove = $strLine;
+							$strTaskBlockToMove = $strTaskBlockToModify;
 						}
 						$nLine++;
 					}
-					if ($strLineToMove != '')
+					if ($strTaskBlockToMove != '')
 					{
-						$strContent .= $strLineToMove;
+						$strContent .= $strTaskBlockToMove;
 					}
 				}
 				else if ($strAction == 'movetonextaction')
@@ -940,7 +954,7 @@
 					foreach ($arrayLines as $strLine)
 					{
 						//$this->Trace($strLine);
-						if ($nLine != $nLineToModify)
+						if ($nLine < $nLineToModify || $nLine > $nLineToModifyEnd)
 						{
 							$strContent .=
 								$strLine
@@ -948,7 +962,7 @@
 							if (FindString($strLine,'=NEXT ACTION=') != -1)
 							{
 								$strContent .=
-									$strLineToModify
+									$strTaskBlockToModify
 									."\n";
 							}
 						}
@@ -967,7 +981,7 @@
 						$strContent .=
 							'=WAITING FOR='
 							."\n"
-							.$strLineToModify
+							.$strTaskBlockToModify
 							."\n";
 					}
 					
@@ -982,7 +996,7 @@
 					foreach ($arrayLines as $strLine)
 					{
 						$this->Trace($strLine);
-						if ($nLine != $nLineToModify)
+						if ($nLine < $nLineToModify || $nLine > $nLineToModifyEnd)
 						{
 							$strContent .=  
 								$strLine
@@ -990,7 +1004,7 @@
 							if (FindString($strLine,'=WAITING FOR=') != -1)
 							{
 								$strContent .=
-									$strLineToModify
+									$strTaskBlockToModify
 									."\n";
 							}
 						}
@@ -1066,15 +1080,15 @@
 					$nLine = 0;
 					foreach ($arrayLines as $strLine)
 					{
-						if ($nLine != $nLineToModify)
+						if ($nLine < $nLineToModify || $nLine > $nLineToModifyEnd)
 						{
 							$strContent .=
 								$strLine
 								."\n";
 						}
-						else
+						else if ($nLine == $nLineToModify)
 						{
-							$strLineToBeMovedToNextActionOtherContext = $strLine;
+							$strTaskBlockToBeMovedToNextActionOtherContext = $strTaskBlockToModify;
 						}
 						$nLine++;
 					}
@@ -1101,7 +1115,7 @@
 			}
 			else
 			{
-				if ($strLineToBeMovedToNextActionOtherContext != '')
+				if ($strTaskBlockToBeMovedToNextActionOtherContext != '')
 				{
 					// TODO: It does not make sense to display a message directly before redirecting.
 					// This should be refactored to avoid the additional round-trip
@@ -1120,7 +1134,7 @@
 					$arrayParams[$strModuleVarNamePrefix.'state'] = 'submitline';
 					$arrayParams[$strModuleVarNamePrefix.'action'] = 'add';
 					//$arrayParams[$strModuleVarNamePrefix.'line_priority_low'] = '0';
-					$arrayParams[$strModuleVarNamePrefix.'text'] = $strLineToBeMovedToNextActionOtherContext; 
+					$arrayParams[$strModuleVarNamePrefix.'text'] = $strTaskBlockToBeMovedToNextActionOtherContext;
 					$arrayParams['content'] = 'tasks'; 
 					$arrayParams['checklisthq_context'] = ''.$nOtherContext; 
 

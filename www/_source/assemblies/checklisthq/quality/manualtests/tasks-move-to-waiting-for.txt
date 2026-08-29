@@ -2,22 +2,22 @@
 # Use test: "login"
 # Navigate to tasks page: /tasks/
 # Select "Edit"
-# Replace the content as follows:
-<pre>
+# Replace the entire content with exactly the following wikitext:
+<syntaxhighlight lang="text">
 =WAITING FOR=
 * already waiting
 =NEXT ACTION=
 * ask supplier for delivery date
 * prepare weekly report
-</pre>
+</syntaxhighlight>
 # Select "Save"
 # For the item "ask supplier for delivery date", select "Move to 'WAITING FOR'"
 # Select "Edit"
-# Validate that the moved item was removed from "Next Action" and added directly after the "Waiting For" heading as follows - if not fail the test
-<pre>
+# Validate that the content exactly matches the following wikitext, with the moved item removed from "Next Action" and added directly after the "Waiting For" heading - if not fail the test
+<syntaxhighlight lang="text">
 =WAITING FOR=
 * ask supplier for delivery date
 * already waiting
 =NEXT ACTION=
 * prepare weekly report
-</pre>
+</syntaxhighlight>

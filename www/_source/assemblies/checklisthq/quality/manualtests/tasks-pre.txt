@@ -2,8 +2,8 @@
 # Use test: "login"
 # Navigate to tasks page: /tasks/
 # Select "Edit"
-# Replace the content as follows:
-
+# Replace the entire content with exactly the following wikitext:
+<syntaxhighlight lang="text">
 =NEXT ACTION=
 * task with some raw text details
 <pre>
@@ -11,6 +11,7 @@ hello world
 /some/url/path?var=true
 </pre>
 * existing task
+</syntaxhighlight>
 # Select "Save"
 # Validate that "hello world" and "/some/url/path?var=true" are each displayed exactly once in the preformatted section - if not fail the test
 # Validate that "existing task" is outside the preformatted section - if not fail the test

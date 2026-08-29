@@ -2,8 +2,8 @@
 # Use test: "login"
 # Navigate to tasks page: /tasks/
 # Select "Edit"
-# Replace the content as follows:
-<pre>
+# Replace the entire content with exactly the following wikitext:
+<syntaxhighlight lang="text">
 =WAITING FOR=
 * waiting line 1
 ----
@@ -12,7 +12,7 @@
 * line 1
 ----
 * line 2
-</pre>
+</syntaxhighlight>
 # Select "Save"
 # Add a new item to the "Waiting For" section as "medium"
 # Validate that the new item is added immediately before the separator in the "Waiting For" section - if not fail the test

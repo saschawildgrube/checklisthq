@@ -2,13 +2,13 @@
 # Use test: "login"
 # Navigate to tasks page: /tasks/
 # Select "Edit"
-# Replace the content as follows:
-<pre>
+# Replace the entire content with exactly the following wikitext:
+<syntaxhighlight lang="text">
 =WAITING FOR=
 * waiting item
 =NEXT ACTION=
 * next item
-</pre>
+</syntaxhighlight>
 # Select "Save"
 # Validate that the "Waiting For" add form offers "low" and "high", but does not offer "medium" - if not fail the test
 # Validate that the "Next Action" add form offers "low" and "high", but does not offer "medium" - if not fail the test
