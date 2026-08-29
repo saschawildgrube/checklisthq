@@ -4447,6 +4447,12 @@
 				print(FileReadBinary($strFilePath));
 				return true;
 			}
+			if (StringSection($strFilePath,-3) == "svg")
+			{
+				header('Content-type: image/svg+xml');
+				print(FileReadBinary($strFilePath));
+				return true;
+			}
 			if (StringSection($strFilePath,-4) == "webp")
 			{
 				header('Content-type: image/webp');

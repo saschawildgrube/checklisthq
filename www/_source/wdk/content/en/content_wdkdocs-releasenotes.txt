@@ -8,15 +8,19 @@ NOT YET Baselined
 * Defects
 ** Fixed calls to non-existent functions in wdk_website.inc.
 * New features
-** No changes
+** CWikiElement now supports the MediaWiki-style &lt;syntaxhighlight&gt; tag with an optional language attribute. The &lt;syntaxhighlighting&gt; alias is also supported.
 * Improvements
+** ParseVersion() now defaults to 3 version components - and hence assumes semantic versions by default.
+** CompareVersions() now supports the $nComponents parameter and defaults to sematic versions with 3 components.
 ** CElement now uses a memory cache for loaded CFG and HTML files to improve rendering performance.
 ** Removed not needed calls to deprecated imagedestroy().
 ** Rendering JavaScript code into the page only in later rendering iterations to improve performance.
+** The Wiki demonstration in the Element Gallery now covers preformatted text, code, syntax highlighting and tables.
 * Discontinued
 ** No changes
 * Quality
 ** Avoiding the user name "test" in automated tests. Using "test.auto" instead.
+** Added automated Wiki element coverage for syntax highlighting, literal Wiki markup and HTML escaping.
 * Refactoring
 ** No changes 
 * Documentation

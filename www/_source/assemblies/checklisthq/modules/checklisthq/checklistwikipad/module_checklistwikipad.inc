@@ -1161,7 +1161,7 @@
 			
 			
 			$strChecklistTitle = $this->WikiDecode($this->GetModuleVar('checklist_title'));
-			$strChecklistContent = $this->WikiDecode($this->GetModuleVar('checklist_content'));
+			$strChecklistContent = StringTrim($this->WikiDecode($this->GetModuleVar('checklist_content')));
 			$strChecklistPrefix = $this->GetModuleVar('checklist_prefix');
 			
 			if ($strChecklistContent == '')
@@ -1188,6 +1188,7 @@
 					$strChecklistContent .= $strLine . "\n";
 				}
 			}
+			$strChecklistContent = StringTrim($strChecklistContent);
 			
 
 			$strTaskList = $this->GetData('wikipad_' . $strChecklistTarget);
@@ -1199,7 +1200,7 @@
 			}
 			else
 			{
-				$strTaskList = $strNextAction . "\n" . $strChecklistContent . "\n" . $strTaskList;
+				$strTaskList = $strNextAction . "\n" . $strChecklistContent . "\n\n" . $strTaskList;
 			}
 
 

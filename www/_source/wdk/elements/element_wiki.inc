@@ -10,6 +10,7 @@
 		protected $m_header;
 		protected $m_list;
 		protected $m_numberedlist;
+		protected $m_sourcecode;
 		
 		private $m_arrayTOC;
 		private $m_arrayChapterIDs;
@@ -26,6 +27,7 @@
 			$this->m_externallink = null;
 			$this->m_list = null;
 			$this->m_numberedlist = null;
+			$this->m_sourcecode = null;
 			$this->m_definitionlist = null;
 			$this->m_table = null;
 			$this->m_arrayTOC = null;
@@ -61,6 +63,8 @@
 			$this->m_arrayTOC = null;
 			$strOutput = $strSource;
 			$strOutput = trim($strOutput);
+			$arraySyntaxHighlightTags = array();
+			$strOutput = $this->ExtractSyntaxHighlightTags($strOutput,$arraySyntaxHighlightTags);
 			
 			if ($strLinkTemplateInternal == "")
 			{ 
@@ -464,8 +468,57 @@
 			{
 				$strOutput = ReplaceString($strOutput,"<!--CHAPTER-->","");	
 			}
+
+			foreach ($arraySyntaxHighlightTags as $strToken => $arraySyntaxHighlightTag)
+			{
+				if ($this->m_sourcecode == null)
+				{
+					$this->IncludeElement("sourcecode");
+					$this->m_sourcecode = new CSourceCodeElement($this->GetWebsite(),"default");
+				}
+				$strSourceCode = HtmlEncode(ArrayGetValue($arraySyntaxHighlightTag,"sourcecode"));
+				$strLanguage = ArrayGetValue($arraySyntaxHighlightTag,"language");
+				$strOutput = ReplaceString(
+					$strOutput,
+					$strToken,
+					$this->m_sourcecode->RenderSourceCode($strSourceCode,$strLanguage));
+			}
 		
 			return $strOutput;
+		}
+
+		private
+		function ExtractSyntaxHighlightTags($strInput,&$arraySyntaxHighlightTags)
+		{
+			$arraySyntaxHighlightTags = array();
+			$strPattern = '/<(syntaxhighlight(?:ing)?)\b([^>]*)>(.*?)<\/\1\s*>/is';
+			$arrayMatches = array();
+			preg_match_all($strPattern,$strInput,$arrayMatches,PREG_SET_ORDER);
+
+			foreach ($arrayMatches as $arrayMatch)
+			{
+				$strLanguage = "";
+				$arrayLanguageMatch = array();
+				if (preg_match('/\blang\s*=\s*(?:"([^"]*)"|\'([^\']*)\'|([^\s"\'>]+))/i',$arrayMatch[2],$arrayLanguageMatch) == 1)
+				{
+					for ($nIndex = 1; $nIndex <= 3; $nIndex++)
+					{
+						if (ArrayGetValue($arrayLanguageMatch,$nIndex) != "")
+						{
+							$strLanguage = ArrayGetValue($arrayLanguageMatch,$nIndex);
+							break;
+						}
+					}
+				}
+
+				$strToken = "SYNTAXHIGHLIGHT".MakeUniqueToken($strInput,array_keys($arraySyntaxHighlightTags));
+				$arraySyntaxHighlightTags[$strToken] = array(
+					"sourcecode" => $arrayMatch[3],
+					"language" => $strLanguage);
+				$strInput = ReplaceStringOnce($strInput,$arrayMatch[0],$strToken);
+			}
+
+			return $strInput;
 		}
 
 		private
