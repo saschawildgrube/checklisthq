@@ -96,23 +96,6 @@ This is some text with html <span style=\"color:red\">formatting</span>.
 				$strExpected);
 
 
-			$strExpected = '<div id="syntax-highlighting"></div>
-<h1>Syntax highlighting</h1>
-<pre class="sourcecode language-php">
-&lt;?php
-if ($value &lt; 2 &amp;&amp; $other &gt; 1) {
-	print(&quot;[[not-a-link]] &#039;&#039;not italic&#039;&#039;&quot;);
-}
-?&gt;
-</pre>
-<pre class="sourcecode language-html">&lt;strong&gt;not HTML&lt;/strong&gt;</pre>
-';
-			$strURL = "http://".GetRootURL()."quality/testwebsite/?content=test-element-wiki5";
-			$this->TestCase_WikiElement(
-				$strURL,
-				$strExpected);
-
-
 			$strExpected = '
 <div id="2x2"></div>
 <h1>2x2</h1>
@@ -310,10 +293,9 @@ Here is some source code:
 			$strURL = "http://".GetRootURL()."quality/testwebsite/?content=test-element-wiki3";
 			$this->TestCase_WikiElement(
 				$strURL,
-				$strExpected);				
+				$strExpected);
 			
 			
-
 			$strExpected = '<div id="title"></div>
 <h1>Title</h1>
 <ul>
@@ -333,6 +315,23 @@ Some text
 ;
 			$strURL = "http://".GetRootURL()."quality/testwebsite/?content=test-element-wiki4";
 			$this->TestCase_WikiElement( 
+				$strURL,
+				$strExpected);
+
+
+			$strExpected = '<div id="syntaxhighlighting"></div>
+<h1>Syntax highlighting</h1>
+<pre class="sourcecode language-php">
+&lt;?php
+if ($value &lt; 2 &amp;&amp; $other &gt; 1) {
+	print(&quot;[[not-a-link]] &#039;&#039;not italic&#039;&#039;&quot;);
+}
+?&gt;
+</pre>
+<pre class="sourcecode language-html">&lt;strong&gt;not HTML&lt;/strong&gt;</pre>
+';
+			$strURL = "http://".GetRootURL()."quality/testwebsite/?content=test-element-wiki5";
+			$this->TestCase_WikiElement(
 				$strURL,
 				$strExpected);
 			
