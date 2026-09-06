@@ -1,0 +1,26 @@
+=Moving the only task between separators removes one separator=
+# Use test: "login"
+# Navigate to tasks page: /tasks/
+# Select "Edit"
+# Replace the entire content with exactly the following wikitext:
+<syntaxhighlight lang="text">
+=WAITING FOR=
+=NEXT ACTION=
+* keep this high-priority next action
+-----
+* move the only task between separators
+-----
+* keep this low-priority next action
+</syntaxhighlight>
+# Select "Save"
+# For the item "move the only task between separators", select "Move to 'WAITING FOR'"
+# Select "Edit"
+# Validate that the content exactly matches the following wikitext, with the moved task at the bottom of "Waiting For" and only one separator remaining in "Next Action" - if not fail the test
+<syntaxhighlight lang="text">
+=WAITING FOR=
+* move the only task between separators
+=NEXT ACTION=
+* keep this high-priority next action
+-----
+* keep this low-priority next action
+</syntaxhighlight>

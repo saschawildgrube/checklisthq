@@ -774,6 +774,51 @@
 			
 			return parent::StateSubmit();
 		}
+
+
+		function CleanUpTaskListContent($strContent)
+		{
+			$strContent = ReplaceString($strContent,"\r\n","\n");
+			$strContent = StringTrim($strContent);
+
+			$arrayLines = StringExplode($strContent,"\n",false);
+			$arrayCleanedLines = array();
+			foreach ($arrayLines as $strLine)
+			{
+				$bIsHeading = (StringSection($strLine,0,1) == '=');
+				if ($bIsHeading == true && ArrayCount($arrayCleanedLines) > 0)
+				{
+					$strPreviousLine = $arrayCleanedLines[ArrayCount($arrayCleanedLines) - 1];
+					if (StringSection($strPreviousLine,0,4) == '----')
+					{
+						array_pop($arrayCleanedLines);
+					}
+				}
+
+				$bIsSeparator = (StringSection($strLine,0,4) == '----');
+				if ($bIsSeparator == true && ArrayCount($arrayCleanedLines) > 0)
+				{
+					$strPreviousLine = $arrayCleanedLines[ArrayCount($arrayCleanedLines) - 1];
+					$bPreviousLineIsHeading = (StringSection($strPreviousLine,0,1) == '=');
+					$bPreviousLineIsSeparator = (StringSection($strPreviousLine,0,4) == '----');
+					if ($bPreviousLineIsHeading == true || $bPreviousLineIsSeparator == true)
+					{
+						continue;
+					}
+				}
+				$arrayCleanedLines[] = $strLine;
+			}
+			if (ArrayCount($arrayCleanedLines) > 0)
+			{
+				$strLastLine = $arrayCleanedLines[ArrayCount($arrayCleanedLines) - 1];
+				if (StringSection($strLastLine,0,4) == '----')
+				{
+					array_pop($arrayCleanedLines);
+				}
+			}
+
+			return implode("\n",$arrayCleanedLines);
+		}
 		
 
 		function StateSubmitLine()
@@ -1104,10 +1149,7 @@
 
 
 			// Clean up content
-			$strContent = ReplaceString($strContent,"\r\n","\n");  
-			$strContent = StringTrim($strContent);
-			$strContent = ReplaceString($strContent,"\n----\n----\n","\n----\n");    
-			$strContent = ReplaceString($strContent,"=\n----\n","=\n");
+			$strContent = $this->CleanUpTaskListContent($strContent);
 
 			if ($this->SetData($this->GetDataName(),$strContent) == false)
 			{

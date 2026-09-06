@@ -1,0 +1,22 @@
+=Moving the last task before a separator removes the separator=
+# Use test: "login"
+# Navigate to tasks page: /tasks/
+# Select "Edit"
+# Replace the entire content with exactly the following wikitext:
+<syntaxhighlight lang="text">
+=WAITING FOR=
+=NEXT ACTION=
+* move the last task before the separator
+-----
+* keep this next action
+</syntaxhighlight>
+# Select "Save"
+# For the item "move the last task before the separator", select "Move to 'WAITING FOR'"
+# Select "Edit"
+# Validate that the content exactly matches the following wikitext, with the moved task at the bottom of "Waiting For" and the separator that would directly follow the "Next Action" heading removed - if not fail the test
+<syntaxhighlight lang="text">
+=WAITING FOR=
+* move the last task before the separator
+=NEXT ACTION=
+* keep this next action
+</syntaxhighlight>
