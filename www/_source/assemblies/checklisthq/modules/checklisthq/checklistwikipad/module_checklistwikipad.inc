@@ -262,11 +262,16 @@
 		}
 	
 	
+		function MaskWikiLiteralSections($strContent)
+		{
+			return preg_replace_callback('/<pre>.*?(?:<\/pre>|$)|<(syntaxhighlight(?:ing)?)\b[^>]*>.*?<\/\1\s*>/s',
+				function ($match) { return preg_replace('/[^\r\n]/',' ',$match[0]); },$strContent);
+		}
+
 		// Byte ranges keep everything outside the selected section unchanged.
 		function GetEditableSections($strContent)
 		{
-			$strScan = preg_replace_callback('/<pre>.*?(?:<\/pre>|$)|<(syntaxhighlight(?:ing)?)\b[^>]*>.*?<\/\1\s*>/s',
-				function ($match) { return preg_replace('/[^\r\n]/',' ',$match[0]); },$strContent);
+			$strScan = $this->MaskWikiLiteralSections($strContent);
 			preg_match_all('/^[ \t]*=(?!=)[^\r\n]*=[ \t]*\r?$/m',$strScan,$matches,PREG_OFFSET_CAPTURE);
 			$sections = array();
 			foreach ($matches[0] as $index => $match)
@@ -295,6 +300,8 @@
 			$strHash = $bSubmitted ? $this->GetModuleVar('sectionhash') : MakeHash($strPage);
 			$strContent = $bSubmitted ? $this->GetModuleVarInsecure('content') :
 				substr($strPage,$sections[(int)$strSection]['start'],$sections[(int)$strSection]['length']);
+			// Retain the draft in this form, not in the whole-page editor's session value.
+			$this->SetModuleVar('content','');
 			$strContent = ReplaceString($strContent,'<code>','<CODE>');
 			$strContent = ReplaceString($strContent,'</code>','</CODE>');
 			$this->m_formDef = new CFormDefinition();
@@ -819,16 +826,18 @@
 			if ($this->GetConfigIsChecklists() == true)
 			{
 				$arrayLines = StringExplode($strContent,"\n",false);
+				$arrayScanLines = StringExplode($this->MaskWikiLiteralSections($strContent),"\n",false);
 				$arrayOutput = array("__TOC__\n");
 				$strChecklistHeader = '';
 				$arrayChecklistContent = array();
-				foreach ($arrayLines as $strLine)
+				foreach ($arrayLines as $nLine => $strLine)
 				{
+					$bIsHeading = (StringSection($arrayScanLines[$nLine],0,1) == '=');
 					if ($strChecklistHeader == '')
 					{
-						if (StringSection($strLine,0,1) != '=')
+						if ($bIsHeading == false)
 						{
-							$arrayOutput[] = $strLine;
+							$arrayOutput[] = $strLine . "\n";
 						}
 						else
 						{
@@ -838,7 +847,7 @@
 					}
 					else // checklist header is set
 					{
-						if (StringSection($strLine,0,1) != '=')
+						if ($bIsHeading == false)
 						{
 							$arrayChecklistContent[] = $strLine . "\n";
 						}
