@@ -1,0 +1,36 @@
+=WikiPad section editing=
+# Use test: "login". Update the hosted website with the changed source before testing. Use disposable content in both Personal and Office contexts.
+# In Notes, use whole-page Edit to save the fixture below. In View, verify a normal-size Edit link appears immediately beside each top-level heading, including both Duplicate headings. Subheadings, the introduction, and the heading inside the preformatted block must have no Edit link. Any table of contents must remain unchanged.
+# Regression: verify the links appear in the final rendered page even though the wiki renderer removes its internal CHAPTER comments. Each link must open its corresponding section.
+# Compare the Edit link with regular paragraph and task text: the font sizes must match on desktop and mobile, including when the heading wraps.
+# Open the first and a later section's Edit link. Verify no stale-section error appears on an unchanged page. In the link HTML, query separators must be encoded once as &amp;, never &amp;amp;; the opened URL must retain the correct section parameter (including section 0).
+# Open Alpha's Edit link. Verify the page reloads with only Alpha's heading and contents, including its subsection and preformatted block, in the editor. Beta and the introduction must not be included.
+# Rename Alpha, change its text, and save. Verify only that section changes; the introduction and all following sections remain intact. Verify the final URL is a read-only view state. Reload twice and confirm no save repeats or resubmission prompt appears.
+# Edit Beta and then each Duplicate section. Verify each editor contains the correct section even when titles repeat. Save changes to the last section and verify the preceding sections remain unchanged.
+# Remove the final newline from a middle section and save. Verify the following heading remains on its own line. Clear a section's entire editor and save. Verify only that section is removed.
+# Make an unsaved section change and use View to cancel. Verify the stored content has not changed. From a section editor, select the whole-page Edit tab and verify it contains the entire page.
+# Where configured, use Save and stay twice. Verify the same section reopens with the saved text and subsequent saves work. Remove its heading and save with Save and stay; verify it returns to View.
+# Open a section editor in tab A, then change the page in tab B. Save tab A. Verify an error appears, tab B's content survives, and tab A's submitted text remains available to copy. Repeat after deleting the section in tab B. Repeated stale saves must never overwrite the current page.
+# Change the section URL parameter to a negative number, text, or an out-of-range number. Verify an error appears and nothing is modified. For a view-only WikiPad, verify no section links appear and direct editsection/submitsection requests cannot modify data.
+# Repeat section editing on Tasks and Projects. Verify task actions and add-task forms appear in View but are absent throughout section edit and whole-page edit, including after a failed save. After saving, verify task actions return and operate on the correct lines.
+# Repeat on Checklists. Verify adding a checklist still uses the correct title and content, without including section-edit links. Verify pages with no top-level headings still support whole-page editing and show no section links.
+# If a storage write fails, verify the error and submitted section text remain visible, without a success redirect.
+
+==Fixture (paste into whole-page Edit)==
+<pre>
+Introduction must stay unchanged.
+=Alpha=
+* Alpha task
+==Alpha details==
+Detail text.
+<pre>
+=Not a section=
+* Literal task
+</pre>
+=Beta=
+* Beta task
+=Duplicate=
+* First duplicate
+=Duplicate=
+* Last duplicate
+</pre>
