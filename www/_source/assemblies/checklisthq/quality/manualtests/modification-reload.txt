@@ -1,0 +1,13 @@
+=Reloading after modifying Checklist HQ content=
+# Use test: "login"
+# Run these checks in both Personal and Office contexts, using disposable test content.
+# After each operation below, wait for the automatic navigation to finish. Verify the final URL uses a read-only state (view, edit, or a visualization), never submit, submitline, or submitchecklist.
+# Reload the page twice, then background and foreground mobile Safari or Chrome. Verify no action repeats and no form-resubmission prompt appears.
+# On Tasks and Projects, cover adding at every available priority, completing a task, moving down, moving to highest priority/next action, and moving to waiting for. Check that neighboring tasks and attached preformatted blocks remain correct.
+# Move a task to the other context. Verify the destination opens, contains the task once, and remains unchanged after reload; the source must no longer contain it.
+# Add a checklist to Tasks, with and without a prefix. Verify reloading the checklist page does not insert it again.
+# Save whole-page edits on Tasks, Projects, Checklists, Links, Notes, Recurring, Header, and Visual. Verify reload does not save again.
+# Where available, use Save and stay. Verify the editor remains open after the automatic navigation and reload.
+# For a stronger stale-save check, save content A in one tab, save content B in a second tab, then reload the first tab. Verify content B survives.
+# Save dashboard settings. Verify the automatic navigation returns to the settings form and reload does not restore older settings changed in another tab.
+# If a wiki write fails, verify the error remains visible instead of being hidden by a success redirect.

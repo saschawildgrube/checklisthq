@@ -34,3 +34,6 @@ find /var/www/vhosts/system/ -type f -name "access*_log" | while read logfile; d
         }
     ' "$logfile"
 done | sort | uniq -c | sort -nr | head -20
+
+echo
+echo

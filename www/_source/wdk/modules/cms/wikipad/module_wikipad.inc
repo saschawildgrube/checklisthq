@@ -228,11 +228,23 @@
 			
 			if ($strSubmitValue == 'stay')
 			{
-				return $this->StateEdit();	
+				$strState = $this->StateEdit();
 			}
-			
-			
-			return $this->StateView();
+			else
+			{
+				$strState = $this->StateView();
+			}
+			$this->RedirectAfterModification($strState);
+			return $strState;
+		}
+
+		function RedirectAfterModification($strState = 'view')
+		{
+			// Reload a read-only request after saving, never the modifying request.
+			$arrayParams = array();
+			$arrayParams[$this->GetModuleVarNameState()] = $strState;
+			$arrayParams[$this->GetModuleVarName('action')] = '';
+			$this->GetWebsite()->Redirect($this->GetWebsite()->MakeURL($arrayParams));
 		}
 		
 		

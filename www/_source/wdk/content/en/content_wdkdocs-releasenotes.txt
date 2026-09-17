@@ -9,7 +9,11 @@ NOT YET Baselined
 ** Fixed calls to non-existent functions in wdk_website.inc.
 * New features
 ** CWikiElement now supports the MediaWiki-style &lt;syntaxhighlight&gt; tag with an optional language attribute. The &lt;syntaxhighlighting&gt; alias is also supported.
+** Added GetPleskVersion(). The system/server status command now returns the installed Plesk version and CServerManagerModule displays it.
+** Added GetVersionInfoOS(). The system/server status command and CServerManagerModule now expose the operating system name and version.
+** CServerManagerModule now compares Plesk versions and highlights servers below the highest detected version.
 * Improvements
+** WikiPd Module now supports the re-direct logic to prevent mobile browsers to offer form resubmission.
 ** ParseVersion() now defaults to 3 version components - and hence assumes semantic versions by default.
 ** CompareVersions() now supports the $nComponents parameter and defaults to sematic versions with 3 components.
 ** CElement now uses a memory cache for loaded CFG and HTML files to improve rendering performance.

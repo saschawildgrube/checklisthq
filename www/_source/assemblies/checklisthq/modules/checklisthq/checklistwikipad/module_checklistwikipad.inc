@@ -760,22 +760,6 @@
 		}
 		
 		
-		function StateSubmit()
-		{	
-			$this->Trace('CChecklistWikiPadModule::StateSubmit');
-			
-			$strModuleVarNamePrefix = $this->GetWebsite()->GetPlugin('checklisthq')->GetContextID();
-			
-			$arrayParams = array(); 
-			$arrayParams[$this->GetModuleVarName('state')] = 'view';
-			$arrayParams[$this->GetModuleVarName('action')] = '';
-			$strUrl = $this->GetWebsite()->MakeURL($arrayParams);
-			$this->GetWebsite()->Redirect($strUrl);
-			
-			return parent::StateSubmit();
-		}
-
-
 		function CleanUpTaskListContent($strContent)
 		{
 			$strContent = ReplaceString($strContent,"\r\n","\n");
@@ -1183,6 +1167,10 @@
 					$strUrl = $this->GetWebsite()->MakeURL($arrayParams);
 					$this->GetWebsite()->Redirect($strUrl);
 				}
+				else
+				{
+					$this->RedirectAfterModification();
+				}
 			}
 			
 			return $this->StateView();
@@ -1246,7 +1234,12 @@
 			}
 
 
-			$this->SetData('wikipad_' . $strChecklistTarget,$strTaskList);
+			if ($this->SetData('wikipad_' . $strChecklistTarget,$strTaskList) == false)
+			{
+				$this->SetErrorMessageCode('WIKIPAD_SET');
+				return $this->StateView();
+			}
+			$this->RedirectAfterModification();
 
 			$this->SetOutputItem('CHECKLIST_ADDED',$strChecklistTitle);
 			$this->SetInfoMessageCode('CHECKLIST_ADDED'); 

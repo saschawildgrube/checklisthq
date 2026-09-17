@@ -2,6 +2,7 @@
 
 	require_once(GetWDKDir()."wdk_module.inc");
 	require_once(GetWDKDir()."wdk_ip.inc");
+	require_once(GetWDKDir()."wdk_version.inc");
 	
 	class CServerManagerModule extends CModule
 	{
@@ -133,11 +134,16 @@
 				"?TID_SERVERMANAGER_LABEL_LOAD_AVERAGE_5MINUTES?",
 				"?TID_SERVERMANAGER_LABEL_LOAD_AVERAGE_15MINUTES?",
 				"?TID_SERVERMANAGER_LABEL_DISK_USED_PERCENT?",
-				"?TID_SERVERMANAGER_LABEL_PLESK_STATUS?"); 
+				"?TID_SERVERMANAGER_LABEL_PLESK_STATUS?",
+				"?TID_SERVERMANAGER_LABEL_PLESK_VERSION?",
+				"?TID_SERVERMANAGER_LABEL_OS_NAME?",
+				"?TID_SERVERMANAGER_LABEL_OS_VERSION?");
 			
 			$this->IncludeElement("format");
 			$formatError = new CFormatElement($this->GetWebsite(),"testfailed");
 			$formatUp = new CFormatElement($this->GetWebsite(),"testpassed");
+			$arrayPleskVersions = array();
+			$strHighestPleskVersion = "";
 			
 			foreach ($arrayServers as $arrayServer)
 			{
@@ -149,6 +155,9 @@
 				$strLoadAvg15 = "";
 				$strDiskUsedPct = "";
 				$strPleskStatus = "";
+				$strPleskVersion = "";
+				$strOSName = "";
+				$strOSVersion = "";
 				if ($strName != "")
 				{
 					$arrayWebservice = ArrayGetValue($arrayServer,"webservice");
@@ -209,6 +218,9 @@
 								$strDiskUsedPct = $formatError->RenderFormat($strDiskUsedPct);
 							}
 							$bPleskActive = $consumer->GetResultValue("PLESK_ACTIVE");
+							$strPleskVersion = $consumer->GetResultValue("PLESK_VERSION");
+							$strOSName = $consumer->GetResultValue("OS_NAME");
+							$strOSVersion = $consumer->GetResultValue("OS_VERSION");
 						}
 						$strPleskLinkLabel = "?TID_ITEM_INACTIVE?";
 						if ($bPleskActive == true)
@@ -228,7 +240,27 @@
 					$strLoadAvg5,
 					$strLoadAvg15,
 					$strDiskUsedPct,
-					$strPleskStatus);
+					$strPleskStatus,
+					$strPleskVersion,
+					$strOSName,
+					$strOSVersion);
+				$arrayPleskVersions[] = $strPleskVersion;
+				if ($strPleskVersion != "" &&
+					($strHighestPleskVersion == "" || CompareVersion($strPleskVersion,$strHighestPleskVersion,4) > 0))
+				{
+					$strHighestPleskVersion = $strPleskVersion;
+				}
+			}
+
+			if ($strHighestPleskVersion != "")
+			{
+				foreach ($arrayPleskVersions as $nServerIndex => $strPleskVersion)
+				{
+					if ($strPleskVersion != "" && CompareVersion($strPleskVersion,$strHighestPleskVersion,4) < 0)
+					{
+						$arrayDashboard[$nServerIndex+1][8] = $formatError->RenderFormat($strPleskVersion);
+					}
+				}
 			}
 			
 			$table = new CTableElement($this->GetWebsite(),"default");

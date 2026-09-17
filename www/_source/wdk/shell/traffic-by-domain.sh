@@ -44,3 +44,6 @@ for domain in /var/www/vhosts/system/*; do
 
     printf "%10d %s\n" "$count" "$domain_name"
 done | sort -nr
+
+echo
+echo
