@@ -14,6 +14,7 @@
 		
 		private $m_arrayTOC;
 		private $m_arrayChapterIDs;
+		private $m_sectionRenderer = null;
 		
 		function __construct(
 			CWebSite $website,
@@ -42,6 +43,21 @@
 		}
 		
 		
+		// Optional decoration of actual wiki boundaries; raw HTML and TOC links are excluded.
+		function SetSectionRenderer($callback)
+		{
+			$this->m_sectionRenderer = $callback;
+		}
+
+		private function RenderSectionBoundary($strHtml,$strType)
+		{
+			if ($this->m_sectionRenderer !== null)
+			{
+				return call_user_func($this->m_sectionRenderer,$strHtml,$strType);
+			}
+			return $strHtml;
+		}
+
 		function RenderTable($arrayTableCells,$arrayTableHeaders)
 		{
 			if ($this->m_table == null)
@@ -313,7 +329,7 @@
 							default:
 								if (StringSection($strLine,0,4) == "----")
 								{
-									$arrayCurrentCell[$nTableLevel] .= "<hr/>\n";
+									$arrayCurrentCell[$nTableLevel] .= $this->RenderSectionBoundary('<hr/>','separator')."\n";
 									$strLine = StringSection($strLine,5);
 								}
 								$strLine = $this->ParseFormats($strLine);
@@ -786,7 +802,8 @@
 							$strHeaderText = $strHeaderTextNumbered;
 						}
 						$strHeaderTextFormats = $this->ParseFormats($strHeaderText);
-						$strHeader .= $this->m_header->RenderHeader($strHeaderTextFormats,$nLevel);
+						$strHeader .= $this->RenderSectionBoundary(
+							$this->m_header->RenderHeader($strHeaderTextFormats,$nLevel),'heading');
 						 
 						if ($navigationtree != null)
 						{

@@ -1,10 +1,10 @@
 =WikiPad section editing=
 # Use test: "login". Update the hosted website with the changed source before testing. Use disposable content in both Personal and Office contexts.
-# In Projects, use whole-page Edit to save the fixture below. In View, verify a normal-size Edit link appears immediately beside each top-level heading, including both Duplicate headings. Subheadings, the introduction, and the heading inside the preformatted block must have no Edit link. Any table of contents must remain unchanged. Notes uses the base WikiPad module and is covered by whole-page editing regression checks.
+# In Projects, use whole-page Edit to save the fixture below. In View, verify a normal-size Edit link appears at the right edge of every heading row (levels 1 through 6) and separator row, including both Duplicate headings. The introduction and boundaries inside literal blocks must have no Edit link. Any table of contents must remain unchanged. Repeat the shared section editor checks on Notes, which uses the base WikiPad module.
 # Regression: verify the links appear in the final rendered page even though the wiki renderer removes its internal CHAPTER comments. Each link must open its corresponding section.
 # Compare the Edit link with regular paragraph and task text: the font sizes must match on desktop and mobile, including when the heading wraps.
 # Open the first and a later section's Edit link. Verify no stale-section error appears on an unchanged page. In the link HTML, query separators must be encoded once as &amp;, never &amp;amp;; the opened URL must retain the correct section parameter (including section 0).
-# Open Alpha's Edit link. Verify the page reloads with only Alpha's heading and contents, including its subsection and preformatted block, in the editor. Beta and the introduction must not be included.
+# Open Alpha's Edit link. Verify the page reloads with only Alpha's heading and contents, up to but excluding Alpha details, in the editor. Each heading or separator begins a separate section ending immediately before the next heading or separator, regardless of heading level. Beta and the introduction must not be included.
 # Rename Alpha, change its text, and save. Verify only that section changes; the introduction and all following sections remain intact. Verify the final URL is a read-only view state. Reload twice and confirm no save repeats or resubmission prompt appears.
 # Edit Beta and then each Duplicate section. Verify each editor contains the correct section even when titles repeat. Save changes to the last section and verify the preceding sections remain unchanged.
 # Remove the final newline from a middle section and save. Verify the following heading remains on its own line. Clear a section's entire editor and save. Verify only that section is removed.
@@ -14,8 +14,10 @@
 # After a rejected stale section save, select the whole-page Edit tab. Verify it contains the complete current stored page, not the rejected section draft. Return to the rejected form using Back: the draft must remain available, and resubmitting it must still be rejected if the page hash differs.
 # Change the section URL parameter to a negative number, text, or an out-of-range number. Verify an error appears and nothing is modified. For a view-only WikiPad, verify no section links appear and direct editsection/submitsection requests cannot modify data.
 # Repeat section editing on Tasks and Projects. Verify task actions and add-task forms appear in View but are absent throughout section edit and whole-page edit, including after a failed save. After saving, verify task actions return and operate on the correct lines.
-# Repeat on Checklists. Verify adding a checklist still uses the correct title and content, without including section-edit links. Verify pages with no top-level headings still support whole-page editing and show no section links.
+# Repeat on Checklists. Verify adding a checklist still uses the correct title and content, without including section-edit links. Verify pages with no headings or separators still support whole-page editing and show no section links. Pages with only subheadings or separators must offer section editing.
 # On Checklists, retain the introductory paragraph before Alpha. Verify Alpha still renders as a heading and every Edit link opens its matching section. The literal heading inside the preformatted block must not create an Add Checklist form or show escaped form markup. Repeat with a syntaxhighlight block containing heading-like text.
+# In Tasks, Projects and Checklists, reload View and immediately edit and save an unchanged section. Generated action links and add forms must not cause a stale-section error; section hashes must represent stored source. Edit the separator sections, including consecutive separators and the last section. Verify the selected source range and unchanged surrounding text.
+# Repeat Save and stay for a subheading and separator. Removing the starting boundary must return to View. Check that task priority insertion and checklist creation still operate correctly after a section save.
 # If a storage write fails, verify the error and submitted section text remain visible, without a success redirect.
 
 ==Fixture (paste into whole-page Edit)==
@@ -25,9 +27,22 @@ Introduction must stay unchanged.
 * Alpha task
 ==Alpha details==
 Detail text.
+===Level three===
+Third level text.
+====Level four====
+Fourth level text.
+=====Level five=====
+Fifth level text.
+======Level six======
+Sixth level text.
+----
+Separator section text.
+----
+----
 <pre>
 =Not a section=
 * Literal task
+----
 </pre>
 =Beta=
 * Beta task

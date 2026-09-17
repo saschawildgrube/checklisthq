@@ -238,10 +238,6 @@
 				{
 					return $this->StateRadialTidyTree();	
 				}				
-				case 'editsection':
-					return $this->StateEditSection();
-				case 'submitsection':
-					return $this->StateSubmitSection();
 				case 'submitline':
 				{
 					return $this->StateSubmitLine();	
@@ -262,127 +258,6 @@
 		}
 	
 	
-		function MaskWikiLiteralSections($strContent)
-		{
-			return preg_replace_callback('/<pre>.*?(?:<\/pre>|$)|<(syntaxhighlight(?:ing)?)\b[^>]*>.*?<\/\1\s*>/s',
-				function ($match) { return preg_replace('/[^\r\n]/',' ',$match[0]); },$strContent);
-		}
-
-		// Byte ranges keep everything outside the selected section unchanged.
-		function GetEditableSections($strContent)
-		{
-			$strScan = $this->MaskWikiLiteralSections($strContent);
-			preg_match_all('/^[ \t]*=(?!=)[^\r\n]*=[ \t]*\r?$/m',$strScan,$matches,PREG_OFFSET_CAPTURE);
-			$sections = array();
-			foreach ($matches[0] as $index => $match)
-			{
-				$start = $match[1];
-				$end = isset($matches[0][$index + 1]) ? $matches[0][$index + 1][1] : strlen($strContent);
-				$sections[] = array('start' => $start,'length' => $end - $start);
-			}
-			return $sections;
-		}
-
-		function StateEditSection($bSubmitted = false)
-		{
-			if ($this->IsViewOnly() || !$this->IsToolVisible('edit'))
-			{
-				return $this->StateView();
-			}
-			$strPage = $this->GetData($this->GetDataName());
-			$strSection = $this->GetModuleVar('section');
-			$sections = $this->GetEditableSections($strPage === false ? '' : $strPage);
-			if (!$bSubmitted && (!ctype_digit((string)$strSection) || !isset($sections[(int)$strSection]) || $strPage === false))
-			{
-				$this->SetErrorMessageCode('SECTION');
-				return $this->StateView();
-			}
-			$strHash = $bSubmitted ? $this->GetModuleVar('sectionhash') : MakeHash($strPage);
-			$strContent = $bSubmitted ? $this->GetModuleVarInsecure('content') :
-				substr($strPage,$sections[(int)$strSection]['start'],$sections[(int)$strSection]['length']);
-			// Retain the draft in this form, not in the whole-page editor's session value.
-			$this->SetModuleVar('content','');
-			$strContent = ReplaceString($strContent,'<code>','<CODE>');
-			$strContent = ReplaceString($strContent,'</code>','</CODE>');
-			$this->m_formDef = new CFormDefinition();
-			$this->m_formDef->SetURL($this->GetWebsite()->GetRootURL(),
-				array($this->GetModuleVarNameState() => 'submitsection'));
-			$this->m_formDef->SetHiddenValue($this->GetModuleVarName('section'),$strSection);
-			$this->m_formDef->SetHiddenValue($this->GetModuleVarName('sectionhash'),$strHash);
-			$nLines = intval($this->GetModuleConfig('lines'));
-			$nColumns = intval($this->GetModuleConfig('columns'));
-			$bStay = $this->GetModuleConfig('showsubmitbuttonsaveandstay');
-			if ($this->GetModuleConfig('showsubmitbuttonontop'))
-			{
-				$this->m_formDef->AddControlButtonSubmit('?TID_WIKIPAD_BUTTON_SAVE?');
-				if ($bStay)
-				{
-					$this->m_formDef->AddControlButtonSubmit('?TID_WIKIPAD_BUTTON_SAVE_AND_STAY?','SUBMIT-STAY','stay');
-				}
-			}
-			$this->m_formDef->AddControlTextArea('CONTENT',$this->GetModuleVarName('content'),'',
-				$strContent,$nColumns > 0 ? $nColumns : 70,$nLines > 0 ? $nLines : 30);
-			$this->m_formDef->AddControlButtonSubmit('?TID_WIKIPAD_BUTTON_SAVE?','SUBMIT-2');
-			if ($bStay)
-			{
-				$this->m_formDef->AddControlButtonSubmit('?TID_WIKIPAD_BUTTON_SAVE_AND_STAY?','SUBMIT-STAY-2','stay');
-			}
-			$form = new CFormElement($this->GetWebsite(),'onecolumn');
-			$this->SetOutputItem('FORM',$form->RenderForm($this->m_formDef,array()));
-			$this->PrepareTabNav('edit');
-			return 'edit';
-		}
-
-		function StateSubmitSection()
-		{
-			if ($this->IsViewOnly() || !$this->IsToolVisible('edit'))
-			{
-				return $this->StateView();
-			}
-			$strPage = $this->GetData($this->GetDataName());
-			if ($strPage === false)
-			{
-				$this->SetErrorMessageCode('WIKIPAD_GET');
-				return $this->StateEditSection(true);
-			}
-			$strSection = $this->GetModuleVar('section');
-			$sections = $this->GetEditableSections($strPage);
-			if (!ctype_digit((string)$strSection) || !isset($sections[(int)$strSection])
-				|| $this->GetModuleVar('sectionhash') !== MakeHash($strPage))
-			{
-				$this->SetErrorMessageCode('SECTION');
-				return $this->StateEditSection(true);
-			}
-			$section = $sections[(int)$strSection];
-			$strContent = $this->GetModuleVarInsecure('content');
-			$strContent = ReplaceString($strContent,'<CODE>','<code>');
-			$strContent = ReplaceString($strContent,'</CODE>','</code>');
-			$strContent = ReplaceString($strContent,u("—"),'--');
-			$strSuffix = substr($strPage,$section['start'] + $section['length']);
-			if ($strSuffix !== '' && $strContent !== '' && substr($strContent,-1) !== "\n")
-			{
-				$strContent .= "\n";
-			}
-			$strNewPage = substr($strPage,0,$section['start']).$strContent.$strSuffix;
-			if (!$this->SetData($this->GetDataName(),$strNewPage))
-			{
-				$this->SetErrorMessageCode('WIKIPAD_SET');
-				return $this->StateEditSection(true);
-			}
-			// A removed heading has no section editor to stay in.
-			$bStay = $this->GetVar('submit') == 'stay'
-				&& preg_match('/\A[ \t]*=(?!=)[^\r\n]*=[ \t]*(?:\r?\n|$)/',$strContent);
-			$arrayParams = array(
-				$this->GetModuleVarNameState() => $bStay ? 'editsection' : 'view',
-				$this->GetModuleVarName('section') => $bStay ? $strSection : '',
-				$this->GetModuleVarName('sectionhash') => '',
-				$this->GetModuleVarName('content') => '',
-				$this->GetModuleVarName('action') => '');
-			$this->SetModuleVar('content','');
-			$this->GetWebsite()->Redirect($this->GetWebsite()->MakeURL($arrayParams));
-			return $bStay ? $this->StateEditSection() : $this->StateView();
-		}
-
 		function WikiEncode($strWiki)
 		{
 			$strEncoded = StringTrim($strWiki);
@@ -663,6 +538,8 @@
 				return parent::StateView();
 			}
 
+			$strSourceContent = $strContent;
+
 			if ($this->GetConfigIsTaskList() == true)
 			{
 				$this->GetWebsite()->MaintainScrollPosition();
@@ -879,35 +756,15 @@
 			}
 
 			$wiki = new CWikiElement($this->GetWebSite(),'default');
+			$this->ConfigureWikiSectionEditing($wiki,$strSourceContent);
 			$this->SetOutputItem(
 				'WIKI',
-				$this->AddSectionEditLinks($wiki->RenderWiki($strContent)));
+				$wiki->RenderWiki($strContent));
 					
 			return 'view';
 		}
 		
 		
-		function AddSectionEditLinks($strHtml)
-		{
-			if ($this->IsViewOnly() || !$this->IsToolVisible('edit'))
-			{
-				return $strHtml;
-			}
-			$nSection = 0;
-			// RenderWiki removes its CHAPTER comments before returning the HTML.
-			return preg_replace_callback('/(<div id="[^"]*"><\/div>\s*)(<h1\b[^>]*>.*?<\/h1>)/is',
-				function ($match) use (&$nSection)
-				{
-					$strURL = $this->GetWebsite()->MakeURL(array(
-						$this->GetModuleVarNameState() => 'editsection',
-						$this->GetModuleVarName('section') => (string)$nSection++),false);
-					// Keep the link outside h1 so it inherits the regular content font size.
-					return $match[1].'<div style="display: flex; align-items: baseline; flex-wrap: wrap; column-gap: 0.4em;">'.
-						$match[2].' <a style="font-size: inherit; font-weight: normal;" href="'.
-						HtmlEncode($strURL).'">?TID_WIKIPAD_TAB_EDIT?</a></div>';
-				},$strHtml);
-		}
-
 		function CleanUpTaskListContent($strContent)
 		{
 			$strContent = ReplaceString($strContent,"\r\n","\n");

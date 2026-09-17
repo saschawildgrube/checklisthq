@@ -52,6 +52,10 @@
 				{
 					return $this->StateEdit();	
 				}
+				case 'editsection':
+					return $this->StateEditSection();
+				case 'submitsection':
+					return $this->StateSubmitSection();
 				case 'view':
 				default:	
 				{
@@ -128,6 +132,7 @@
 			}
 
 			$wiki = new CWikiElement($this->GetWebSite(),'default');
+			$this->ConfigureWikiSectionEditing($wiki,$strContent);
 			$this->SetOutputItem(
 				'WIKI',
 				$wiki->RenderWiki(
@@ -137,15 +142,33 @@
 		}
 		
 		
+		// Hash stored source before adding view-only controls.
+		function ConfigureWikiSectionEditing($wiki,$strContent)
+		{
+			if (!$this->IsViewOnly() && $this->IsToolVisible('edit'))
+			{
+				$nSection = 0;
+				$strHash = MakeHash($strContent);
+				$wiki->SetSectionRenderer(function ($strHtml,$strType) use (&$nSection,$strHash)
+				{
+					$strURL = $this->GetWebsite()->MakeURL(array(
+						$this->GetModuleVarNameState() => 'editsection',
+						$this->GetModuleVarName('section') => (string)$nSection++,
+						$this->GetModuleVarName('sectionhash') => $strHash),false);
+					if ($strType == 'separator')
+					{
+						$strHtml = '<div style="flex: 1;">'.$strHtml.'</div>';
+					}
+					return '<div class="wikipad-section" style="display: flex; align-items: baseline; flex-wrap: wrap; column-gap: 0.4em;">'.
+						$strHtml.' <a style="margin-left: auto; font-size: inherit; font-weight: normal;" href="'.
+						HtmlEncode($strURL).'">?TID_WIKIPAD_TAB_EDIT?</a></div>';
+				});
+			}
+		}
+
 		function StateEdit()
 		{
 			$this->Trace('StateEdit');
-
-			$this->m_formDef = new CFormDefinition();
-			
-			$arrayParams = array();
-			$arrayParams[$this->GetModuleVarNameState()] = 'submit';
-			$this->m_formDef->SetURL($this->GetWebsite()->GetRootURL(),$arrayParams);
 
 			$strContent = $this->GetModuleVarInsecure('content');
 			if ($strContent == '')
@@ -157,6 +180,14 @@
 				}
 			}
 
+			return $this->RenderEditForm($strContent);
+		}
+
+		function RenderEditForm($strContent,$strSubmitState = 'submit',$arrayParams = array())
+		{
+			$this->m_formDef = new CFormDefinition();
+			$arrayParams[$this->GetModuleVarNameState()] = $strSubmitState;
+			$this->m_formDef->SetURL($this->GetWebsite()->GetRootURL(),$arrayParams);
 			$nLines = intval($this->GetModuleConfig('lines'));
 			if ($nLines == 0)
 			{
@@ -200,6 +231,133 @@
 			$this->PrepareTabNav('edit');
 	
 			return 'edit';
+		}
+
+		function MaskWikiLiteralSections($strContent)
+		{
+			$mask = function ($match) { return preg_replace('/[^\r\n]/',' ',$match[0]); };
+			// The renderer extracts syntax-highlight blocks before processing pre blocks.
+			$strContent = preg_replace_callback('/<(syntaxhighlight(?:ing)?)\b[^>]*>.*?<\/\1\s*>/is',$mask,$strContent);
+			return preg_replace_callback('/<pre>.*?(?:<\/pre>|$)/s',$mask,$strContent);
+		}
+
+		function GetSectionBoundaryType($strLine)
+		{
+			$strLine = trim($strLine);
+			if (substr($strLine,0,4) == '----')
+			{
+				return 'separator';
+			}
+			// ParseHeaders accepts the highest matching level, capped at six.
+			if (substr($strLine,0,1) == '=' && substr($strLine,-1) == '=')
+			{
+				return 'heading';
+			}
+			return '';
+		}
+
+		// Each boundary starts an independent section, ending at the next boundary.
+		function GetEditableSections($strContent)
+		{
+			$sections = array();
+			$nOffset = 0;
+			foreach (explode("\n",$this->MaskWikiLiteralSections($strContent)) as $strLine)
+			{
+				$strType = $this->GetSectionBoundaryType($strLine);
+				if ($strType != '')
+				{
+					$nPrevious = count($sections) - 1;
+					if ($nPrevious >= 0)
+					{
+						$sections[$nPrevious]['length'] = $nOffset - $sections[$nPrevious]['start'];
+					}
+					$sections[] = array('start' => $nOffset,'length' => strlen($strContent) - $nOffset,'type' => $strType);
+				}
+				$nOffset += strlen($strLine) + 1;
+			}
+			return $sections;
+		}
+
+		function StateEditSection($bSubmitted = false)
+		{
+			if ($this->IsViewOnly() || !$this->IsToolVisible('edit'))
+			{
+				return $this->StateView();
+			}
+			$strPage = $this->GetData($this->GetDataName());
+			$strSection = $this->GetModuleVar('section');
+			$sections = $this->GetEditableSections($strPage === false ? '' : $strPage);
+			$strRequestedHash = $this->GetModuleVar('sectionhash');
+			if (!$bSubmitted && (!ctype_digit((string)$strSection) || !isset($sections[(int)$strSection])
+				|| $strPage === false || ($this->IsModuleParam('sectionhash') && $strRequestedHash != ''
+					&& $strRequestedHash !== MakeHash($strPage))))
+			{
+				$this->SetErrorMessageCode('SECTION');
+				return $this->StateView();
+			}
+			$strHash = $bSubmitted ? $strRequestedHash : MakeHash($strPage);
+			$strContent = $bSubmitted ? $this->GetModuleVarInsecure('content') :
+				substr($strPage,$sections[(int)$strSection]['start'],$sections[(int)$strSection]['length']);
+			// Keep a rejected draft in its form without leaking it to whole-page editing.
+			$this->SetModuleVar('content','');
+			return $this->RenderEditForm($strContent,'submitsection',array(
+				$this->GetModuleVarName('section') => HtmlEncode($strSection),
+				$this->GetModuleVarName('sectionhash') => HtmlEncode($strHash)));
+		}
+
+		function StateSubmitSection()
+		{
+			if ($this->IsViewOnly() || !$this->IsToolVisible('edit'))
+			{
+				return $this->StateView();
+			}
+			$strPage = $this->GetData($this->GetDataName());
+			if ($strPage === false)
+			{
+				$this->SetErrorMessageCode('WIKIPAD_GET');
+				return $this->StateEditSection(true);
+			}
+			$strSection = $this->GetModuleVar('section');
+			$sections = $this->GetEditableSections($strPage);
+			if (!$this->IsModuleParam('section') || !$this->IsModuleParam('sectionhash') || !$this->IsModuleParam('content')
+				|| !ctype_digit((string)$strSection) || !isset($sections[(int)$strSection])
+				|| $this->GetModuleVar('sectionhash') !== MakeHash($strPage))
+			{
+				$this->SetErrorMessageCode('SECTION');
+				return $this->StateEditSection(true);
+			}
+			$section = $sections[(int)$strSection];
+			$strContent = $this->GetModuleVarInsecure('content');
+			$strContent = ReplaceString($strContent,'<CODE>','<code>');
+			$strContent = ReplaceString($strContent,'</CODE>','</code>');
+			$strContent = ReplaceString($strContent,u("—"),'--');
+			$strSuffix = substr($strPage,$section['start'] + $section['length']);
+			if ($strSuffix !== '' && $strContent !== '' && substr($strContent,-1) !== "\n")
+			{
+				$strContent .= "\n";
+			}
+			$strNewPage = substr($strPage,0,$section['start']).$strContent.$strSuffix;
+			if (!$this->SetData($this->GetDataName(),$strNewPage))
+			{
+				$this->SetErrorMessageCode('WIKIPAD_SET');
+				return $this->StateEditSection(true);
+			}
+			// Stay only if the edited content still starts with a real boundary.
+			$newSections = $this->GetEditableSections($strNewPage);
+			$bStay = $this->GetVar('submit') == 'stay' && $strContent !== ''
+				&& isset($newSections[(int)$strSection])
+				&& $newSections[(int)$strSection]['start'] == $section['start']
+				&& $this->GetSectionBoundaryType(strtok($this->MaskWikiLiteralSections($strContent),"\n")) != '';
+			$arrayParams = array(
+				$this->GetModuleVarNameState() => $bStay ? 'editsection' : 'view',
+				$this->GetModuleVarName('section') => $bStay ? $strSection : '',
+				$this->GetModuleVarName('sectionhash') => '',
+				$this->GetModuleVarName('content') => '',
+				$this->GetModuleVarName('action') => '');
+			$this->SetModuleVar('content','');
+			$this->SetModuleVar('sectionhash','');
+			$this->GetWebsite()->Redirect($this->GetWebsite()->MakeURL($arrayParams));
+			return $bStay ? $this->StateEditSection() : $this->StateView();
 		}
 
 		function StateSubmit()
