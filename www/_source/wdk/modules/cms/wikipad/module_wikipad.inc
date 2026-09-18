@@ -119,7 +119,7 @@
 		function StateView()
 		{
 			$this->Trace('StateView');
-			
+
 			$this->PrepareTabNav('view');
 
 
@@ -137,31 +137,37 @@
 				'WIKI',
 				$wiki->RenderWiki(
 					$strContent));
-	
+
 			return 'view';
 		}
-		
-		
-		// Hash stored source before adding view-only controls.
+
+
 		function ConfigureWikiSectionEditing($wiki,$strContent)
 		{
 			if (!$this->IsViewOnly() && $this->IsToolVisible('edit'))
 			{
 				$nSection = 0;
-				$strHash = MakeHash($strContent);
-				$wiki->SetSectionRenderer(function ($strHtml,$strType) use (&$nSection,$strHash)
+				$strURLTemplate = null;
+				$strSectionToken = uniqid('wdkwikipadsection',false);
+				$wiki->SetSectionRenderer(function ($strHtml,$strType) use (&$nSection,&$strURLTemplate,$strSectionToken,$strContent)
 				{
-					$strURL = $this->GetWebsite()->MakeURL(array(
-						$this->GetModuleVarNameState() => 'editsection',
-						$this->GetModuleVarName('section') => (string)$nSection++,
-						$this->GetModuleVarName('sectionhash') => $strHash),false);
+					if ($strURLTemplate === null)
+					{
+						// Routing/session preparation and HTML encoding are identical for every section.
+						// Build lazily so pages without boundaries do not need a URL or content hash.
+						$strURLTemplate = HtmlEncode($this->GetWebsite()->MakeURL(array(
+							$this->GetModuleVarNameState() => 'editsection',
+							$this->GetModuleVarName('section') => $strSectionToken,
+							$this->GetModuleVarName('sectionhash') => MakeHash($strContent)),false));
+					}
+					$strURL = str_replace($strSectionToken,(string)$nSection++,$strURLTemplate);
 					if ($strType == 'separator')
 					{
 						$strHtml = '<div style="flex: 1;">'.$strHtml.'</div>';
 					}
 					return '<div class="wikipad-section" style="display: flex; align-items: baseline; flex-wrap: wrap; column-gap: 0.4em;">'.
 						$strHtml.' <a style="margin-left: auto; font-size: inherit; font-weight: normal;" href="'.
-						HtmlEncode($strURL).'">?TID_WIKIPAD_TAB_EDIT?</a></div>';
+						$strURL.'">?TID_WIKIPAD_TAB_EDIT?</a></div>';
 				});
 			}
 		}
@@ -356,7 +362,10 @@
 				$this->GetModuleVarName('action') => '');
 			$this->SetModuleVar('content','');
 			$this->SetModuleVar('sectionhash','');
-			$this->GetWebsite()->Redirect($this->GetWebsite()->MakeURL($arrayParams));
+			if ($this->RedirectAfterModification($bStay ? 'editsection' : 'view',$arrayParams))
+			{
+				return false;
+			}
 			return $bStay ? $this->StateEditSection() : $this->StateView();
 		}
 
@@ -384,25 +393,29 @@
 			
 			$strSubmitValue = $this->GetVar('submit');
 			
-			if ($strSubmitValue == 'stay')
+			if ($this->RedirectAfterModification($strSubmitValue == 'stay' ? 'edit' : 'view'))
 			{
-				$strState = $this->StateEdit();
+				return false;
 			}
-			else
-			{
-				$strState = $this->StateView();
-			}
-			$this->RedirectAfterModification($strState);
-			return $strState;
+			return $strSubmitValue == 'stay' ? $this->StateEdit() : $this->StateView();
 		}
 
-		function RedirectAfterModification($strState = 'view')
+		function GetViewStateAfterModification()
 		{
-			// Reload a read-only request after saving, never the modifying request.
-			$arrayParams = array();
-			$arrayParams[$this->GetModuleVarNameState()] = $strState;
+			return 'view';
+		}
+
+		function RedirectAfterModification($strState = 'view',$arrayParams = array())
+		{
+			if (!$this->GetWebsite()->IsMobileClient())
+			{
+				return false;
+			}
+			// Resolve the destination without loading or rendering the wiki.
+			$arrayParams[$this->GetModuleVarNameState()] = $strState == 'view' ? $this->GetViewStateAfterModification() : $strState;
 			$arrayParams[$this->GetModuleVarName('action')] = '';
 			$this->GetWebsite()->Redirect($this->GetWebsite()->MakeURL($arrayParams));
+			return true;
 		}
 		
 		

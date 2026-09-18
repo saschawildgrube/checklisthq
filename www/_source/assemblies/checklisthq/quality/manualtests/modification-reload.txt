@@ -1,6 +1,6 @@
 =Reloading after modifying Checklist HQ content=
 # Use test: "login"
-# Run these checks in both Personal and Office contexts, using disposable test content.
+# Run the mobile checks below in both Personal and Office contexts, using disposable test content and a mobile browser user agent.
 # After each operation below, wait for the automatic navigation to finish. Verify the final URL uses a read-only state (view, edit, or a visualization), never submit, submitline, or submitchecklist.
 # Reload the page twice, then background and foreground mobile Safari or Chrome. Verify no action repeats and no form-resubmission prompt appears.
 # On Tasks and Projects, cover adding at every available priority, completing a task, moving down, moving to highest priority/next action, and moving to waiting for. Check that neighboring tasks and attached preformatted blocks remain correct.
@@ -11,3 +11,8 @@
 # For a stronger stale-save check, save content A in one tab, save content B in a second tab, then reload the first tab. Verify content B survives.
 # Save dashboard settings. Verify the automatic navigation returns to the settings form and reload does not restore older settings changed in another tab.
 # If a wiki write fails, verify the error remains visible instead of being hidden by a success redirect.
+# Include section Save and Save and stay. Verify the section editor reopens only for Save and stay and invalid edits keep their error display.
+# Inspect the modifying response before following its refresh: it must contain the refresh header but no rendered wiki task list, editor, or visualization. Only the destination request should render these.
+# Repeat successful saves and task actions with desktop Safari, Chrome, and Firefox user agents. Verify the response renders the result directly with no automatic refresh. Do not expect desktop resubmissions to be prevented by this mobile-only mechanism.
+# On desktop, cross-context moves still require the transfer navigation, but must not render the source task list before that navigation or refresh again after the destination insertion.
+# Cover iPhone, iPad, Android phone/tablet, and Sec-CH-UA-Mobile: ?1. Desktop user agents without mobile identifiers should not trigger the protective refresh. Devices using an indistinguishable desktop user agent cannot be classified by server-side detection.

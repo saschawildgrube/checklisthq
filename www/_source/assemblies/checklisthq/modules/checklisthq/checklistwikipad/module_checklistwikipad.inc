@@ -500,32 +500,44 @@
 			return $arrayPositions;
 		}
 
-		function StateView()
+		function GetViewStateAfterModification()
 		{
 			$strPreviousState = $this->GetPreviousState();
 			$this->Trace('Previous state: '.$strPreviousState);
 			if ($this->GetConfigIsZoomableSunburst() == true && $strPreviousState == 'zoomablesunburst')
 			{
-				return $this->StateZoomableSunburst();	
+				return 'zoomablesunburst';
 			}
 			if ($this->GetConfigIsNetwork() == true && $strPreviousState == 'network')
 			{
-				return $this->StateNetwork();
+				return 'network';
 			}
 			
 			if ($this->GetConfigIsHideView() == true)
 			{
 				if ($this->GetConfigIsZoomableSunburst() == true)
 				{
-					return $this->StateZoomableSunburst();	
+					return 'zoomablesunburst';
 				}
 				if ($this->GetConfigIsNetwork() == true)
 				{
-					return $this->StateNetwork();	
+					return 'network';
 				}
-				return $this->StateEdit();
+				return 'edit';
 			}
 			
+			return 'view';
+		}
+
+		function StateView()
+		{
+			switch ($this->GetViewStateAfterModification())
+			{
+				case 'zoomablesunburst': return $this->StateZoomableSunburst();
+				case 'network': return $this->StateNetwork();
+				case 'edit': return $this->StateEdit();
+			}
+
 			$this->PrepareTabNav('view');
 
 
@@ -1171,10 +1183,11 @@
 
 					$strUrl = $this->GetWebsite()->MakeURL($arrayParams);
 					$this->GetWebsite()->Redirect($strUrl);
+					return false;
 				}
-				else
+				else if ($this->RedirectAfterModification())
 				{
-					$this->RedirectAfterModification();
+					return false;
 				}
 			}
 			
@@ -1244,7 +1257,10 @@
 				$this->SetErrorMessageCode('WIKIPAD_SET');
 				return $this->StateView();
 			}
-			$this->RedirectAfterModification();
+			if ($this->RedirectAfterModification())
+			{
+				return false;
+			}
 
 			$this->SetOutputItem('CHECKLIST_ADDED',$strChecklistTitle);
 			$this->SetInfoMessageCode('CHECKLIST_ADDED'); 

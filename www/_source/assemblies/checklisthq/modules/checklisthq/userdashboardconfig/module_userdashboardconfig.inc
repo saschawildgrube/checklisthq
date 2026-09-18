@@ -144,8 +144,12 @@
 			$this->SetOutputItem('MESSAGE',$message->RenderMessage('?TID_USERDASHBOARDCONFIG_INFO_SUCCESS?'));
 			
 			$this->SetModuleVar('mode','');
-			$arrayParams = array($this->GetModuleVarNameState() => 'form');
-			$this->GetWebsite()->Redirect($this->GetWebsite()->MakeURL($arrayParams));
+			if ($this->GetWebsite()->IsMobileClient())
+			{
+				$arrayParams = array($this->GetModuleVarNameState() => 'form');
+				$this->GetWebsite()->Redirect($this->GetWebsite()->MakeURL($arrayParams));
+				return false;
+			}
 			
 			return $this->StateForm();
 		}

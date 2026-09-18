@@ -23,9 +23,22 @@ class JsonEditorField extends React.Component
 				'aria-invalid': !!this.state.error, title: this.state.error,
 				onFocus: () => { this.focused = true; },
 				onChange: event => { this.setState({ draft: event.target.value, error: '' }); if (this.props.onInput) this.props.onInput(event.target.value); },
-				onBlur: () => { this.focused = false; this.commit(); },
+				onBlur: () => { this.focused = false; if (!this.skipBlurCommit) this.commit(); this.skipBlurCommit = false; },
 				onKeyDown: event => {
-					if (event.key === 'Enter') { event.preventDefault(); this.commit(); }
+					if (event.key === 'Tab' && !event.shiftKey && this.props.onTab)
+					{
+						event.preventDefault();
+						this.skipBlurCommit = true;
+						const error = this.props.onTab(this.state.draft);
+						if (error) { this.skipBlurCommit = false; this.setState({ error: error }); }
+						return;
+					}
+					if (event.key === 'Enter')
+					{
+						event.preventDefault();
+						if (this.props.onEnter) { this.skipBlurCommit = true; this.props.onEnter(this.state.draft); }
+						else this.commit();
+					}
 					if (event.key === 'Escape') this.setState({ draft: this.props.value, error: '' });
 				}
 			}),
@@ -37,18 +50,20 @@ class JsonEditorField extends React.Component
 class JsonEditorNewRow extends React.Component
 {
 	constructor(props) { super(props); this.state = { name: '', value: '', error: '', type: null }; }
-	commit()
+	commit(focusNext = false)
 	{
 		if (!this.state.name && !this.state.value && this.state.type === null) return;
 		const error = this.props.onAdd(this.state.name, this.state.value, this.state.type);
 		if (error) this.setState({ error: error });
-		else this.setState({ name: '', value: '', error: '', type: null });
+		else this.setState({ name: '', value: '', error: '', type: null }, () => {
+			if (focusNext && this.firstInput) this.firstInput.focus();
+		});
 	}
 	render()
 	{
-		return e('div', { className: 'jsoneditor-row jsoneditor-new-row', onBlur: event => { if (!event.currentTarget.contains(event.relatedTarget)) this.commit(); }, onKeyDown: event => { if (event.key === 'Enter') { event.preventDefault(); this.commit(); } } },
-			this.props.array ? e('span', {}, 'New item') : e('input', { className: 'jsoneditor-key', placeholder: 'New key', 'aria-label': 'New property name', value: this.state.name, onChange: event => this.setState({ name: event.target.value, error: '' }) }),
-			e('input', { className: 'jsoneditor-value', placeholder: 'Value', 'aria-label': 'New value', value: this.state.value, onChange: event => this.setState({ value: event.target.value, error: '', type: null }) }),
+		return e('div', { className: 'jsoneditor-row jsoneditor-new-row', onBlur: event => { if (!event.currentTarget.contains(event.relatedTarget)) this.commit(); }, onKeyDown: event => { if (event.key === 'Enter') { event.preventDefault(); this.commit(true); } } },
+			this.props.array ? e('span', {}, 'New item') : e('input', { ref: input => { this.firstInput = input; }, className: 'jsoneditor-key', placeholder: 'New key', 'aria-label': 'New property name', value: this.state.name, onChange: event => this.setState({ name: event.target.value, error: '' }) }),
+			e('input', { ref: this.props.array ? input => { this.firstInput = input; } : undefined, className: 'jsoneditor-value', placeholder: 'Value', 'aria-label': 'New value', value: this.state.value, onChange: event => this.setState({ value: event.target.value, error: '', type: null }) }),
 			e('select', { 'aria-label': 'New value type', value: this.state.type || this.props.detectType(this.state.value), onChange: event => {
 				const type = event.target.value, defaults = { string: this.state.value, number: '0', boolean: 'false', null: 'null', object: '{}', array: '[]' };
 				this.setState({ type: type, value: defaults[type] });
@@ -62,7 +77,7 @@ class JsonEditor extends WDKReactComponent
 	constructor(props)
 	{
 		super(props);
-		this.state = { raw: '{}', data: {}, error: '', rawVisible: true, treeVisible: true, collapsed: {}, revision: 0 };
+		this.state = { raw: '{}', data: {}, error: '', rawVisible: true, treeVisible: true, collapsed: {}, revision: 0, split: 50, query: '', searchIndex: -1, activePath: [], line: 1, column: 1 };
 	}
 	type(value) { return value === null ? 'null' : Array.isArray(value) ? 'array' : typeof value; }
 	// Preserve every character, including incomplete JSON, for the highlighting layer.
@@ -93,6 +108,7 @@ class JsonEditor extends WDKReactComponent
 		{
 			this.rawHighlight.scrollTop = this.rawInput.scrollTop;
 			this.rawHighlight.scrollLeft = this.rawInput.scrollLeft;
+			if (this.lineNumbers) this.lineNumbers.scrollTop = this.rawInput.scrollTop;
 		}
 	}
 	componentDidUpdate() { this.syncRawScroll(); }
@@ -233,23 +249,33 @@ class JsonEditor extends WDKReactComponent
 		}
 		this.setState({ data: data, raw: JSON.stringify(data, null, 2) });
 	}
-	rename(path, name)
+	rename(path, name, focusValue = false)
 	{
 		const oldName = path[path.length - 1];
-		if (name === oldName) return '';
+		if (name === oldName) { if (focusValue) this.focusRow(path, true); return ''; }
 		const parentPath = path.slice(0, -1);
 		const parent = this.get(this.state.data, parentPath);
 		if (Object.prototype.hasOwnProperty.call(parent, name)) return 'This property already exists.';
 		const replacement = {};
 		Object.keys(parent).forEach(key => this.put(replacement, key === oldName ? name : key, parent[key]));
 		this.change(parentPath, replacement);
+		if (focusValue) this.setState({}, () => this.focusRow(parentPath.concat(name), true));
 		return '';
 	}
 	add(path, after = null, name = null, initial = '', focus = false)
 	{
 		if (this.state.error) return 'Correct the raw JSON before adding a property.';
 		const value = JSON.parse(JSON.stringify(this.get(this.state.data, path)));
-		if (Array.isArray(value)) value.splice(after === null ? 0 : after + 1, 0, initial);
+		if (Array.isArray(value))
+		{
+			// Plus-created items use the first object's keys, without copying its data.
+			if (name === null && initial === '' && this.type(value[0]) === 'object')
+			{
+				initial = {};
+				Object.keys(value[0]).forEach(key => this.put(initial, key, ''));
+			}
+			value.splice(after === null ? 0 : after + 1, 0, initial);
+		}
 		else
 		{
 			if (name === null) { name = 'newKey'; let suffix = 1; while (Object.prototype.hasOwnProperty.call(value, name)) name = 'newKey' + suffix++; }
@@ -265,15 +291,89 @@ class JsonEditor extends WDKReactComponent
 		this.setState(state => ({ collapsed: Object.assign({}, state.collapsed, { [JSON.stringify(path)]: false }) }), () => { if (focus) this.focusRow(path.concat(after === null ? 0 : after + 1)); });
 		return '';
 	}
-	focusRow(path)
+	focusRow(path, value = false)
 	{
-		const input = this.rowInputs && this.rowInputs[JSON.stringify(path)];
+		const input = this.rowInputs && this.rowInputs[JSON.stringify(path) + (value ? ':value' : '')];
 		if (input) { input.focus(); input.select(); }
+	}
+	enterValue(path, draft)
+	{
+		this.change(path, this.infer(draft));
+		this.setState({}, () => {
+			if (!path.length) return;
+			const parentPath = path.slice(0, -1), parent = this.get(this.state.data, parentPath);
+			const keys = Object.keys(parent), index = keys.indexOf(String(path[path.length - 1]));
+			if (index + 1 < keys.length)
+			{
+				const next = keys[index + 1];
+				this.focusRow(parentPath.concat(Array.isArray(parent) ? Number(next) : next));
+			}
+			else
+			{
+				const row = this.draftRows && this.draftRows[JSON.stringify(parentPath)];
+				if (row && row.firstInput) row.firstInput.focus();
+			}
+		});
 	}
 	rememberInput(id, input)
 	{
 		if (!this.rowInputs) this.rowInputs = {};
 		this.rowInputs[id] = input;
+	}
+	setBranches(closed)
+	{
+		const collapsed = {};
+		const visit = (value, path) => {
+			if (value === null || typeof value !== 'object') return;
+			collapsed[JSON.stringify(path)] = closed;
+			Object.keys(value).forEach(key => visit(value[key], path.concat(Array.isArray(value) ? Number(key) : key)));
+		};
+		visit(this.state.data, []);
+		this.setState({ collapsed: collapsed });
+	}
+	findNext(backward = false)
+	{
+		const query = this.state.query.toLowerCase();
+		if (!query) return;
+		const matches = [];
+		const visit = (value, path) => {
+			const label = path.length ? String(path[path.length - 1]) : '';
+			if (label.toLowerCase().includes(query) || (value === null || typeof value !== 'object') && String(value).toLowerCase().includes(query)) matches.push(path);
+			if (value !== null && typeof value === 'object') Object.keys(value).forEach(key => visit(value[key], path.concat(Array.isArray(value) ? Number(key) : key)));
+		};
+		visit(this.state.data, []);
+		if (!matches.length) { this.setState({ searchMessage: 'No matches' }); return; }
+		const index = (this.state.searchIndex + (backward ? -1 : 1) + matches.length) % matches.length, path = matches[index];
+		const collapsed = Object.assign({}, this.state.collapsed);
+		for (let depth = 0; depth < path.length; depth++) collapsed[JSON.stringify(path.slice(0, depth))] = false;
+		this.setState({ searchIndex: index, searchMessage: (index + 1) + ' / ' + matches.length, collapsed: collapsed, activePath: path, treeVisible: true }, () => this.focusRow(path, true));
+	}
+	moveRow(event)
+	{
+		if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey || event.isComposing || event.target.tagName === 'SELECT' || (event.key !== 'ArrowDown' && event.key !== 'ArrowUp')) return;
+		const rows = Array.from(event.currentTarget.querySelectorAll('.jsoneditor-row'));
+		const current = event.target.closest('.jsoneditor-row'), index = rows.indexOf(current);
+		const next = rows[index + (event.key === 'ArrowDown' ? 1 : -1)];
+		if (next)
+		{
+			const column = event.target.closest('.jsoneditor-value') ? 'value' : 'key';
+			const input = next.querySelector('input.jsoneditor-' + column + ', .jsoneditor-' + column + ' input') || next.querySelector('input,button');
+			if (input) { event.preventDefault(); input.focus(); }
+		}
+	}
+	startResize(event)
+	{
+		event.preventDefault(); event.currentTarget.setPointerCapture(event.pointerId); this.resizing = true;
+	}
+	resize(event)
+	{
+		if (!this.resizing || !this.panes) return;
+		const rect = this.panes.getBoundingClientRect();
+		this.setState({ split: Math.max(25, Math.min(75, (event.clientX - rect.left) / rect.width * 100)) });
+	}
+	iconButton(icon, label, action, props = {})
+	{
+		return this.button(e('span', { className: 'fa fa-' + icon, 'aria-hidden': true }), action, Object.assign({ className: 'jsoneditor-tool', title: label, 'aria-label': label }, props));
 	}
 	togglePane(pane)
 	{
@@ -292,18 +392,18 @@ class JsonEditor extends WDKReactComponent
 		const label = path.length ? String(path[path.length - 1]) : 'root';
 		const defaults = { string: '', number: 0, boolean: false, null: null, object: {}, array: [] };
 		return e('div', { key: id },
-			e('div', { className: 'jsoneditor-row jsoneditor-type-' + type },
-				branch && this.button(closed ? '+' : '−', () => this.setState(state => ({ collapsed: Object.assign({}, state.collapsed, { [id]: !closed }) })), { 'aria-expanded': !closed, 'aria-label': (closed ? 'Expand ' : 'Collapse ') + label }),
-				path.length && !parentIsArray ? e(JsonEditorField, { className: 'jsoneditor-key', value: label, label: 'Property name', inputRef: input => this.rememberInput(id, input), onCommit: name => this.rename(path, name) }) : e('strong', {}, label),
-				e(JsonEditorField, { className: 'jsoneditor-value', value: this.valueText(value), label: 'Value of ' + label, inputRef: parentIsArray ? input => this.rememberInput(id, input) : undefined, onInput: draft => this.change(path, this.infer(draft)), onCommit: draft => { this.change(path, this.infer(draft)); return ''; } }),
+			e('div', { className: 'jsoneditor-row jsoneditor-type-' + type + (JSON.stringify(this.state.activePath) === id ? ' jsoneditor-row-active' : ''), onFocus: () => { if (JSON.stringify(this.state.activePath) !== id) this.setState({ activePath: path }); } },
+				branch ? this.iconButton(closed ? 'caret-right' : 'caret-down', (closed ? 'Expand ' : 'Collapse ') + label, () => this.setState(state => ({ collapsed: Object.assign({}, state.collapsed, { [id]: !closed }) })), { 'aria-expanded': !closed }) : e('span', { className: 'jsoneditor-leaf-spacer', 'aria-hidden': true }),
+				path.length && !parentIsArray ? e(JsonEditorField, { className: 'jsoneditor-key', value: label, label: 'Property name', inputRef: input => this.rememberInput(id, input), onCommit: name => this.rename(path, name), onTab: name => this.rename(path, name, true) }) : e('strong', {}, label),
+				e(JsonEditorField, { className: 'jsoneditor-value', value: this.valueText(value), label: 'Value of ' + label, inputRef: input => { this.rememberInput(id + ':value', input); if (parentIsArray) this.rememberInput(id, input); }, onInput: draft => this.change(path, this.infer(draft)), onEnter: draft => this.enterValue(path, draft), onCommit: draft => { this.change(path, this.infer(draft)); return ''; } }),
 				e('select', { value: type, 'aria-label': 'Type of ' + label, onChange: event => this.change(path, event.target.value === 'string' ? this.valueText(value) : defaults[event.target.value]) },
 					Object.keys(defaults).map(name => e('option', { key: name, value: name }, name))),
-				branch && e('span', {}, Object.keys(value).length + (type === 'array' ? ' items' : ' properties')),
+				branch && e('span', { className: 'jsoneditor-count', title: Object.keys(value).length + (type === 'array' ? ' items' : ' properties') }, (type === 'array' ? '[' : '{') + Object.keys(value).length + (type === 'array' ? ']' : '}')),
 				branch && this.button(e('span', { className: 'fa fa-plus', 'aria-hidden': true }), () => this.add(path, null, null, '', true), { className: 'jsoneditor-add', title: type === 'array' ? 'Add item' : 'Add property', 'aria-label': (type === 'array' ? 'Add item to ' : 'Add property to ') + label }),
 				path.length > 0 && this.button(e('span', { className: 'fa fa-plus', 'aria-hidden': true }), () => this.add(path.slice(0, -1), path[path.length - 1], null, '', true), { className: 'jsoneditor-add', title: 'Insert after ' + label, 'aria-label': 'Insert after ' + label }),
 				path.length > 0 && this.button(e('span', { className: 'fa fa-remove', 'aria-hidden': true }), () => this.change(path, null, true), { className: 'jsoneditor-delete', title: 'Delete ' + label, 'aria-label': 'Delete ' + label })),
 			branch && !closed && e('div', { className: 'jsoneditor-children' }, Object.keys(value).map(key => this.node(value[key], path.concat(type === 'array' ? Number(key) : key), type === 'array')),
-				e(JsonEditorNewRow, { key: 'draft', array: type === 'array', detectType: text => this.type(this.infer(text)), onAdd: (name, text, selectedType) => {
+				e(JsonEditorNewRow, { key: 'draft', ref: row => { if (!this.draftRows) this.draftRows = {}; this.draftRows[id] = row; }, array: type === 'array', detectType: text => this.type(this.infer(text)), onAdd: (name, text, selectedType) => {
 					const keys = Object.keys(value), after = keys.length ? (type === 'array' ? value.length - 1 : keys[keys.length - 1]) : null;
 					return this.add(path, after, name, selectedType === 'string' ? text : this.infer(text));
 				} })));
@@ -312,22 +412,29 @@ class JsonEditor extends WDKReactComponent
 	{
 		const direction = (pane === 'rawVisible') === this.state[pane] ? 'left' : 'right';
 		return e('div', { className: 'jsoneditor-pane-header' },
+			this.state[pane] && e('div', { className: 'jsoneditor-pane-tools' },
+				pane === 'treeVisible' && this.iconButton('expand', 'Expand all', () => this.setBranches(false)),
+				pane === 'treeVisible' && this.iconButton('compress', 'Collapse all', () => this.setBranches(true)),
+				pane === 'rawVisible' && e('span', { className: 'jsoneditor-mode', title: 'JSON source editor' }, e('span', { className: 'fa fa-code', 'aria-hidden': true })),
+				pane === 'treeVisible' && e('input', { className: 'jsoneditor-search', type: 'search', placeholder: 'Find key or value', 'aria-label': 'Find key or value', value: this.state.query, onChange: event => this.setState({ query: event.target.value, searchIndex: -1, searchMessage: '' }), onKeyDown: event => { if (event.key === 'Enter') { event.preventDefault(); this.findNext(event.shiftKey); } } }),
+				pane === 'treeVisible' && this.iconButton('search', 'Find next (Enter)', () => this.findNext())),
 			this.button(e('span', { className: 'fa fa-chevron-' + direction, 'aria-hidden': true }), () => this.togglePane(pane), { className: 'jsoneditor-pane-toggle', title: (this.state[pane] ? 'Hide ' : 'Show ') + label, 'aria-label': (this.state[pane] ? 'Hide ' : 'Show ') + label, 'aria-expanded': this.state[pane] }));
 	}
 	render()
 	{
 		return e('div', {},
-			e('div', { className: 'jsoneditor-toolbar' },
-				this.button('Format JSON', () => this.setState({ raw: JSON.stringify(this.state.data, null, 2) }), { disabled: !!this.state.error })),
 			this.state.error && e('p', { className: 'jsoneditor-error', role: 'alert' }, 'Invalid JSON: ' + this.state.error + ' The tree shows the last valid JSON. Correct the raw text to resume editing.'),
-			e('div', { className: 'jsoneditor-panes' },
-				e('section', { className: 'jsoneditor-pane' + (this.state.rawVisible ? '' : ' jsoneditor-pane-collapsed'), 'aria-label': 'Raw JSON' },
+			e('div', { className: 'jsoneditor-panes', ref: element => { this.panes = element; } },
+				e('section', { style: this.state.rawVisible ? { flexGrow: this.state.treeVisible ? this.state.split : 1 } : {}, className: 'jsoneditor-pane' + (this.state.rawVisible ? '' : ' jsoneditor-pane-collapsed'), 'aria-label': 'Raw JSON' },
 					this.paneHeader('Raw JSON', 'rawVisible'),
 					e('div', { className: 'jsoneditor-raw-container', hidden: !this.state.rawVisible },
+						e('pre', { className: 'jsoneditor-line-numbers', 'aria-hidden': true, ref: element => { this.lineNumbers = element; } }, this.state.raw.split('\n').map((line, index) => index + 1).join('\n')),
 						e('pre', { className: 'jsoneditor-highlight', 'aria-hidden': true, ref: element => { this.rawHighlight = element; } },
 							this.tokens(this.state.raw).map(token => e('span', { key: token.start, className: 'jsoneditor-token-' + token.type }, token.text)), '\n'),
-						e('textarea', { className: 'jsoneditor-raw', value: this.state.raw, wrap: 'off', spellCheck: false, autoCapitalize: 'off', autoCorrect: 'off', 'aria-label': 'Raw JSON. Tab selects the next key or value; Shift+Tab selects the previous one. At either end, Tab leaves the editor.', 'aria-invalid': !!this.state.error, ref: element => { this.rawInput = element; }, onScroll: () => this.syncRawScroll(), onKeyDown: event => this.rawKeyDown(event), onChange: event => this.parse(event.target.value) }))),
-				e('section', { className: 'jsoneditor-pane' + (this.state.treeVisible ? '' : ' jsoneditor-pane-collapsed'), 'aria-label': 'JSON tree' },
-					this.paneHeader('Tree editor', 'treeVisible'), e('div', { className: 'jsoneditor-tree', hidden: !this.state.treeVisible }, e('fieldset', { disabled: !!this.state.error, key: this.state.revision }, this.node(this.state.data, [], false))))));
+						e('textarea', { className: 'jsoneditor-raw', value: this.state.raw, wrap: 'off', spellCheck: false, autoCapitalize: 'off', autoCorrect: 'off', 'aria-label': 'Raw JSON. Tab selects the next key or value; Shift+Tab selects the previous one. At either end, Tab leaves the editor.', 'aria-invalid': !!this.state.error, ref: element => { this.rawInput = element; }, onScroll: () => this.syncRawScroll(), onKeyDown: event => this.rawKeyDown(event), onBlur: () => { if (!this.state.error) this.setState({ raw: JSON.stringify(this.state.data, null, 2) }); }, onChange: event => this.parse(event.target.value) }))),
+				this.state.rawVisible && this.state.treeVisible && e('div', { className: 'jsoneditor-divider', role: 'separator', tabIndex: 0, 'aria-label': 'Resize editor panes', 'aria-orientation': 'vertical', 'aria-valuemin': 25, 'aria-valuemax': 75, 'aria-valuenow': Math.round(this.state.split), onPointerDown: event => this.startResize(event), onPointerMove: event => this.resize(event), onPointerUp: () => { this.resizing = false; }, onLostPointerCapture: () => { this.resizing = false; }, onKeyDown: event => { if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') { event.preventDefault(); this.setState({ split: Math.max(25, Math.min(75, this.state.split + (event.key === 'ArrowLeft' ? -5 : 5))) }); } } } ),
+				e('section', { style: this.state.treeVisible ? { flexGrow: this.state.rawVisible ? 100 - this.state.split : 1 } : {}, className: 'jsoneditor-pane' + (this.state.treeVisible ? '' : ' jsoneditor-pane-collapsed'), 'aria-label': 'JSON tree' },
+					this.paneHeader('Tree editor', 'treeVisible'), e('div', { className: 'jsoneditor-tree', hidden: !this.state.treeVisible, onKeyDown: event => this.moveRow(event) }, e('fieldset', { disabled: !!this.state.error, key: this.state.revision }, this.node(this.state.data, [], false))))),
+			e('div', { className: 'jsoneditor-status', role: 'status' }, e('span', {}, this.state.error ? 'Invalid JSON' : 'Valid JSON'), e('span', { className: 'jsoneditor-path' }, '$' + this.state.activePath.map(key => '[' + JSON.stringify(key) + ']').join('')), e('span', {}, this.state.searchMessage || '↑ / ↓  Navigate rows')));
 	}
 }

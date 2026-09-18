@@ -2486,6 +2486,13 @@
 		}
 
 		
+		function IsMobileClient()
+		{
+			$strUserAgent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
+			return (isset($_SERVER['HTTP_SEC_CH_UA_MOBILE']) && $_SERVER['HTTP_SEC_CH_UA_MOBILE'] == '?1')
+				|| preg_match('/Mobile|Android|iPhone|iPad|iPod|IEMobile|Opera Mini|Opera Mobi|Silk|Kindle/i',$strUserAgent) === 1;
+		}
+
 		final
 		function EnforceHTTPS()
 		{

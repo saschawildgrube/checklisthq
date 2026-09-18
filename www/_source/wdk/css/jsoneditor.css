@@ -1,26 +1,48 @@
-.wdk-jsoneditor { width: 100%; }
+.wdk-jsoneditor { width: 100%; font: 13px/1.45 Consolas, 'Courier New', monospace; --editor-accent: #a8c979; }
 .wdk-jsoneditor * { box-sizing: border-box; }
-.wdk-jsoneditor .jsoneditor-toolbar, .wdk-jsoneditor .jsoneditor-row { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; margin-bottom: .5rem; }
-.wdk-jsoneditor .jsoneditor-panes { display: flex; gap: 1rem; width: 100%; }
+.wdk-jsoneditor .jsoneditor-row { display: flex; align-items: center; gap: .25rem; flex-wrap: nowrap; white-space: nowrap; min-width: 0; width: 100%; margin-bottom: .5rem; }
+.wdk-jsoneditor .jsoneditor-row > button { flex: 0 0 auto; padding: .25rem; }
+.wdk-jsoneditor .jsoneditor-row > select { flex: 0 1 5.5rem; min-width: 0; width: 5.5rem; }
+.wdk-jsoneditor .jsoneditor-row > strong, .wdk-jsoneditor .jsoneditor-row > span:not(.jsoneditor-key):not(.jsoneditor-value) { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.wdk-jsoneditor .jsoneditor-panes { display: flex; gap: 0; width: 100%; }
 .wdk-jsoneditor .jsoneditor-pane { flex: 1 1 0; min-width: 0; }
-.wdk-jsoneditor .jsoneditor-pane-header { display: flex; align-items: center; justify-content: flex-end; height: 32px; }
+.wdk-jsoneditor .jsoneditor-pane-header { display: flex; align-items: center; justify-content: space-between; height: 36px; padding: 0 3px; background: #536640; color: #f5f8ef; border: 1px solid #687b55; }
+.wdk-jsoneditor .jsoneditor-pane-tools { display: flex; gap: 2px; align-items: center; flex: 1; min-width: 0; }
+.wdk-jsoneditor .jsoneditor-tool, .wdk-jsoneditor .jsoneditor-pane-toggle { flex-shrink: 0; border: 0; border-radius: 3px; background: transparent; color: inherit; cursor: pointer; min-width: 24px; height: 28px; }
+.wdk-jsoneditor .jsoneditor-tool:hover, .wdk-jsoneditor .jsoneditor-pane-toggle:hover { background: #ffffff25; }
+.wdk-jsoneditor .jsoneditor-mode { padding: 0 8px; }
+.wdk-jsoneditor .jsoneditor-search { width: 100%; min-width: 0; max-width: 220px; background: #34442b; color: #fff; border: 1px solid #839774; border-radius: 3px; padding: 3px 6px; }
+.wdk-jsoneditor .jsoneditor-search::placeholder { color: #d0dcc6; }
+.wdk-jsoneditor .jsoneditor-divider { flex: 0 0 8px; cursor: col-resize; touch-action: none; background: #292e35; border-inline: 1px solid #59616b; }
+.wdk-jsoneditor .jsoneditor-divider:hover, .wdk-jsoneditor .jsoneditor-divider:focus { background: #839c61; }
+.wdk-jsoneditor .jsoneditor-status { display: flex; gap: 12px; align-items: center; padding: 5px 8px; color: #c7d0db; background: #292e35; border: 1px solid #59616b; font-size: 11px; }
+.wdk-jsoneditor .jsoneditor-path { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #b7d48e; }
+.wdk-jsoneditor .jsoneditor-line-numbers { position: absolute; top: 0; bottom: 0; left: 0; width: 42px; margin: 0; padding: .75rem 7px .75rem 0; border: 1px solid transparent; border-right-color: #525c67; background: #30353c; color: #98a2ae; text-align: right; font: 14px/1.5 monospace; overflow: hidden; pointer-events: none; border-radius: 0; }
 .wdk-jsoneditor .jsoneditor-pane-collapsed { flex: 0 0 32px; background: #383d45; color: #f1f3f5; border: 1px solid #78818e; }
 .wdk-jsoneditor [hidden] { display: none !important; }
 .wdk-jsoneditor .jsoneditor-pane-toggle { border: 0; background: transparent; padding: .5rem; cursor: pointer; }
 .wdk-jsoneditor .jsoneditor-tree { color: #f1f3f5; color-scheme: dark; }
-.wdk-jsoneditor .jsoneditor-tree input, .wdk-jsoneditor .jsoneditor-tree select { color: #f1f3f5; border: 1px solid #78818e; border-radius: 3px; padding: .25rem; }
+.wdk-jsoneditor .jsoneditor-tree input, .wdk-jsoneditor .jsoneditor-tree select { color: #f1f3f5; border: 1px solid transparent; border-radius: 2px; padding: 2px 3px; }
+.wdk-jsoneditor .jsoneditor-tree input:hover, .wdk-jsoneditor .jsoneditor-tree select:hover { border-color: #727c88; }
+.wdk-jsoneditor input:focus, .wdk-jsoneditor select:focus, .wdk-jsoneditor button:focus-visible { outline: 2px solid var(--editor-accent); outline-offset: -1px; }
+.wdk-jsoneditor .jsoneditor-row { margin-bottom: 1px; min-height: 28px; border-radius: 2px; }
+.wdk-jsoneditor .jsoneditor-row:hover { background: #ffffff09; }
+.wdk-jsoneditor .jsoneditor-row-active, .wdk-jsoneditor .jsoneditor-row:focus-within { background: #52634455; }
+.wdk-jsoneditor .jsoneditor-leaf-spacer { flex: 0 0 24px !important; }
+.wdk-jsoneditor .jsoneditor-count { color: #a7b2bf; font-size: 11px; }
 .wdk-jsoneditor .jsoneditor-tree input::placeholder { color: #c0c7d2; opacity: 1; }
-.wdk-jsoneditor .jsoneditor-value input { width: 100%; }
+.wdk-jsoneditor .jsoneditor-value input, .wdk-jsoneditor .jsoneditor-key input { width: 100%; min-width: 0; }
 .wdk-jsoneditor .jsoneditor-new-row { padding-top: .4rem; border-top: 1px dashed #78818e; }
 .wdk-jsoneditor .jsoneditor-draft-type { color: #c0c7d2; }
 .wdk-jsoneditor .jsoneditor-raw-container { position: relative; height: 65vh; min-height: 320px; background: #383d45; }
-.wdk-jsoneditor .jsoneditor-raw, .wdk-jsoneditor .jsoneditor-highlight { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: .75rem; border: 1px solid #aaa; border-radius: 0; font: 14px/1.5 monospace; letter-spacing: normal; text-align: left; white-space: pre; overflow-wrap: normal; word-break: normal; tab-size: 4; overflow: scroll; }
+.wdk-jsoneditor .jsoneditor-raw, .wdk-jsoneditor .jsoneditor-highlight { position: absolute; top: 0; left: 42px; width: calc(100% - 42px); height: 100%; margin: 0; padding: .75rem; border: 1px solid #59616b; border-radius: 0; font: 14px/1.5 monospace; letter-spacing: normal; text-align: left; white-space: pre; overflow-wrap: normal; word-break: normal; tab-size: 4; overflow: scroll; }
 .wdk-jsoneditor .jsoneditor-highlight { pointer-events: none; color: #f1f3f5; background: transparent; scrollbar-color: transparent transparent; }
 .wdk-jsoneditor .jsoneditor-highlight::-webkit-scrollbar { visibility: hidden; }
 .wdk-jsoneditor .jsoneditor-raw { resize: none; color: transparent; -webkit-text-fill-color: transparent; caret-color: #ffffff; background: transparent; }
 .wdk-jsoneditor .jsoneditor-raw::selection { background: rgba(80, 135, 210, .3); }
 .wdk-jsoneditor .jsoneditor-tree { height: 65vh; min-height: 320px; overflow: auto; border: 1px solid #aaa; padding: .75rem; background: #383d45; }
-.wdk-jsoneditor .jsoneditor-tree input, .wdk-jsoneditor .jsoneditor-tree select { background: #383d45; }
+.wdk-jsoneditor .jsoneditor-tree input, .wdk-jsoneditor .jsoneditor-tree select { background: transparent; }
+.wdk-jsoneditor .jsoneditor-tree option { background: #383d45; }
 .wdk-jsoneditor .jsoneditor-token-key, .wdk-jsoneditor .jsoneditor-key input { color: #ffd18a; }
 .wdk-jsoneditor .jsoneditor-token-string, .wdk-jsoneditor .jsoneditor-type-string > .jsoneditor-value input { color: #a6e3a1; }
 .wdk-jsoneditor .jsoneditor-token-number, .wdk-jsoneditor .jsoneditor-type-number > .jsoneditor-value input { color: #89caff; }
@@ -29,13 +51,13 @@
 .wdk-jsoneditor .jsoneditor-token-punctuation { color: #d8dee9; }
 @media (forced-colors: active) { .wdk-jsoneditor .jsoneditor-highlight { display: none; } .wdk-jsoneditor .jsoneditor-raw { color: CanvasText; -webkit-text-fill-color: CanvasText; } }
 .wdk-jsoneditor fieldset { margin: 0; min-width: 0; border: 0; padding: 0; }
-.wdk-jsoneditor .jsoneditor-children { margin-left: 1.25rem; border-left: 1px solid #ccc; padding-left: .75rem; }
+.wdk-jsoneditor .jsoneditor-children { margin-left: min(.75rem, 2%); border-left: 1px solid #ccc; padding-left: min(.5rem, 2%); min-width: 0; }
 .wdk-jsoneditor input, .wdk-jsoneditor select, .wdk-jsoneditor button { font: inherit; max-width: 100%; }
-.wdk-jsoneditor .jsoneditor-value { flex: 1 1 120px; min-width: 80px; }
-.wdk-jsoneditor .jsoneditor-key { width: 130px; font-family: monospace; }
+.wdk-jsoneditor .jsoneditor-value { flex: 1 1 120px; min-width: 0; width: 0; }
+.wdk-jsoneditor .jsoneditor-key { flex: 0 1 130px; min-width: 0; width: 130px; font-family: monospace; }
 .wdk-jsoneditor .jsoneditor-add, .wdk-jsoneditor .jsoneditor-delete { border: 0; background: transparent; color: inherit; padding: .35rem .5rem; cursor: pointer; }
 .wdk-jsoneditor .jsoneditor-add:hover, .wdk-jsoneditor .jsoneditor-add:focus { color: #a6e3a1; }
 .wdk-jsoneditor .jsoneditor-delete:hover, .wdk-jsoneditor .jsoneditor-delete:focus { color: #ff9c9c; }
 .wdk-jsoneditor .jsoneditor-add:disabled, .wdk-jsoneditor .jsoneditor-delete:disabled { opacity: .5; cursor: default; }
 .wdk-jsoneditor .jsoneditor-error { color: #ff9c9c; margin: .5rem 0; overflow-wrap: anywhere; }
-@media (max-width: 700px) { .wdk-jsoneditor .jsoneditor-panes { gap: .35rem; } }
+@media (max-width: 700px) { .wdk-jsoneditor .jsoneditor-status > span:last-child { display: none; } .wdk-jsoneditor .jsoneditor-leaf-spacer { flex-basis: 12px !important; } }
