@@ -147,11 +147,11 @@
 			if (!$this->IsViewOnly() && $this->IsToolVisible('edit'))
 			{
 				$nSection = 0;
-				$strURLTemplate = null;
+				$strEditLinkTemplate = null;
 				$strSectionToken = uniqid('wdkwikipadsection',false);
-				$wiki->SetSectionRenderer(function ($strHtml,$strType) use (&$nSection,&$strURLTemplate,$strSectionToken,$strContent)
+				$wiki->SetSectionRenderer(function ($strHtml,$strType) use (&$nSection,&$strEditLinkTemplate,$strSectionToken,$strContent)
 				{
-					if ($strURLTemplate === null)
+					if ($strEditLinkTemplate === null)
 					{
 						// Routing/session preparation and HTML encoding are identical for every section.
 						// Build lazily so pages without boundaries do not need a URL or content hash.
@@ -159,15 +159,18 @@
 							$this->GetModuleVarNameState() => 'editsection',
 							$this->GetModuleVarName('section') => $strSectionToken,
 							$this->GetModuleVarName('sectionhash') => MakeHash($strContent)),false));
+						// Avoid a separate whole-page resource replacement for every Edit link.
+						$strEditLinkTemplate = $this->GetWebsite()->ReplaceText(
+							'<a style="margin-left: auto; font-size: inherit; font-weight: normal;" href="'.
+							$strURLTemplate.'">?TID_WIKIPAD_TAB_EDIT?</a>',false);
 					}
-					$strURL = str_replace($strSectionToken,(string)$nSection++,$strURLTemplate);
+					$strEditLink = str_replace($strSectionToken,(string)$nSection++,$strEditLinkTemplate);
 					if ($strType == 'separator')
 					{
 						$strHtml = '<div style="flex: 1;">'.$strHtml.'</div>';
 					}
 					return '<div class="wikipad-section" style="display: flex; align-items: baseline; flex-wrap: wrap; column-gap: 0.4em;">'.
-						$strHtml.' <a style="margin-left: auto; font-size: inherit; font-weight: normal;" href="'.
-						$strURL.'">?TID_WIKIPAD_TAB_EDIT?</a></div>';
+						$strHtml.' '.$strEditLink.'</div>';
 				});
 			}
 		}

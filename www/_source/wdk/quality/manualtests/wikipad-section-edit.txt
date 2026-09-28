@@ -42,3 +42,10 @@ Sixth-level section.
 ----
 Last separator section.
 </syntaxhighlight>
+
+==Rendering performance regression==
+# Before deployment, record several reload timings for a long WikiPad and keep its content unchanged. After deploying modules/cms/wikipad/module_wikipad.inc and elements/element_wiki.inc, repeat with the same account, language, trace settings, and content. Compare median server response times, excluding the first warm-up request.
+# Test an editable pad with hundreds of headings/separators as well as viewonly. Check that every Edit link remains translated, its section index selects the correct source, and stale-page protection still rejects old links. Repeat in a second language and with the edit tool hidden.
+# Compare rendered content for Unicode before and inside internal/external links, headings, list items, and table cells. Include an external link at the start of the page, malformed/unclosed links, duplicate headings, and a separator immediately followed by a non-ASCII character.
+# Check a plain pad without section boundaries: it must not build a section-edit URL or resolve the section Edit label. Check TOCs and literal pre/syntaxhighlight blocks using the fixture above.
+# With profiling enabled, compare both wiki rendering and the later ReplaceText phase: section labels now resolve once in a small link template instead of triggering one whole-page string rebuild per section.

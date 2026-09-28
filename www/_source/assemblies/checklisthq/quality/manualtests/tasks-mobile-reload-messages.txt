@@ -1,0 +1,14 @@
+=Mobile task action messages before and after reload=
+# Use test: "login" on https://dev.checklisthq.com/ with an iPhone/iPad or Android user agent. Preserve network responses to inspect the brief redirect page.
+# Back up the Tasks wikitext in Personal and Office; use uniquely named disposable tasks and restore both pages afterwards.
+# In NEXT ACTION, add a task named "reload message <sample> & row", a neighboring task, and a lower-priority task after a separator. Include a preformatted block immediately after the disposable task.
+# Select "Do next" on the lower-priority task. The modifying response must show exactly "Processing. Please wait..." with an animated spinning wheel and no activity confirmation. Its automatic navigation must lead to a read-only page.
+# On that reloaded page, verify the moved-task confirmation includes the correct row text, with no {LINE_MOVED} placeholder. Verify the task moved once and neighboring rows remain intact.
+# Repeat for "Do it later" and "Move to WAITING FOR". Verify the confirmation accurately describes the action on the reloaded page.
+# Check off the disposable task. Before navigation, expect the same processing message and spinner. After navigation, expect the checked-off confirmation containing the removed row, with no {LINE_DELETED} placeholder. The row and its attached preformatted block must be gone.
+# Use a row containing literal angle brackets, ampersands, quotes, and {LINE_MOVED}; verify its contents display as text, not HTML or substituted template markup.
+# Reload each resulting page twice. The operation must not repeat, and its confirmation must not reappear. Background/foreground the mobile browser and verify the same behavior.
+# Move a disposable task to the other context. Every intermediate page must show processing with a spinner; the final destination must confirm the move and identify the row and destination context. Verify exactly one destination copy and no source copy.
+# Repeat in both contexts and on Projects where the corresponding task action is available.
+# With a stale action URL (edit the task in another tab first), verify an error is shown without a success confirmation or protective reload.
+# Repeat with a desktop user agent: same-context actions show their confirmation and row text directly, without protective reload or processing spinner; cross-context navigation still works.

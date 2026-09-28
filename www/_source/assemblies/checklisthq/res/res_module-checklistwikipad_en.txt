@@ -22,6 +22,10 @@ TID_WIKIPAD_TOOL_LINEDELETE
 Check this task off the list
 TID_WIKIPAD_INFO_LINEDELETED
 Great Job! This task is checked off the list: {LINE_DELETED}
+TID_WIKIPAD_INFO_PROCESSING
+Processing. Please wait...
+TID_WIKIPAD_INFO_LINEMOVEDDOWN
+This task has been moved down the list: {LINE_MOVED}
 TID_WIKIPAD_INFO_LINEMOVEDTOOTHERCONTEXT
 This task has been moved to the {CONTEXT} area: {LINE_MOVED}
 TID_WIKIPAD_TOOL_LINEMOVETOP

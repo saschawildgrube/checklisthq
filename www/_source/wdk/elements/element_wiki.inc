@@ -205,7 +205,7 @@
 					$strUntrimmedLine = $strLine;
 					$strLine = trim($strLine);
 					$bEmptyLine = ($strLine=="")?(true):(false);
-					$strMagicChar = StringSection($strLine,0,1);
+					$strMagicChar = substr($strLine,0,1);
 					switch ($strMagicChar)
 					{
 						case "=":
@@ -223,7 +223,7 @@
 							if ($nTableLevel > 0)
 							{
 								$strNewMode = "table_header";
-								$strLine = StringSection($strLine,1);
+								$strLine = substr($strLine,1);
 							}
 							else
 							{
@@ -232,18 +232,18 @@
 							}
 							break;
 						default:
-							$strMagicCharPair = StringSection($strLine,0,2);
+							$strMagicCharPair = substr($strLine,0,2);
 							switch ($strMagicCharPair)
 							{
 								case "{|":
 									$strNewMode = "table_begin";
-									$strLine = StringSection($strLine,2);
+									$strLine = substr($strLine,2);
 									break;
 								case "|}":
 									if ($nTableLevel > 0)
 									{
 										$strNewMode = "table_end";
-										$strLine = StringSection($strLine,2);
+										$strLine = substr($strLine,2);
 									}
 									else
 									{
@@ -255,7 +255,7 @@
 									if ($nTableLevel > 0)
 									{
 										$strNewMode = "table_row";
-										$strLine = StringSection($strLine,2);
+										$strLine = substr($strLine,2);
 									}
 									else
 									{
@@ -269,7 +269,7 @@
 										if ($nTableLevel > 0)
 										{
 											$strNewMode = "table_cell";
-											$strLine = StringSection($strLine,1);
+											$strLine = substr($strLine,1);
 										}
 										else
 										{
@@ -316,7 +316,7 @@
 								$arrayListStack[] = $strLine;
 								break;
 							case "definitionlist":
-								$strLine = trim(StringSection($strLine,1));
+								$strLine = trim(substr($strLine,1));
 								if ($strMagicChar == ";")
 								{
 									$strLastTerm = $strLine;
@@ -327,7 +327,7 @@
 								}
 								break;
 							default:
-								if (StringSection($strLine,0,4) == "----")
+								if (substr($strLine,0,4) == "----")
 								{
 									$arrayCurrentCell[$nTableLevel] .= $this->RenderSectionBoundary('<hr/>','separator')."\n";
 									$strLine = StringSection($strLine,5);
@@ -537,36 +537,37 @@
 			return $strInput;
 		}
 
+		// Wiki delimiters are ASCII: keep searches and slices in byte offsets.
 		private
 		function ParseInternalLinks($strInput,$strLinkTemplate,$strLinkTemplateChapter)
 		{
-			$nFirstLinkPos = FindString($strInput,"[[");
-			if ($nFirstLinkPos == -1)
+			$nFirstLinkPos = strpos($strInput,"[[");
+			if ($nFirstLinkPos === false)
 			{
 				return $strInput;	
 			}
 			
-			$strOutput = StringSection($strInput,0,$nFirstLinkPos);
-			$strRest = StringSection($strInput,$nFirstLinkPos+2);
+			$strOutput = substr($strInput,0,$nFirstLinkPos);
+			$strRest = substr($strInput,$nFirstLinkPos+2);
 			$arraySections = explode("[[",$strRest);	
 			
 			foreach ($arraySections as $strSection)
 			{
-				$nPosCloseTag = FindString($strSection,"]]");
-				if ($nPosCloseTag == -1)
+				$nPosCloseTag = strpos($strSection,"]]");
+				if ($nPosCloseTag === false)
 				{
 					$strOutput .= "[[".$strSection;
 					continue;
 				}
 				
-				$strLinkRaw = StringSection($strSection,0,$nPosCloseTag);
+				$strLinkRaw = substr($strSection,0,$nPosCloseTag);
 				if ($strLinkRaw != "")
 				{
-					$nPosDelimiter = FindString($strLinkRaw,"|");
-					if ($nPosDelimiter != -1)
+					$nPosDelimiter = strpos($strLinkRaw,"|");
+					if ($nPosDelimiter !== false)
 					{
-						$strArticleIDRaw = StringSection($strLinkRaw,0,$nPosDelimiter);
-						$strText = StringSection($strLinkRaw,$nPosDelimiter+1);
+						$strArticleIDRaw = substr($strLinkRaw,0,$nPosDelimiter);
+						$strText = substr($strLinkRaw,$nPosDelimiter+1);
 					}
 					else
 					{
@@ -588,15 +589,15 @@
 						}
 						
 						$strChapterIDRaw = "";
-						$nPosHash = FindString($strArticleIDRaw,"#");
-						if ($nPosHash != -1)
+						$nPosHash = strpos($strArticleIDRaw,"#");
+						if ($nPosHash !== false)
 						{
 							if ($nPosHash == 0)
 							{
-								$strText = 	StringSection($strArticleIDRaw,1);
+								$strText = 	substr($strArticleIDRaw,1);
 							}
-							$strChapterIDRaw = StringSection($strArticleIDRaw,$nPosHash+1); 
-							$strArticleIDRaw = StringSection($strArticleIDRaw,0,$nPosHash);
+							$strChapterIDRaw = substr($strArticleIDRaw,$nPosHash+1);
+							$strArticleIDRaw = substr($strArticleIDRaw,0,$nPosHash);
 						}
 						
 						$strArticleID = MakeID($strArticleIDRaw);
@@ -620,7 +621,7 @@
 						$strLink = ReplaceString($strLink,"{CHAPTERID}",$strChapterID);
 						$strLinkHTML = $this->m_internallink->RenderLink($strLink,$strText);
 						$strLinkHTML = trim($strLinkHTML);
-						$strOutput .= $strLinkHTML . StringSection($strSection,$nPosCloseTag+2);
+						$strOutput .= $strLinkHTML . substr($strSection,$nPosCloseTag+2);
 						continue;
 					}
 				}
@@ -632,33 +633,33 @@
 		private
 		function ParseExternalLinks($strInput)
 		{
-			$nFirstLinkPos = FindString($strInput,"[");
-			if ($nFirstLinkPos == -1)
+			$nFirstLinkPos = strpos($strInput,"[");
+			if ($nFirstLinkPos === false)
 			{
 				return $strInput;	
 			}
 			
-			$strOutput = StringSection($strInput,0,$nFirstLinkPos);
-			$arraySections = explode("[",StringSection($strInput,$nFirstLinkPos+1));	
+			$strOutput = substr($strInput,0,$nFirstLinkPos);
+			$arraySections = explode("[",substr($strInput,$nFirstLinkPos+1));
 			
 			foreach ($arraySections as $strSection)
 			{
-				$nPosCloseTag = FindString($strSection,"]");
-				if ($nPosCloseTag == -1)
+				$nPosCloseTag = strpos($strSection,"]");
+				if ($nPosCloseTag === false)
 				{
 					$strOutput .= "[".$strSection;
 					continue;
 				}
 				
-				$strLinkRaw = StringSection($strSection,0,$nPosCloseTag);
+				$strLinkRaw = substr($strSection,0,$nPosCloseTag);
 				
 				if ($strLinkRaw != "")
 				{
-					$nPosDelimiter = FindString($strLinkRaw,' ');
-					if ($nPosDelimiter != -1)
+					$nPosDelimiter = strpos($strLinkRaw,' ');
+					if ($nPosDelimiter !== false)
 					{
-						$strURL = StringSection($strLinkRaw,0,$nPosDelimiter);
-						$strText = StringSection($strLinkRaw,$nPosDelimiter+1);
+						$strURL = substr($strLinkRaw,0,$nPosDelimiter);
+						$strText = substr($strLinkRaw,$nPosDelimiter+1);
 					}
 					else
 					{
@@ -685,7 +686,7 @@
 						$strLinkHTML = $this->m_externallink->RenderLink($strURL,$strText,$bExternal);
 						$strLinkHTML = trim($strLinkHTML);
 						 
-						$strOutput .= $strLinkHTML . StringSection($strSection,$nPosCloseTag+1);
+						$strOutput .= $strLinkHTML . substr($strSection,$nPosCloseTag+1);
 						continue;
 					}
 					else
@@ -737,9 +738,9 @@
 			for ($nLevel = 6; $nLevel >= 1; $nLevel--)
 			{
 				$strTag = StringRepeat("=",$nLevel);
-				if (StringSection($strLine,0,$nLevel) == $strTag)
+				if (substr($strLine,0,$nLevel) == $strTag)
 				{
-					if (StringSection($strLine,-$nLevel) == $strTag)
+					if (substr($strLine,-$nLevel) == $strTag)
 					{
 						if ($this->m_header == null)
 						{
@@ -774,7 +775,7 @@
 
 						
 						
-						$strHeaderText = StringSection($strLine,$nLevel,StringLength($strLine)-(2*$nLevel));
+						$strHeaderText = substr($strLine,$nLevel,strlen($strLine)-(2*$nLevel));
 						$strHeaderTextNumbered = $strNumber . " " .$strHeaderText;
 						// What to do in case of ambiguous chapter names?include the chapter number? Then links to chapters don't work
 						$strCurrentChapterID = MakeID($strHeaderText);
@@ -984,7 +985,7 @@
 		private
 		function ParseFormats($strInput)
 		{
-			if (FindString($strInput,"'") == -1)
+			if (strpos($strInput,"'") === false)
 			{
 				return $strInput;	
 			}

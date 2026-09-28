@@ -204,6 +204,67 @@
 		}		
 		
 
+		function ShowTaskProcessingMessage()
+		{
+			$this->IncludeElement('icon');
+			$icon = new CIconElement($this->GetWebsite(),'spin');
+			$this->SetInfoMessageText($icon->RenderIcon('spinner').' '.$this->GetMessage('info','PROCESSING'));
+		}
+
+		function ShowTaskActionMessage($strCode,$strLine)
+		{
+			if (!in_array($strCode,array('LINEDELETED','LINEMOVEDDOWN','LINEMOVEDTONEXTACTION',
+				'LINEMOVEDTOWAITINGFOR','LINEMOVEDTOOTHERCONTEXT','LINEADDED'),true))
+			{
+				return;
+			}
+			$plugin = $this->GetWebsite()->GetPlugin('checklisthq');
+			// Module output items are not available to the site's message stack.
+			// Encode braces too, so task text cannot become a later template placeholder.
+			$strLineHTML = strtr(HtmlEncode($strLine),array('{' => '&#123;','}' => '&#125;'));
+			$this->SetInfoMessageText(strtr($this->GetMessage('info',$strCode),array(
+				'{LINE_DELETED}' => '<pre>'.$strLineHTML.'</pre>',
+				'{LINE_MOVED}' => '<pre>'.$strLineHTML.'</pre>',
+				'{LINE_ADDED}' => '<pre>'.$strLineHTML.'</pre>',
+				'{CONTEXT}' => HtmlEncode($plugin->GetContextName($plugin->GetContextID())))));
+		}
+
+		function GetPendingTaskMessages()
+		{
+			$arrayMessages = json_decode($this->GetModuleVarInsecure('task_messages'),true);
+			return is_array($arrayMessages) ? $arrayMessages : array();
+		}
+
+		function QueueTaskActionMessage($strCode,$strLine)
+		{
+			$arrayMessages = $this->GetPendingTaskMessages();
+			// Bound session storage for redirects that are never followed.
+			$arrayMessages = array_slice($arrayMessages,-9,null,true);
+			$strToken = MakeHexToken(32);
+			$arrayMessages[$strToken] = array('code' => $strCode,'line' => $strLine);
+			$this->SetModuleVar('task_messages',json_encode($arrayMessages));
+			return $strToken;
+		}
+
+		function ShowPendingTaskActionMessage()
+		{
+			$strToken = $this->GetModuleParam('task_message');
+			$this->SetModuleVar('task_message','');
+			$arrayMessages = $this->GetPendingTaskMessages();
+			if (!isset($arrayMessages[$strToken]))
+			{
+				return;
+			}
+			$arrayMessage = $arrayMessages[$strToken];
+			unset($arrayMessages[$strToken]);
+			$this->SetModuleVar('task_messages',count($arrayMessages) ? json_encode($arrayMessages) : '');
+			if (isset($arrayMessage['code'],$arrayMessage['line'])
+				&& is_string($arrayMessage['code']) && is_string($arrayMessage['line']))
+			{
+				$this->ShowTaskActionMessage($arrayMessage['code'],$arrayMessage['line']);
+			}
+		}
+
 		function OnRenderModule($strState)
 		{
 			if ($this->IsViewOnly() == true)
@@ -222,6 +283,10 @@
 			if ($strState == '' && $this->GetConfigIsRadialTidyTree() == true)
 			{
 				$strState = 'radialtidytree';	
+			}
+			if (in_array($strState,array('','view','edit','editsection','network','zoomablesunburst','radialtidytree'),true))
+			{
+				$this->ShowPendingTaskActionMessage();
 			}
 						
 			switch ($strState)
@@ -852,6 +917,8 @@
 			$this->SetModuleVar('text','');
 			
 			$strTaskBlockToBeMovedToNextActionOtherContext = '';
+			$strTaskMessageCode = '';
+			$strTaskMessageLine = '';
 			
 			if ($strAction == '')
 			{
@@ -945,11 +1012,13 @@
 								."\n";
 						}
 					}
-					$this->SetOutputItem('LINE_DELETED','<pre>'.$arrayLines[$nLineToModify].'</pre>');
-					$this->SetInfoMessageCode('LINEDELETED');
+					$strTaskMessageCode = 'LINEDELETED';
+					$strTaskMessageLine = $strLineToModify;
 				}
 				else if ($strAction == 'movedown')
 				{
+					$strTaskMessageCode = 'LINEMOVEDDOWN';
+					$strTaskMessageLine = $strLineToModify;
 					$strContent = '';
 					$nLine = 0;
 					$strTaskBlockToMove = '';
@@ -1015,8 +1084,8 @@
 						$nLine++;
 					}
 					
-					$this->SetOutputItem('LINE_MOVED','<pre>'.$strLineToModify.'</pre>');
-					$this->SetInfoMessageCode('LINEMOVEDTONEXTACTION');	
+					$strTaskMessageCode = 'LINEMOVEDTONEXTACTION';
+					$strTaskMessageLine = $strLineToModify;
 				}
 				else if ($strAction == 'movetowaitingfor')
 				{
@@ -1057,8 +1126,8 @@
 						$nLine++;
 					}
 					
-					$this->SetOutputItem('LINE_MOVED','<pre>'.$strLineToModify.'</pre>');
-					$this->SetInfoMessageCode('LINEMOVEDTOWAITINGFOR');	
+					$strTaskMessageCode = 'LINEMOVEDTOWAITINGFOR';
+					$strTaskMessageLine = $strLineToModify;
 				}
 				else if ($strAction == 'add')
 				{
@@ -1117,8 +1186,15 @@
 							$nLine++;
 						}
 					}
-					$this->SetOutputItem('LINE_ADDED','<pre>'.$strLineText.'</pre>');
-					$this->SetInfoMessageCode('LINEADDED');
+					$strTaskMessageCode = 'LINEADDED';
+					$strTaskMessageLine = HtmlDecode($strLineText);
+					$strTransfer = $this->GetModuleVarInsecure('task_transfer');
+					$this->SetModuleVar('task_transfer','');
+					if ($strTransfer != '' && $strTransfer === HtmlDecode($strLineText))
+					{
+						$strTaskMessageCode = 'LINEMOVEDTOOTHERCONTEXT';
+						$strTaskMessageLine = strtok($strTransfer,"\n");
+					}
 				}
 				else if ($strAction == 'movetoothercontext')
 				{
@@ -1160,11 +1236,6 @@
 			{
 				if ($strTaskBlockToBeMovedToNextActionOtherContext != '')
 				{
-					// TODO: It does not make sense to display a message directly before redirecting.
-					// This should be refactored to avoid the additional round-trip
-					//$this->SetOutputItem('LINE_MOVED','<pre>'.$arrayLines[$nLineToModify].'</pre>');
-					//$this->SetInfoMessageCode('LINEMOVEDTOOTHERCONTEXT');
-
 					$nOtherContext = 1 - $this->GetWebsite()->GetPlugin('checklisthq')->GetContextID();
 
 					$strModuleVarNamePrefix = 'wikipad_tasks_';
@@ -1174,6 +1245,8 @@
 					}
 
 					$arrayParams = array(); 
+					$this->GetWebsite()->SetVar($strModuleVarNamePrefix.'task_transfer',$strTaskBlockToBeMovedToNextActionOtherContext);
+					$this->ShowTaskProcessingMessage();
 					$arrayParams[$strModuleVarNamePrefix.'state'] = 'submitline';
 					$arrayParams[$strModuleVarNamePrefix.'action'] = 'add';
 					//$arrayParams[$strModuleVarNamePrefix.'line_priority_low'] = '0';
@@ -1185,9 +1258,26 @@
 					$this->GetWebsite()->Redirect($strUrl);
 					return false;
 				}
-				else if ($this->RedirectAfterModification())
+				else
 				{
-					return false;
+					$arrayParams = array();
+					if ($this->GetWebsite()->IsMobileClient())
+					{
+						if ($strTaskMessageCode != '')
+						{
+							$arrayParams[$this->GetModuleVarName('task_message')] =
+								$this->QueueTaskActionMessage($strTaskMessageCode,$strTaskMessageLine);
+						}
+						$this->ShowTaskProcessingMessage();
+					}
+					else if ($strTaskMessageCode != '')
+					{
+						$this->ShowTaskActionMessage($strTaskMessageCode,$strTaskMessageLine);
+					}
+					if ($this->RedirectAfterModification('view',$arrayParams))
+					{
+						return false;
+					}
 				}
 			}
 			
