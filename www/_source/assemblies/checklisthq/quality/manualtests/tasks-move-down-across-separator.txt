@@ -1,4 +1,4 @@
-﻿=Do it later moves the last task across a separator=
+=Do it later moves the last task across a separator=
 # Use test: "login"
 # Navigate to tasks page: /tasks/
 # Select "Edit"

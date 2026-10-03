@@ -1,13 +1,13 @@
-﻿=Moving tasks between contexts into Next Action=
+=Moving tasks between contexts into Next Action=
 # Use test: "login"
 # Use disposable task lists. Run every case below from Personal to Office, then repeat from Office to Personal, resetting both lists before each case.
 # In the source context, open /tasks/, select "Edit", replace the content with the following, and save:
 <syntaxhighlight lang="text">
-=NEXT ACTION=
+=NEXT ACTION= 
 * transfer this task
-** child task
+** child task 
 <pre>
-transfer notes
+transfer notes  
 </pre>
 * keep source task
 </syntaxhighlight>
