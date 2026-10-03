@@ -1,0 +1,49 @@
+=Completing and moving tasks includes their indented sub-elements=
+# Use test: "login"
+# Navigate to tasks page: /tasks/
+# Select "Edit" and replace the entire content with this fixture:
+<syntaxhighlight lang="text">
+=NEXT ACTION=
+* keep first task
+* parent task
+** bullet child
+*** bullet grandchild
+## numbered child
+### numbered grandchild
+* keep following task
+** keep following child
+----
+* keep low-priority task
+=WAITING FOR=
+* keep waiting task
+</syntaxhighlight>
+# Select "Save"
+# Tick off "parent task", then select "Edit"
+# Validate that the content exactly matches the following wikitext - if not fail the test. No child or grandchild of "parent task" may remain:
+<syntaxhighlight lang="text">
+=NEXT ACTION=
+* keep first task
+* keep following task
+** keep following child
+----
+* keep low-priority task
+=WAITING FOR=
+* keep waiting task
+</syntaxhighlight>
+# Restore and save the original fixture before EACH of the following independent movement checks. After each action select "Edit" and validate that the parent and its four sub-elements occur exactly once, consecutively, in their original order and with unchanged list markers. The following task and its child must remain together and all unrelated tasks must be preserved - if not fail the test:
+## Select "Do it later" for "parent task": its entire block must appear after "keep following child", immediately before the separator.
+## Select the rocket (highest priority) for "parent task": its entire block must appear immediately after "=NEXT ACTION=", before "keep first task".
+## Move "parent task" to Waiting For: its entire block must appear immediately after "=WAITING FOR=", before "keep waiting task". Save/return to the task view and move it back to Next Action: its entire block must appear immediately after "=NEXT ACTION=".
+## Move "parent task" to the other context: its entire block must disappear from the original context and appear together exactly once in the destination context. Inspect both contexts using "Edit".
+# Restore the original fixture. Tick off "bullet child" and inspect the wikitext: only "** bullet child" and "*** bullet grandchild" must disappear. The parent, the numbered child and grandchild, and all other tasks must remain - if not fail the test.
+# Repeat the parent completion and movement checks with "# parent task" instead of "* parent task", and mixed-marker sub-elements "*# mixed child" and "#** mixed grandchild" added inside its block. All consecutive sub-elements must accompany the parent - if not fail the test.
+# Repeat with a complete preformatted block before the first child and another after the last child:
+<syntaxhighlight lang="text">
+<pre>
+notes belonging to the parent
+</pre>
+</syntaxhighlight>
+# Validate that both preformatted blocks and all children accompany the parent for completion and movement - if not fail the test.
+# Restore the fixture and insert a blank line immediately after the parent. Complete the parent: the following list items must remain because the blank line interrupts the task block - if not fail the test.
+# Repeat with an ordinary text line, a separator, and a heading in place of that blank line. None may be consumed as part of the task block - if not fail the test.
+# Restore the fixture and remove everything after "### numbered grandchild". Complete the parent: all four sub-elements must be removed through the end of the document, while "keep first task" remains - if not fail the test.

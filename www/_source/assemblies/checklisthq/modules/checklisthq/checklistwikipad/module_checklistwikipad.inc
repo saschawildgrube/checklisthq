@@ -963,20 +963,33 @@
 					}
 
 					$nLineToModifyEnd = $nLineToModify;
-					$nPreStart = $nLineToModify + 1;
-					// A preformatted section belongs to the task only if it follows immediately
-					// and has a closing tag.
-					if (ArrayKeyExists($arrayLines,$nPreStart)
-						&& StringSection(trim($arrayLines[$nPreStart]),0,5) == '<pre>')
+					$nTaskDepth = strspn($strLineToModify,'*#');
+					$nTaskLine = $nLineToModify + 1;
+					while ($nTaskLine < ArrayCount($arrayLines))
 					{
-						for ($nPreLine = $nPreStart; $nPreLine < ArrayCount($arrayLines); $nPreLine++)
+						// Consecutive deeper list items belong to this task. A sibling,
+						// heading, separator, blank or ordinary text ends the block.
+						if ($nTaskDepth > 0 && strspn($arrayLines[$nTaskLine],'*#') > $nTaskDepth)
 						{
-							if (FindString($arrayLines[$nPreLine],'</pre>') != -1)
+							$nLineToModifyEnd = $nTaskLine++;
+							continue;
+						}
+
+						// Preserve attached, closed preformatted notes, including notes
+						// interleaved with descendants. Never consume an unclosed block.
+						if (StringSection(trim($arrayLines[$nTaskLine]),0,5) == '<pre>')
+						{
+							for ($nPreLine = $nTaskLine; $nPreLine < ArrayCount($arrayLines); $nPreLine++)
 							{
-								$nLineToModifyEnd = $nPreLine;
-								break;
+								if (FindString($arrayLines[$nPreLine],'</pre>') != -1)
+								{
+									$nLineToModifyEnd = $nPreLine;
+									$nTaskLine = $nPreLine + 1;
+									continue 2;
+								}
 							}
 						}
+						break;
 					}
 
 					$strTaskBlockToModify = '';
