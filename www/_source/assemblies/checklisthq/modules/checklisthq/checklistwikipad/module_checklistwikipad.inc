@@ -627,6 +627,8 @@
 				$bAddTaskFormAdded = false;
 				$nLineCount = ArrayCount($arrayLines);
 				$arrayInsertPositions = $this->ComputeTaskListInsertPositions($arrayLines);
+				// Keep templates local to this render so context and translations stay fresh.
+				$arrayActionTemplates = array();
 				$strSection = 'nextaction'; // the default
 				$arrayOutput = array();
 				
@@ -695,14 +697,7 @@
 
 					
 					$strHtmlFormAddTask = '';
-					$strHtmlLinkLineDelete = '';
-					$strHtmlLinkLineMoveDown = '';
-					$strHtmlLinkLineMoveTop = '';
-					$strHtmlLinkLineMoveToNextAction = ''; 
-					$strHtmlLinkLineMoveToWaitingFor = '';
-					$strHtmlLinkLineMoveToOtherContext = '';
-					
-					
+					$strHtmlTaskActions = '';
 					if (StringSection($strLine,0,1) == '=')
 					{
 						if (isset($arrayInsertPositions[$nLine]))
@@ -718,54 +713,56 @@
 						||	StringSection($strLine,0,1) == '#')
 					{
 						
-						$strLineHash = MakeHash($strLine);
-
-						if ($nLine < $nLineCount - 1)
+						$strActionKey = $strSection.':'.(int)$bFirstLineInSection.':'.(int)($nLine < $nLineCount - 1);
+						if (!isset($arrayActionTemplates[$strActionKey]))
 						{
-							$strHtmlLinkLineMoveDown = $this->MakeHtmlLinkMoveDown($nLine,$strLineHash);
-						}
+							$strHtmlLinkLineDelete = '';
+							$strHtmlLinkLineMoveDown = '';
+							$strHtmlLinkLineMoveTop = '';
+							$strHtmlLinkLineMoveToNextAction = '';
+							$strHtmlLinkLineMoveToWaitingFor = '';
+							$strHtmlLinkLineMoveToOtherContext = '';
+							$strLineHash = 'HASH';
+							$nActionLine = 'LINE';
+
+							if ($nLine < $nLineCount - 1)
+							{
+								$strHtmlLinkLineMoveDown = $this->MakeHtmlLinkMoveDown($nActionLine,$strLineHash);
+							}
 						
-						$strHtmlLinkLineMoveToOtherContext = $this->MakeHtmlLinkMoveToOtherContext($nLine,$strLineHash);
+							$strHtmlLinkLineMoveToOtherContext = $this->MakeHtmlLinkMoveToOtherContext($nActionLine,$strLineHash);
 						
-						$strHtmlLinkLineDelete = $this->MakeHtmlLinkDelete($nLine,$strLineHash);
+							$strHtmlLinkLineDelete = $this->MakeHtmlLinkDelete($nActionLine,$strLineHash);
 
-						if ($strSection != 'waitingfor')
-						{
-							$strHtmlLinkLineMoveToWaitingFor = $this->MakeHtmlLinkMoveToWaitingFor($nLine,$strLineHash);
-	/*						$arrayParams = array(
-								$this->GetModuleVarName('line') => $nLine,
-								$this->GetModuleVarName('linehash') => $strLineHash,
-								$this->GetModuleVarName('action') => 'movetowaitingfor',
-								$this->GetModuleVarNameState() => 'submitline'
-								);
-							$strHtmlLinkLineMoveToWaitingFor = '&nbsp;'.$linkicon->RenderLinkIcon(
-								$this->GetWebsite()->MakeURL($arrayParams),
-								'hourglass-start',
-								$strTID_LineMoveToWaitingFor);
-		*/
+							if ($strSection != 'waitingfor')
+							{
+								$strHtmlLinkLineMoveToWaitingFor = $this->MakeHtmlLinkMoveToWaitingFor($nActionLine,$strLineHash);
+							}
+
+							if ($strSection != 'nextaction')
+							{
+								$strHtmlLinkLineMoveToNextAction = $this->MakeHtmlLinkMoveToNextAction($nActionLine,$strLineHash);
+							}
+
+							if ($strSection == 'nextaction' && $bFirstLineInSection == false)
+							{
+								$strHtmlLinkLineMoveTop = $this->MakeHtmlLinkMoveTop($nActionLine,$strLineHash);
+							}
+
+							$arrayActionTemplates[$strActionKey] =
+								$strHtmlLinkLineMoveToWaitingFor.$strHtmlLinkLineMoveToNextAction.
+								$strHtmlLinkLineMoveTop.$strHtmlLinkLineMoveToOtherContext.
+								$strHtmlLinkLineMoveDown.$strHtmlLinkLineDelete;
 						}
-
-						if ($strSection != 'nextaction')   
-						{
-							$strHtmlLinkLineMoveToNextAction = $this->MakeHtmlLinkMoveToNextAction($nLine,$strLineHash);
-						}
-
-						if ($strSection == 'nextaction' && $bFirstLineInSection == false)   
-						{
-							$strHtmlLinkLineMoveTop = $this->MakeHtmlLinkMoveTop($nLine,$strLineHash);
-						}
-
+						// Expand the complete toolbar once instead of each link separately.
+						$strHtmlTaskActions = strtr($arrayActionTemplates[$strActionKey],array(
+							'LINE' => (string)$nLine,'HASH' => MakeHash($strLine)));
 						$bFirstLineInSection = false;
 					}
 					$arrayOutput[] =
 						$strLine
 						.$strHtmlFormAddTask
-						.$strHtmlLinkLineMoveToWaitingFor
-						.$strHtmlLinkLineMoveToNextAction
-						.$strHtmlLinkLineMoveTop
-						.$strHtmlLinkLineMoveToOtherContext
-						.$strHtmlLinkLineMoveDown 
-						.$strHtmlLinkLineDelete
+						.$strHtmlTaskActions
 						."\n".$strPre;
 					
 				}

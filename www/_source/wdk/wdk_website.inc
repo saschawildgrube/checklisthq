@@ -3364,6 +3364,8 @@
 		final
 		function ReplaceGenericOutputItems($strOutput)
 		{
+			// Placeholder delimiters are ASCII. Keep all search/slice offsets in bytes
+			// so large UTF-8 pages are not recounted for every registered item.
 			$nFirstTagStartPos = 0;
 
 			$arrayTags = array();
@@ -3378,29 +3380,41 @@
 				{
 					$nNextTagStartPos++;
 
-					$nNextTagStartPos = FindString($strOutput,$strTagStart,false,$nNextTagStartPos);
+					$nNextTagStartPos = strpos($strOutput,$strTagStart,$nNextTagStartPos);
+					if ($nNextTagStartPos === false)
+					{
+						$nNextTagStartPos = -1;
+					}
 					if ($nNextTagStartPos != -1)
 					{
-						$strFound = "";
-						$nNextTagStartPos = FindStringMultiple(
-							$strOutput, 
-							array(
+						$nBoundaryPos = -1;
+						foreach (array(
 								$strTagStart.$strTagEnd,
 								$strTagStart." ",
 								$strTagStart."\t",
 								$strTagStart."\n",
 								$strTagStart."\r\n"
-								),
-							$strFound,
-							false,
-							$nNextTagStartPos);
+								) as $strBoundary)
+						{
+							$nCandidatePos = strpos($strOutput,$strBoundary,$nNextTagStartPos);
+							if ($nCandidatePos !== false && ($nBoundaryPos == -1 || $nCandidatePos < $nBoundaryPos))
+							{
+								$nBoundaryPos = $nCandidatePos;
+							}
+							if ($nBoundaryPos == $nNextTagStartPos)
+							{
+								break;
+							}
+						}
+						$nNextTagStartPos = $nBoundaryPos;
 
 						if ($nNextTagStartPos != -1)
 						{
 							
-							$nNextTagEndPos = FindString($strOutput, $strTagEnd, false, $nNextTagStartPos);
-							if ($nNextTagEndPos == -1)
+							$nNextTagEndPos = strpos($strOutput,$strTagEnd,$nNextTagStartPos);
+							if ($nNextTagEndPos === false)
 							{
+								$nNextTagEndPos = -1;
 								$this->Error("Syntax Error after \"{".$strItemID."\": Missing end tag \"$strTagEnd\". nNextTagStartPos=$nNextTagStartPos. nNextTagEndPos=$nNextTagEndPos.");
 							}
 							if ($nNextTagEndPos < $nNextTagStartPos)
@@ -3408,10 +3422,10 @@
 								$this->Error("nNextTagEndPos($nNextTagEndPos) < nNextTagStartPos($nNextTagStartPos)");    
 							}
 							
-							$strItemTag = StringSection(
+							$strItemTag = substr(
 								$strOutput,
 								$nNextTagStartPos,
-								$nNextTagEndPos - $nNextTagStartPos + StringLength($strTagEnd)
+								$nNextTagEndPos - $nNextTagStartPos + strlen($strTagEnd)
 								);
 								
 							$arrayAttributes = array();

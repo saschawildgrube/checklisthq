@@ -426,9 +426,10 @@
 	
 	function ReplaceTags_TagLoop($strTemplate, $arrayTags, $strTagPrefix, $strTagPostfix)
 	{
+		// Only presence matters here; byte searches preserve UTF-8 text unchanged.
 		if ($strTagPrefix != '')
 		{
-			if (FindString($strTemplate,$strTagPrefix) == -1 )
+			if (strpos($strTemplate,$strTagPrefix) === false)
 			{
 				return $strTemplate;
 			}
@@ -447,7 +448,7 @@
 		  {
 		  	if ($strTagPrefix != '')
 		  	{
-					if (FindString($strResult,$strTagPrefix) == -1 )
+					if (strpos($strResult,$strTagPrefix) === false)
 					{
 						return $strResult;
 					}
