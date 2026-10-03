@@ -1,0 +1,32 @@
+﻿=Do it later moves the last task across a separator=
+# Use test: "login"
+# Navigate to tasks page: /tasks/
+# Select "Edit"
+# Replace the entire content with exactly the following wikitext:
+<syntaxhighlight lang="text">
+=NEXT ACTION=
+* keep this first-section task
+* move this last task
+-----
+* keep this next-section task first
+* keep this next-section task second
+</syntaxhighlight>
+# Select "Save"
+# For the item "move this last task", select "Do it later" (the hand pointing down)
+# Select "Edit"
+# Validate that the content exactly matches the following wikitext, with the moved task immediately after the separator as the first task in the next section - if not fail the test
+<syntaxhighlight lang="text">
+=NEXT ACTION=
+* keep this first-section task
+-----
+* move this last task
+* keep this next-section task first
+* keep this next-section task second
+</syntaxhighlight>
+# Repeat from the original content with the following block immediately after "* move this last task" and before the separator:
+<syntaxhighlight lang="text">
+<pre>
+notes belonging to the moved task
+</pre>
+</syntaxhighlight>
+# Validate that the task and its entire preformatted block move together immediately after the separator, before the existing next-section tasks - if not fail the test

@@ -1030,6 +1030,16 @@
 							if (	StringSection($strLine,0,1) == '='
 								||	StringSection($strLine,0,3) == '---')
 							{
+								// At the end of a section, move the complete task block
+								// across the separator to the start of the next section.
+								if ($nLine == $nLineToModifyEnd + 1
+									&& StringSection($strLine,0,3) == '---')
+								{
+									$strContent .= $strLine."\n".$strTaskBlockToMove."\n";
+									$strTaskBlockToMove = '';
+									$nLine++;
+									continue;
+								}
 								$strContent .=
 									$strTaskBlockToMove
 									."\n"
