@@ -1,0 +1,53 @@
+﻿=Moving tasks between contexts into Next Action=
+# Use test: "login"
+# Use disposable task lists. Run every case below from Personal to Office, then repeat from Office to Personal, resetting both lists before each case.
+# In the source context, open /tasks/, select "Edit", replace the content with the following, and save:
+<syntaxhighlight lang="text">
+=NEXT ACTION=
+* transfer this task
+** child task
+<pre>
+transfer notes
+</pre>
+* keep source task
+</syntaxhighlight>
+# For each case, replace the target context's task list with the specified input and save. Return to the source context and select "Move to other context" for "transfer this task".
+# Verify the destination context opens and confirms the move. In "Edit", verify the complete transferred block appears exactly once, directly below =NEXT ACTION=. Its child task and preformatted notes must remain attached.
+# Verify the source now contains only =NEXT ACTION= and * keep source task.
+==Case 1: Existing Next Action==
+<syntaxhighlight lang="text">
+=WAITING FOR=
+* keep waiting task
+=NEXT ACTION=
+* keep next task
+=SOMEDAY=
+* keep someday task
+</syntaxhighlight>
+# Expect the transferred block between =NEXT ACTION= and * keep next task. All other content and heading order must remain unchanged; no duplicate heading may be created.
+==Case 2: Missing Next Action, Waiting For followed by another section==
+<syntaxhighlight lang="text">
+=WAITING FOR=
+* keep waiting task
+<pre>
+=NEXT ACTION=
+This is a note, not a section.
+</pre>
+=SOMEDAY=
+* keep someday task
+</syntaxhighlight>
+# Expect a new =NEXT ACTION= heading and the transferred block AFTER the complete Waiting For section (including its notes), BEFORE =SOMEDAY=. The heading inside the notes must remain unchanged.
+==Case 3: Waiting For is the last section==
+<syntaxhighlight lang="text">
+=WAITING FOR=
+* keep waiting task
+</syntaxhighlight>
+# Expect =NEXT ACTION= and the transferred block appended after * keep waiting task.
+==Case 4: Neither heading exists==
+<syntaxhighlight lang="text">
+=SOMEDAY=
+* keep someday task
+</syntaxhighlight>
+# Expect =NEXT ACTION= and the transferred block before =SOMEDAY=; preserve the existing section.
+==Case 5: Empty target==
+# Empty the target list and save before moving. Expect only =NEXT ACTION= followed by the complete transferred block.
+# Fail the test if any expectation above is not met.

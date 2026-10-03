@@ -1183,7 +1183,58 @@
 						$nLineToAdd = $nLineToAddPriorityHigh;
 					}
 					
-					if ($nLineToAdd == 0)
+					$strTransfer = $this->GetModuleVarInsecure('task_transfer');
+					$bIsContextTransfer = ($strTransfer != '' && $strTransfer === HtmlDecode($strLineText));
+					if ($bIsContextTransfer)
+					{
+						// Locate section headings outside preformatted task notes.
+						$nNextAction = -1;
+						$nWaitingForEnd = -1;
+						$bInWaitingFor = false;
+						$bInPre = false;
+						foreach ($arrayLines as $nTargetLine => $strTargetLine)
+						{
+							$strHeading = StringTrim($strTargetLine);
+							if ($bInPre == false && StringSection($strHeading,0,1) == '=')
+							{
+								if ($bInWaitingFor)
+								{
+									$nWaitingForEnd = $nTargetLine;
+									$bInWaitingFor = false;
+								}
+								if ($strHeading == '=NEXT ACTION=')
+								{
+									$nNextAction = $nTargetLine;
+									break;
+								}
+								if ($strHeading == '=WAITING FOR=')
+								{
+									$bInWaitingFor = true;
+								}
+							}
+							if (FindString($strTargetLine,'<pre>') != -1)
+							{
+								$bInPre = true;
+							}
+							if (FindString($strTargetLine,'</pre>') != -1)
+							{
+								$bInPre = false;
+							}
+						}
+						if ($nNextAction != -1)
+						{
+							$nInsertAt = $nNextAction + 1;
+							$arrayInsert = array($strLineText);
+						}
+						else
+						{
+							$nInsertAt = $bInWaitingFor ? ArrayCount($arrayLines) : (($nWaitingForEnd != -1) ? $nWaitingForEnd : 0);
+							$arrayInsert = array('=NEXT ACTION=',$strLineText);
+						}
+						array_splice($arrayLines,$nInsertAt,0,$arrayInsert);
+						$strContent = implode("\n",$arrayLines);
+					}
+					else if ($nLineToAdd == 0)
 					{
 							$strContent =
 								$strLineText
@@ -1211,9 +1262,8 @@
 					}
 					$strTaskMessageCode = 'LINEADDED';
 					$strTaskMessageLine = HtmlDecode($strLineText);
-					$strTransfer = $this->GetModuleVarInsecure('task_transfer');
 					$this->SetModuleVar('task_transfer','');
-					if ($strTransfer != '' && $strTransfer === HtmlDecode($strLineText))
+					if ($bIsContextTransfer)
 					{
 						$strTaskMessageCode = 'LINEMOVEDTOOTHERCONTEXT';
 						$strTaskMessageLine = strtok($strTransfer,"\n");
