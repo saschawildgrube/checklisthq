@@ -38,6 +38,9 @@
 		{
 			if ($this->IsViewOnly() == true)
 			{
+				// Request variables survive in the session even when the write is ignored.
+				// Do not let a read-only instance seed a later editable instance's draft.
+				$this->SetModuleVar('content','');
 				$strState = 'view';	
 			}
 			
@@ -237,7 +240,8 @@
 					$this->m_formDef,
 					array()));
 					
-			$this->PrepareTabNav('edit');
+			// Section editing must keep the whole-page Edit tab navigable.
+			$this->PrepareTabNav($strSubmitState == 'submitsection' ? 'editsection' : 'edit');
 	
 			return 'edit';
 		}
@@ -339,7 +343,7 @@
 			$strContent = $this->GetModuleVarInsecure('content');
 			$strContent = ReplaceString($strContent,'<CODE>','<code>');
 			$strContent = ReplaceString($strContent,'</CODE>','</code>');
-			$strContent = ReplaceString($strContent,u("—"),'--');
+			$strContent = ReplaceString($strContent,u("ï¿½"),'--');
 			$strSuffix = substr($strPage,$section['start'] + $section['length']);
 			if ($strSuffix !== '' && $strContent !== '' && substr($strContent,-1) !== "\n")
 			{
@@ -383,7 +387,7 @@
 			$strContent = ReplaceString($strContent,'<CODE>','<code>');
 			$strContent = ReplaceString($strContent,'</CODE>','</code>');
 			
-			$strContent = ReplaceString($strContent,u("—"),'--'); 
+			$strContent = ReplaceString($strContent,u("ï¿½"),'--'); 
 			
 			$this->SetState('');
 		

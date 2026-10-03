@@ -20,6 +20,9 @@
 # Repeat Save and stay for a subheading and separator. Removing the starting boundary must return to View. Check that task priority insertion and checklist creation still operate correctly after a section save.
 # If a storage write fails, verify the error and submitted section text remain visible, without a success redirect.
 
+# Read-only draft isolation: in both Personal and Office, obtain a valid Header section form, then submit its changed draft while Header is rendered read-only on Tasks. Verify the rendered Header and stored source remain unchanged. Open Header whole-page Edit without clearing request/session content manually: it must contain the stored source, never the ignored draft. Repeat with a whole-page submit request; restore the original Header afterward.
+# In both a fresh section editor and a rejected stale section form, inspect and click the whole-page Edit tab. Its href must navigate to the edit state, not #. Verify the complete current stored page opens; the normal whole-page editor must still mark Edit as selected.
+
 ==Fixture (paste into whole-page Edit)==
 <syntaxhighlight lang="text">
 Introduction must stay unchanged.

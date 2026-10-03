@@ -1,5 +1,12 @@
 .wdk-jsoneditor { width: 100%; font: 13px/1.45 Consolas, 'Courier New', monospace; --editor-accent: #a8c979; }
 .wdk-jsoneditor * { box-sizing: border-box; }
+.wdk-jsoneditor .jsoneditor-view-controls { margin-left: auto; flex-shrink: 0; }
+.wdk-jsoneditor .jsoneditor-editor:fullscreen { display: flex; flex-direction: column; width: 100%; height: 100%; padding: 8px; background: #292e35; overflow: auto; }
+.wdk-jsoneditor .jsoneditor-editor:fullscreen > .jsoneditor-shared-toolbar, .wdk-jsoneditor .jsoneditor-editor:fullscreen > .jsoneditor-status { flex-shrink: 0; }
+.wdk-jsoneditor .jsoneditor-editor:fullscreen > .jsoneditor-panes { flex: 1; min-height: 0; }
+.wdk-jsoneditor .jsoneditor-editor:fullscreen .jsoneditor-pane { display: flex; flex-direction: column; min-height: 0; }
+.wdk-jsoneditor .jsoneditor-editor:fullscreen .jsoneditor-pane-header { flex-shrink: 0; }
+.wdk-jsoneditor .jsoneditor-editor:fullscreen .jsoneditor-raw-container, .wdk-jsoneditor .jsoneditor-editor:fullscreen .jsoneditor-tree { flex: 1; height: auto; min-height: 0; }
 .wdk-jsoneditor .jsoneditor-row { display: flex; align-items: center; gap: .25rem; flex-wrap: nowrap; white-space: nowrap; min-width: 0; width: 100%; margin-bottom: .5rem; }
 .wdk-jsoneditor .jsoneditor-row > button { flex: 0 0 auto; padding: .25rem; }
 .wdk-jsoneditor .jsoneditor-row > select { flex: 0 1 5.5rem; min-width: 0; width: 5.5rem; }
