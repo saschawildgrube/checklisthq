@@ -1,0 +1,61 @@
+=Moving an individual sub-task promotes it to the highest level=
+# Use test: "login"
+# Navigate to tasks page: /tasks/
+# Select "Edit", replace the entire content with this fixture, and select "Save":
+<syntaxhighlight lang="text">
+=NEXT ACTION=
+* keep first task
+* parent task
+** selected sub-task
+*** selected child
+<pre>
+*** literal note, not a task
+</pre>
+** keep sibling
+* keep following task
+----
+* keep low-priority task
+=WAITING FOR=
+* keep waiting task
+</syntaxhighlight>
+# Select "Do it later" for "selected sub-task" itself, then select "Edit".
+# Validate that the content exactly matches the following wikitext - if not fail the test:
+<syntaxhighlight lang="text">
+=NEXT ACTION=
+* keep first task
+* parent task
+** keep sibling
+* keep following task
+* selected sub-task
+** selected child
+<pre>
+*** literal note, not a task
+</pre>
+----
+* keep low-priority task
+=WAITING FOR=
+* keep waiting task
+</syntaxhighlight>
+# Restore and save the original fixture. Select the rocket (highest priority) for "selected sub-task" itself, then select "Edit".
+# Validate that the content exactly matches the following wikitext - if not fail the test:
+<syntaxhighlight lang="text">
+=NEXT ACTION=
+* selected sub-task
+** selected child
+<pre>
+*** literal note, not a task
+</pre>
+* keep first task
+* parent task
+** keep sibling
+* keep following task
+----
+* keep low-priority task
+=WAITING FOR=
+* keep waiting task
+</syntaxhighlight>
+# After each movement return to the task view and reload. Validate that "selected sub-task" has no indentation, "selected child" remains one level below it, and the old parent and sibling are unchanged - if not fail the test.
+# Repeat both independent movement checks with "### selected sub-task" and "#### selected child" in the original fixture. The moved lines must be "# selected sub-task" and "## selected child" - if not fail the test.
+# Repeat both checks with "*# selected sub-task" and "*#* selected child". The moved lines must be "# selected sub-task" and "#* selected child" - if not fail the test.
+# Repeat both checks without "selected child" and its preformatted notes. The moved sub-task must still have exactly one list marker - if not fail the test.
+# Restore the original fixture and move "parent task" instead. Its entire block must move together with its original indentation unchanged - if not fail the test.

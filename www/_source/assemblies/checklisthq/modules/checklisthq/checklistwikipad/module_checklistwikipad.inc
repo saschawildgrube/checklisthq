@@ -992,14 +992,31 @@
 						break;
 					}
 
+					// Moving a sub-task up or down makes it a top-level task.
+					// Shift its descendants equally, preserving their relative depth.
+					$bPromoteTask = ($nTaskDepth > 1 && in_array($strAction,array('movedown','movetop','movetonextaction')));
+					$bInTaskPre = false;
 					$strTaskBlockToModify = '';
 					for ($nTaskBlockLine = $nLineToModify; $nTaskBlockLine <= $nLineToModifyEnd; $nTaskBlockLine++)
 					{
+						$strTaskBlockLine = $arrayLines[$nTaskBlockLine];
+						if (StringSection(trim($strTaskBlockLine),0,5) == '<pre>')
+						{
+							$bInTaskPre = true;
+						}
+						if ($bPromoteTask && $bInTaskPre == false && strspn($strTaskBlockLine,'*#') >= $nTaskDepth)
+						{
+							$strTaskBlockLine = substr($strTaskBlockLine,$nTaskDepth - 1);
+						}
+						if ($bInTaskPre && FindString($strTaskBlockLine,'</pre>') != -1)
+						{
+							$bInTaskPre = false;
+						}
 						if ($strTaskBlockToModify != '')
 						{
 							$strTaskBlockToModify .= "\n";
 						}
-						$strTaskBlockToModify .= $arrayLines[$nTaskBlockLine];
+						$strTaskBlockToModify .= $strTaskBlockLine;
 					}
 				}
 				
