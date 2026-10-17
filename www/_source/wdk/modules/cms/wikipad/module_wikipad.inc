@@ -18,6 +18,17 @@
 		function OnInit()
 		{
 			$bResult = parent::OnInit();
+
+			// Navigation must not resume an editor or replay a saved submission from the session.
+			if (!$this->IsModuleParam('state')
+				&& in_array($this->GetState(),array('edit','editsection','submit','submitsection'),true))
+			{
+				$this->SetState('');
+				$this->SetModuleVar('content','');
+				$this->SetModuleVar('section','');
+				$this->SetModuleVar('sectionhash','');
+			}
+
 			$this->IncludeElement('wiki');
 			$this->IncludeElement('tabnavigation');
 			

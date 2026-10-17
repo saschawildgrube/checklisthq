@@ -7,13 +7,15 @@ NOT YET Baselined
 ** No changes
 * Defects
 ** Fixed calls to non-existent functions in wdk_website.inc.
+** CWikiPadModule now clears remembered editing and submission states when returning to a page through navigation, preventing reopened editors and stale-section errors. Explicit editing requests and pages configured to open in edit mode remain supported.
 * New features
 ** CWikiElement now supports the MediaWiki-style &lt;syntaxhighlight&gt; tag with an optional language attribute. The &lt;syntaxhighlighting&gt; alias is also supported.
 ** Added GetPleskVersion(). The system/server status command now returns the installed Plesk version and CServerManagerModule displays it.
 ** Added GetVersionInfoOS(). The system/server status command and CServerManagerModule now expose the operating system name and version.
 ** CServerManagerModule now compares Plesk versions and highlights servers below the highest detected version.
+** Added check.sh shell script to perform a series of read-only analysis checks on a server.
 * Improvements
-** WikiPd Module now supports the re-direct logic to prevent mobile browsers to offer form resubmission.
+** CWikiPadModule Module now supports the re-direct logic to prevent mobile browsers to offer form resubmission.
 ** ParseVersion() now defaults to 3 version components - and hence assumes semantic versions by default.
 ** CompareVersions() now supports the $nComponents parameter and defaults to sematic versions with 3 components.
 ** CElement now uses a memory cache for loaded CFG and HTML files to improve rendering performance.

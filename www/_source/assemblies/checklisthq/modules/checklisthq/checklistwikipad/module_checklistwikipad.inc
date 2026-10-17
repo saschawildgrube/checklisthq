@@ -267,6 +267,17 @@
 
 		function OnRenderModule($strState)
 		{
+			// Navigation must not resume an editor or replay a saved submission from the session.
+			if (!$this->IsModuleParam('state')
+				&& in_array($strState,array('edit','editsection','submit','submitsection'),true))
+			{
+				$strState = '';
+				$this->SetState('');
+				$this->SetModuleVar('content','');
+				$this->SetModuleVar('section','');
+				$this->SetModuleVar('sectionhash','');
+			}
+
 			if ($this->IsViewOnly() == true)
 			{
 				$strState = 'view';	

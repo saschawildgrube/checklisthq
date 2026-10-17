@@ -61,18 +61,19 @@
 			$strCurrentDir = $this->GetModuleVar("currentdir");
 			if ($strCurrentDir != "")
 			{
+				$arrayParams = array();
+				$arrayParams[$this->GetModuleVarNameState()] = "browse";
+				$arrayParams[$this->GetModuleVarName("currentdir")] = "";
+				$strLink = $this->GetWebsite()->MakeURL($arrayParams);
+				$toolbarDef->AddTool($strLink, "chevron-right", "?TID_STATICFILEBROWSER_TOOL_ROOTDIR?");
+			
 				$strParentDir = GetParentDirectoryFromPath($strCurrentDir);
 				$arrayParams = array();
 				$arrayParams[$this->GetModuleVarNameState()] = "browse";
 				$arrayParams[$this->GetModuleVarName("currentdir")] = $strParentDir;
 				$strLink = $this->GetWebsite()->MakeURL($arrayParams);
-				$toolbarDef->AddTool($strLink, "level-up", "?TID_STATICFILEBROWSER_TOOL_PARENTDIR?");
+				$toolbarDef->AddTool($strLink, "chevron-up", "?TID_STATICFILEBROWSER_TOOL_PARENTDIR?");
 
-				$arrayParams = array();
-				$arrayParams[$this->GetModuleVarNameState()] = "browse";
-				$arrayParams[$this->GetModuleVarName("currentdir")] = "";
-				$strLink = $this->GetWebsite()->MakeURL($arrayParams);
-				$toolbarDef->AddTool($strLink, "level-up", "?TID_STATICFILEBROWSER_TOOL_ROOTDIR?");
 			}
 			
 			

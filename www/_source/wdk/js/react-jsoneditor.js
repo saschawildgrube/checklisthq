@@ -94,25 +94,25 @@ class JsonEditor extends WDKReactComponent
 	componentDidMount()
 	{
 		super.componentDidMount();
-		this.fullscreenChanged = () => this.setState({ fullscreen: document.fullscreenElement === this.editor, fullscreenError: '' });
-		document.addEventListener('fullscreenchange', this.fullscreenChanged);
+		this.fullscreenKeyDown = event => { if (event.key === 'Escape' && this.state.fullscreen) this.setFullscreen(false); };
+		document.addEventListener('keydown', this.fullscreenKeyDown);
 	}
 	componentWillUnmount()
 	{
-		document.removeEventListener('fullscreenchange', this.fullscreenChanged);
+		document.removeEventListener('keydown', this.fullscreenKeyDown);
+		if (this.state.fullscreen) document.body.style.overflow = this.previousBodyOverflow;
 		super.componentWillUnmount();
 	}
-	async setFullscreen(enabled)
+	setFullscreen(enabled)
 	{
-		try
+		if (enabled === !!this.state.fullscreen) return;
+		if (enabled)
 		{
-			if (enabled) await this.editor.requestFullscreen();
-			else if (document.fullscreenElement === this.editor) await document.exitFullscreen();
+			this.previousBodyOverflow = document.body.style.overflow;
+			document.body.style.overflow = 'hidden';
 		}
-		catch (error)
-		{
-			if (this.IsMounted()) this.setState({ fullscreenError: 'Unable to ' + (enabled ? 'enter' : 'exit') + ' full screen in this browser.' });
-		}
+		else document.body.style.overflow = this.previousBodyOverflow;
+		this.setState({ fullscreen: enabled });
 	}
 	type(value) { return value === null ? 'null' : Array.isArray(value) ? 'array' : typeof value; }
 	// Preserve every character, including incomplete JSON, for the highlighting layer.
@@ -590,9 +590,8 @@ class JsonEditor extends WDKReactComponent
 	}
 	render()
 	{
-		return e('div', { className: 'jsoneditor-editor', ref: element => { this.editor = element; } },
+		return e('div', { className: 'jsoneditor-editor' + (this.state.fullscreen ? ' jsoneditor-fullscreen' : ''), ref: element => { this.editor = element; } },
 			this.sharedToolbar(),
-			this.state.fullscreenError && e('p', { className: 'jsoneditor-error', role: 'alert' }, this.state.fullscreenError),
 			this.state.error && e('p', { className: 'jsoneditor-error', role: 'alert' }, 'Invalid JSON: ' + this.state.error + ' The tree shows the last valid JSON. Correct the raw text to resume editing.'),
 			e('div', { className: 'jsoneditor-panes', ref: element => { this.panes = element; } },
 				e('section', { style: this.state.rawVisible ? { flexGrow: this.state.treeVisible ? this.state.split : 1 } : {}, className: 'jsoneditor-pane' + (this.state.rawVisible ? '' : ' jsoneditor-pane-collapsed'), 'aria-label': 'Raw JSON' },

@@ -1,0 +1,13 @@
+=Returning to a page after editing=
+# Use test: "login"
+# In Personal, open Recurring and select View if an editor is already open.
+# Click Edit beside the DAILY section heading. Record the original section text.
+# Append a temporary task: "* Navigation regression probe" and click Save.
+# Verify the saved page is displayed with the temporary task, without an editor or a stale-section message.
+# Click Tasks in the main navigation, then click Recurring in the main navigation. Do not use browser Back or an old editor URL.
+# Verify Recurring displays the saved page, with no whole-page or section editor and no "This section is no longer current" message.
+# Clean up through View and a fresh section Edit link: restore the original section text, save, and select View.
+# Repeat navigation away and back after opening the whole-page editor, and after opening a section editor without saving. The returning page must display normally.
+# Where available, repeat after Save and stay: the editor must remain open immediately after saving, but returning through main navigation must display the page normally.
+# Repeat in Office. Explicit Edit links must still open the intended editor, and invalid section submissions must still show their error and preserve the draft.
+# Open Header, navigate to Tasks, then return to Header. Header must still open in its intended editor mode. Check Visual still opens a visualization and its explicit editor and visualization tabs work.
