@@ -544,6 +544,18 @@
 
 			
 			
+		function GetTaskListLines($strContent)
+		{
+			$arrayLines = StringExplode($strContent,"\n",false);
+			$nLineCount = ArrayCount($arrayLines);
+			// A terminal newline does not represent another task-list line.
+			if ($nLineCount > 0 && $arrayLines[$nLineCount - 1] === '')
+			{
+				array_pop($arrayLines);
+			}
+			return $arrayLines;
+		}
+
 		function ComputeTaskListInsertPositions($arrayLines)
 		{
 			$nLineCount = ArrayCount($arrayLines);
@@ -633,7 +645,7 @@
 				$this->GetWebsite()->MaintainScrollPosition();
 				
 				
-				$arrayLines = StringExplode($strContent,"\n",false);
+				$arrayLines = $this->GetTaskListLines($strContent);
 				
 				$bAddTaskFormAdded = false;
 				$nLineCount = ArrayCount($arrayLines);
@@ -944,7 +956,7 @@
 					}
 				}
 				
-				$arrayLines = StringExplode($strContentOld,"\n",false);
+				$arrayLines = $this->GetTaskListLines($strContentOld);
 				
 				$nMaxLine = ArrayCount($arrayLines) - 1;
 				if ($strAction == 'add')
@@ -1179,6 +1191,10 @@
 				}
 				else if ($strAction == 'add')
 				{
+					// Compare the original transfer payload before trimming line endings.
+					$strTransfer = $this->GetModuleVarInsecure('task_transfer');
+					$bIsContextTransfer = ($strTransfer != '' && $strTransfer === HtmlDecode($strLineText));
+
 					$strLineText = StringTrim($strLineText);
 					if ($strLineText == '')
 					{
@@ -1208,8 +1224,6 @@
 						$nLineToAdd = $nLineToAddPriorityHigh;
 					}
 					
-					$strTransfer = $this->GetModuleVarInsecure('task_transfer');
-					$bIsContextTransfer = ($strTransfer != '' && $strTransfer === HtmlDecode($strLineText));
 					if ($bIsContextTransfer)
 					{
 						// Locate section headings outside preformatted task notes.
