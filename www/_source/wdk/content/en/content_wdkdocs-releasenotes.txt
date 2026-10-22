@@ -2,19 +2,28 @@
 ==Version 0.0.80 WORK IN PROGRESS==
 NOT YET Baselined
 * '''IMPORTANT'''
-** No issues
+** Deploy the bundled phpseclib directory under /wdk together with wdk_encryption-symmetric.inc. Rijndael encryption no longer requires mcrypt; other historical algorithms still require the extension.
 * Security
-** No changes
+** Updated symmetric Rijndael-128, Rijndael-192 and Rijndael-256 encryption for PHP 7.4.33 using the bundled phpseclib 2.0.55 implementation. Legacy key derivation, CBC mode, zero padding and payload handling are retained for binary compatibility in both directions with the mcrypt implementation.
+** IsMcryptSupported() checks for the mcrypt extension and is used by the legacy mcrypt code paths and the bidirectional compatibility test. Removed mcrypt availability guards from encryption callers and regular tests because phpseclib is a bundled dependency.
+** CMonitoringUnitTest::TestCase_Server() now fails if PHP is below 7.4.33 due to potential exposure to CVE-2026-109618 and CVE-2026-109619.
+** MakeInitVector() now uses random_bytes() for Rijndael initialization vectors.
+** Static file viewing and downloading now resolve file paths within the configured root directory, rejecting files outside that directory.
 * Defects
 ** Fixed calls to non-existent functions in wdk_website.inc.
 ** CWikiPadModule now clears remembered editing and submission states when returning to a page through navigation, preventing reopened editors and stale-section errors. Explicit editing requests and pages configured to open in edit mode remain supported.
 * New features
+** Added CStaticFileViewerModule (cms/staticfileviewer) to display local server text and source code files based on their extensions, with escaped contents and preserved formatting.
+** CStaticFileBrowserModule now opens supported text files in the viewer in both list and portfolio layouts. Other files remain downloads. The file view includes Back to folder and Download actions.
 ** CWikiElement now supports the MediaWiki-style &lt;syntaxhighlight&gt; tag with an optional language attribute. The &lt;syntaxhighlighting&gt; alias is also supported.
 ** Added GetPleskVersion(). The system/server status command now returns the installed Plesk version and CServerManagerModule displays it.
 ** Added GetVersionInfoOS(). The system/server status command and CServerManagerModule now expose the operating system name and version.
-** CServerManagerModule now compares Plesk versions and highlights servers below the highest detected version.
+** CServerManagerModule now displays and compares Plesk versions and highlights servers below the highest detected version.
+** CServerManagerModule now displays and compares PHP versions and highlights servers below the highest detected version.
+** The system/server status command now returns the PHP version. 
 ** Added check.sh shell script to perform a series of read-only analysis checks on a server.
 * Improvements
+** The static file viewer uses a single frame with horizontal and vertical scrolling confined to the file pane. CSS-only sizing follows the viewport without changing the surrounding page or navigation layout.
 ** CWikiPadModule Module now supports the re-direct logic to prevent mobile browsers to offer form resubmission.
 ** ParseVersion() now defaults to 3 version components - and hence assumes semantic versions by default.
 ** CompareVersions() now supports the $nComponents parameter and defaults to sematic versions with 3 components.
@@ -25,10 +34,13 @@ NOT YET Baselined
 * Discontinued
 ** No changes
 * Quality
+** Deactivated tests for source code write access, ebury and openssl build date - to maintain compatibility with FPM PHP runmode.
+** Added symmetric encryption round-trip, initialization-vector validation, block-boundary and NUL-byte tests. When mcrypt is installed, tests also check byte-for-byte ciphertext equality and decryption in both directions. Runtime verification on PHP 7.4.33 and an mcrypt-enabled host is pending.
+** Added static file viewer tests for extension classification, root-directory containment and literal text escaping.
 ** Avoiding the user name "test" in automated tests. Using "test.auto" instead.
 ** Added automated Wiki element coverage for syntax highlighting, literal Wiki markup and HTML escaping.
 * Refactoring
-** No changes 
+** No changes
 * Documentation
 ** No changes
 ==Version 0.0.79==

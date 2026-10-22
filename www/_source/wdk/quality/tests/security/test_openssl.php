@@ -14,6 +14,7 @@
 		{
 			parent::OnInit();
 			$this->SetResult(true);
+			$this->SetActive(false);
 			return true;
 		}
 		
