@@ -134,7 +134,7 @@
 				"LOAD_AVERAGE_5MINUTES" => "?TID_SERVERMANAGER_LABEL_LOAD_AVERAGE_5MINUTES?",
 				"LOAD_AVERAGE_15MINUTES" => "?TID_SERVERMANAGER_LABEL_LOAD_AVERAGE_15MINUTES?",
 				"DISK_USED_PERCENT" => "?TID_SERVERMANAGER_LABEL_DISK_USED_PERCENT?",
-				"PLESK_STATUS" => "?TID_SERVERMANAGER_LABEL_PLESK_STATUS?",
+				"PLESK_STATUS" => "?TID_SERVERMANAGER_LABEL_PLESK?",
 				"PLESK_VERSION" => "?TID_SERVERMANAGER_LABEL_PLESK_VERSION?",
 				"OS_NAME" => "?TID_SERVERMANAGER_LABEL_OS_NAME?",
 				"OS_VERSION" => "?TID_SERVERMANAGER_LABEL_OS_VERSION?",
@@ -173,8 +173,15 @@
 						if ($strHost != "")
 						{
 							$strIP = GetIPFromHostName($strHost);
+							$strServerURL = ArrayGetValue($arrayURL,"PROTOCOL")."://".$strHost;
+							$strPort = ArrayGetValue($arrayURL,"PORT");
+							if ($strPort != "")
+							{
+								$strServerURL .= ":".$strPort;
+							}
+							$link = new CLinkElement($this->GetWebsite(),"default");
+							$strName = $link->RenderLink($strServerURL."/",$strName,true);
 						}
-						$bPleskActive = false;
 
 						$consumer = new CWebServiceConsumerWebApplication($this->GetWebsite());	
 						$arrayParams = array();
@@ -221,17 +228,12 @@
 							{
 								$strDiskUsedPct = $formatError->RenderFormat($strDiskUsedPct);
 							}
-							$bPleskActive = $consumer->GetResultValue("PLESK_ACTIVE");
 							$strPleskVersion = $consumer->GetResultValue("PLESK_VERSION");
 							$strOSName = $consumer->GetResultValue("OS_NAME");
 							$strOSVersion = $consumer->GetResultValue("OS_VERSION");
 							$strPHPVersion = $consumer->GetResultValue("PHP_VERSION");
 						}
-						$strPleskLinkLabel = "?TID_ITEM_INACTIVE?";
-						if ($bPleskActive == true)
-						{
-							$strPleskLinkLabel = "?TID_ITEM_ACTIVE?";
-						}
+						$strPleskLinkLabel = "?TID_SERVERMANAGER_LINK_LOGIN?";
 						$strPleskURL = "https://".$strHost.":8443/login_up.php";
 						$link = new CLinkElement($this->GetWebsite(),"default");							
 						$strPleskStatus = $link->RenderLink($strPleskURL,$strPleskLinkLabel,true);						

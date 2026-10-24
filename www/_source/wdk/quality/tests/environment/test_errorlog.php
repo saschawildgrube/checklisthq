@@ -28,7 +28,7 @@
 			if ($strLog === false)
 			{
 				$this->Trace("Log file could not be read");
-				$this->Trace("Log file does not exist or the www-data user does not have access.");
+				$this->Trace("Log file does not exist or the system user does not have access.");
 				$this->SetResult(false);
 				return;
 			}	

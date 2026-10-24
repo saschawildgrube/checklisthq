@@ -2,7 +2,7 @@
 ==Version 0.0.80 WORK IN PROGRESS==
 NOT YET Baselined
 * '''IMPORTANT'''
-** Deploy the bundled phpseclib directory under /wdk together with wdk_encryption-symmetric.inc. Rijndael encryption no longer requires mcrypt; other historical algorithms still require the extension.
+** Minimum required PHP Version is now 7.4.33 (due to the php2shell vulnerability)
 * Security
 ** Updated symmetric Rijndael-128, Rijndael-192 and Rijndael-256 encryption for PHP 7.4.33 using the bundled phpseclib 2.0.55 implementation. Legacy key derivation, CBC mode, zero padding and payload handling are retained for binary compatibility in both directions with the mcrypt implementation.
 ** IsMcryptSupported() checks for the mcrypt extension and is used by the legacy mcrypt code paths and the bidirectional compatibility test. Removed mcrypt availability guards from encryption callers and regular tests because phpseclib is a bundled dependency.
@@ -31,10 +31,11 @@ NOT YET Baselined
 ** Removed not needed calls to deprecated imagedestroy().
 ** Rendering JavaScript code into the page only in later rendering iterations to improve performance.
 ** The Wiki demonstration in the Element Gallery now covers preformatted text, code, syntax highlighting and tables.
+** The .htaccess contained in website scaffolds now contains the directive "CGIPassAuth On" to ensure that Apache forwards authentication headers to the PHP handler.
 * Discontinued
 ** No changes
 * Quality
-** Deactivated tests for source code write access, ebury and openssl build date - to maintain compatibility with FPM PHP runmode.
+** Deactivated tests for source code write access - to maintain compatibility with FPM PHP runmode.
 ** Added symmetric encryption round-trip, initialization-vector validation, block-boundary and NUL-byte tests. When mcrypt is installed, tests also check byte-for-byte ciphertext equality and decryption in both directions. Runtime verification on PHP 7.4.33 and an mcrypt-enabled host is pending.
 ** Added static file viewer tests for extension classification, root-directory containment and literal text escaping.
 ** Avoiding the user name "test" in automated tests. Using "test.auto" instead.
