@@ -1,6 +1,6 @@
 ={WDK} Release Notes= 
-==Version 0.0.80 WORK IN PROGRESS==
-NOT YET Baselined
+==Version 0.0.80==
+Baselined 2026-10-25
 * '''IMPORTANT'''
 ** Minimum required PHP Version is now 7.4.33 (due to the php2shell vulnerability)
 * Security
@@ -32,6 +32,7 @@ NOT YET Baselined
 ** Rendering JavaScript code into the page only in later rendering iterations to improve performance.
 ** The Wiki demonstration in the Element Gallery now covers preformatted text, code, syntax highlighting and tables.
 ** The .htaccess contained in website scaffolds now contains the directive "CGIPassAuth On" to ensure that Apache forwards authentication headers to the PHP handler.
+** The env.inc contained in website scaffolds now refers to "error.log" instead of "error_log" (as this is the default error file name used by FPM).
 * Discontinued
 ** No changes
 * Quality
@@ -40,6 +41,8 @@ NOT YET Baselined
 ** Added static file viewer tests for extension classification, root-directory containment and literal text escaping.
 ** Avoiding the user name "test" in automated tests. Using "test.auto" instead.
 ** Added automated Wiki element coverage for syntax highlighting, literal Wiki markup and HTML escaping.
+** The test environment/errorlog now displays the complete error log.
+** The test sourcefiles/unintendedfiles now also captures conflicted files created by pCloud.
 * Refactoring
 ** No changes
 * Documentation

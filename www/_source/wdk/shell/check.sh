@@ -38,6 +38,12 @@ ps -eo pid,ppid,user,stat,pcpu,pmem,etime,comm --sort=-pcpu | head -25
 echo ""
 echo ""
 
+echo "Plesk Version:"
+plesk version
+echo ""
+echo ""
+
+
 echo "apache2 config test:"
 apache2ctl configtest
 echo ""
@@ -48,6 +54,10 @@ apache2ctl -t -D DUMP_RUN_CFG
 echo ""
 echo ""
 
+echo "apache2 loaded modules:"
+apachectl -M
+echo ""
+echo ""
 
 echo "apache2 processes:"
 pid=$(ps -eo pid,comm,stat | awk '$2=="apache2" && $3 ~ /^R/ {print $1; exit}')

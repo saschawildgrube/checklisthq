@@ -41,14 +41,7 @@
 			if ($nPos != -1)
 			{
 				$this->Trace("Found at least one PHP notice, warning, or error:");
-				$nPosNextEOL = FindString(StringSection($strLog,$nPos),"\n");
-				$this->Trace("");
-				if ($nPosNextEOL != -1)
-				{
-					$nPosLine = max(0,$nPos-58);
-					$this->Trace(StringSection($strLog,$nPosLine,$nPos+$nPosNextEOL-$nPosLine));
-					$this->Trace("");
-				}
+				$this->Trace($strLog);
 				$this->SetResult(false);	
 				return;
 			}
