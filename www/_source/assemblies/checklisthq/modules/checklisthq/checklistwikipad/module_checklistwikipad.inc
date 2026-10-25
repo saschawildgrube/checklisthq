@@ -926,6 +926,15 @@
 			$strAction = $this->GetModuleVar('action');
 			$strLineText = $this->GetModuleVar('text');
 			$strSubmit = $this->GetParam('submit');
+			$bIsResumedAdd = ($strAction == 'add' && $this->GetModuleParam('action') != 'add');
+			if ($bIsResumedAdd)
+			{
+				// Saved positions may no longer match the list after logging in again.
+				$nLineToModify = 0;
+				$nLineToAddPriorityLow = 0;
+				$nLineToAddPriorityMedium = 0;
+				$nLineToAddPriorityHigh = 0;
+			}
 			
 
 			$this->SetModuleVar('line','');
@@ -1224,7 +1233,7 @@
 						$nLineToAdd = $nLineToAddPriorityHigh;
 					}
 					
-					if ($bIsContextTransfer)
+					if ($bIsContextTransfer || $bIsResumedAdd)
 					{
 						// Locate section headings outside preformatted task notes.
 						$nNextAction = -1;
@@ -1263,6 +1272,11 @@
 						if ($nNextAction != -1)
 						{
 							$nInsertAt = $nNextAction + 1;
+							$arrayInsert = array($strLineText);
+						}
+						else if ($bIsResumedAdd && $bIsContextTransfer == false)
+						{
+							$nInsertAt = 0;
 							$arrayInsert = array($strLineText);
 						}
 						else

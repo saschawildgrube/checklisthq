@@ -181,6 +181,15 @@
 				}
 			}
 			
+			// Load login before rendering a protected Checklist HQ page.
+			if ($this->GetAuthUserID() == '' && in_array($this->GetContent(),array(
+				'checklists','header','links','notes','projects','recurring',
+				'signout','tasks','usersettings','visual'),true))
+			{
+				$this->SetWarningMessageCode('SESSION_ENDED');
+				$this->SetContent('login');
+			}
+
 			//$nContextID = GetIntegerValue($this->GetVar('checklisthq_context'));
 			//$this->GetPlugin('checklisthq')->SetContextID($nContextID);
 			
