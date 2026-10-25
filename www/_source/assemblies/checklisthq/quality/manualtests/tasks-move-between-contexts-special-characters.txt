@@ -1,0 +1,24 @@
+=Moving tasks between contexts preserves special characters=
+# Use test: "login"
+# Back up both Personal and Office task lists and restore them after testing.
+# Repeat the following from Personal to Office and from Office to Personal.
+# In the destination, save =NEXT ACTION= followed by * keep destination task.
+# In the source, use "Edit" to save this exact content:
+<syntaxhighlight lang="text">
+=NEXT ACTION=
+* Grüße aus Köln: äöü ÄÖÜ ß & < > " ' + % €
+** Rückfrage für Jörg & Büro
+<pre>
+Notizen: schön & größer; Rückmeldung für Jörg.
+</pre>
+* keep source task
+</syntaxhighlight>
+# Select "Move to other context" for the parent task.
+# In destination "Edit", compare the entire transferred block with the original above. Every character must remain identical. The block must occur exactly once below =NEXT ACTION=, before the existing destination task.
+# Verify the rendered parent and child show the original umlauts, not entity names such as &uuml; or &amp;.
+# Verify the source retains only its heading and * keep source task.
+# Reload the destination and verify the block is still identical and occurs once.
+# Move the same parent task back to its original context without editing or re-saving it first. Verify the original characters and the complete child/notes block again. Repeat once more to detect accumulated encoding.
+# Fail if either direction changes any character, loses attached content, or duplicates the task.
+# After every transfer, verify the confirmation message independently of the task list: its task text must display the same umlauts, ampersand, quotes, and angle brackets as the rendered task. No HTML tags may execute in the message.
+# Also test an existing task stored with HTML entities (for example a task originally entered using Add): move it without first editing or re-saving it. The confirmation must display the umlauts, not literal &auml;, &ouml;, or &uuml; strings. Check desktop and mobile redirect messages.

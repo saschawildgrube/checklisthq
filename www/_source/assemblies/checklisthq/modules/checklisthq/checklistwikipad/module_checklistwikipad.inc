@@ -1203,6 +1203,11 @@
 					// Compare the original transfer payload before trimming line endings.
 					$strTransfer = $this->GetModuleVarInsecure('task_transfer');
 					$bIsContextTransfer = ($strTransfer != '' && $strTransfer === HtmlDecode($strLineText));
+					if ($bIsContextTransfer)
+					{
+						// Store the original task block, not its HTML-encoded request value.
+						$strLineText = $strTransfer;
+					}
 
 					$strLineText = StringTrim($strLineText);
 					if ($strLineText == '')
@@ -1319,7 +1324,7 @@
 					if ($bIsContextTransfer)
 					{
 						$strTaskMessageCode = 'LINEMOVEDTOOTHERCONTEXT';
-						$strTaskMessageLine = strtok($strTransfer,"\n");
+						$strTaskMessageLine = HtmlDecode(strtok($strTransfer,"\n"));
 					}
 				}
 				else if ($strAction == 'movetoothercontext')
