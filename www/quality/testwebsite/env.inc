@@ -116,8 +116,9 @@
 	{
 		if (GetEnvID() == "dev")
 		{
-			return GetDocumentRootDir()."../../logs/dev.checklisthq.com/error_log";	
+			return GetDocumentRootDir()."../../logs/log-dev/error.log";	
 		}
-		return GetDocumentRootDir()."../../logs/error_log";		}
+		return GetDocumentRootDir()."../../logs/error.log";		
+	}
 
 
