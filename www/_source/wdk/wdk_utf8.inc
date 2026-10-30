@@ -110,7 +110,7 @@
     	}
  	 		$str = $strRest;
 		}
-  	return $strOut;
+  		return $strOut;
 	}
 	
 	function StringDecodeUTF8($str)
