@@ -101,6 +101,11 @@
 		return 'json';  
 	}
 
+	function GetWebservicesDefaultTransportMode()
+	{
+		return 'static';	
+	}
+
 	function GetErrorLogPath()
 	{
 		if (GetEnvID() == 'dev')

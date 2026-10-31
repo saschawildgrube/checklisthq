@@ -1,5 +1,6 @@
 <?php
 
+	require_once(__DIR__."/wdk_webservice_transport.inc");
 	require_once("wdk_json.inc");
 	require_once("wdk_xml.inc");
 	require_once("wdk_pathcontent.inc");
@@ -54,7 +55,11 @@
 			
 		}
 		
-		function ConsumeWebService($strWebServiceURL,$arrayParams,$nTimeOut=WEBSERVICE_CONSUMER_TIMEOUT_DEFAULT)
+		function ConsumeWebService(
+			$strWebServiceURL,
+			$arrayParams,
+			$nTimeOut=WEBSERVICE_CONSUMER_TIMEOUT_DEFAULT,
+			$strTransportMode='http')
 		{
 			$this->m_bCalled = true;
 			
@@ -89,7 +94,20 @@
 			}
 
 			$this->m_stopwatchRequest->Start();
-			$strServiceOutput = HttpRequest($strURL,$arrayParams,"post",$nTimeOut);
+			if ($strTransportMode == 'static')
+			{
+				$strServiceOutput = StaticWebserviceRequest($strURL,$arrayParams);
+			}
+			else if ($strTransportMode == 'http')
+			{
+				$strServiceOutput = HttpRequest($strURL,$arrayParams,"post",$nTimeOut);
+			}
+			else
+			{
+				$this->m_stopwatchRequest->Stop();
+				$this->m_strError = "TRANSPORT_INVALID";
+				return false;
+			}
 			$this->m_stopwatchRequest->Stop();
 
 			if ($strServiceOutput == false)
