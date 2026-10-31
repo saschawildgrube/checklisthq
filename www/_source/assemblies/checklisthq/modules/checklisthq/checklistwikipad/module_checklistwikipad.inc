@@ -1050,7 +1050,6 @@
 				}
 				
 				$bHasNextAction = (FindString($strContentOld,'=NEXT ACTION=') != -1)?(true):(false);
-				$bHasWaitingFor = (FindString($strContentOld,'=WAITING FOR=') != -1)?(true):(false);
 				
 				if ($strAction == 'movetop') // we interpret that as 'movetonextaction'
 				{
@@ -1158,9 +1157,42 @@
 				}
 				else if ($strAction == 'movetowaitingfor')
 				{
+					// Append after the complete waiting section, ignoring headings in notes.
+					$nWaitingForEnd = -1;
+					$bInWaitingFor = false;
+					$bInPre = false;
+					foreach ($arrayLines as $nTargetLine => $strTargetLine)
+					{
+						$strHeading = StringTrim($strTargetLine);
+						if ($bInPre == false && StringSection($strHeading,0,1) == '=')
+						{
+							if ($bInWaitingFor)
+							{
+								$nWaitingForEnd = $nTargetLine;
+								break;
+							}
+							if ($strHeading == '=WAITING FOR=')
+							{
+								$bInWaitingFor = true;
+							}
+						}
+						if (FindString($strTargetLine,'<pre>') != -1)
+						{
+							$bInPre = true;
+						}
+						if (FindString($strTargetLine,'</pre>') != -1)
+						{
+							$bInPre = false;
+						}
+					}
+					if ($bInWaitingFor && $nWaitingForEnd == -1)
+					{
+						$nWaitingForEnd = ArrayCount($arrayLines);
+					}
+
 					$strContent = '';
 		
-					if ($bHasWaitingFor == false)  
+					if ($nWaitingForEnd == -1)
 					{
 						$strContent .=
 							'=WAITING FOR='
@@ -1179,20 +1211,21 @@
 					$nLine = 0;
 					foreach ($arrayLines as $strLine)
 					{
-						$this->Trace($strLine);
+						if ($nLine == $nWaitingForEnd)
+						{
+							$strContent .= $strTaskBlockToModify."\n";
+						}
 						if ($nLine < $nLineToModify || $nLine > $nLineToModifyEnd)
 						{
 							$strContent .=  
 								$strLine
 								."\n";
-							if (FindString($strLine,'=WAITING FOR=') != -1)
-							{
-								$strContent .=
-									$strTaskBlockToModify
-									."\n";
-							}
 						}
 						$nLine++;
+					}
+					if ($nWaitingForEnd == ArrayCount($arrayLines))
+					{
+						$strContent .= $strTaskBlockToModify."\n";
 					}
 					
 					$strTaskMessageCode = 'LINEMOVEDTOWAITINGFOR';

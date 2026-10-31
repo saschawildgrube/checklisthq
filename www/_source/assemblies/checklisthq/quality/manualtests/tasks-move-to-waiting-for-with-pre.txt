@@ -16,14 +16,14 @@ details belonging to the task moved to waiting for
 # Select "Save"
 # For the item "move this task to waiting for", select "Move to 'WAITING FOR'"
 # Select "Edit"
-# Validate that the content exactly matches the following wikitext, with the moved item and its following preformatted section together directly after the "Waiting For" heading - if not fail the test
+# Validate that the content exactly matches the following wikitext, with the moved item and its following preformatted section together at the end of "Waiting For", after all existing waiting tasks - if not fail the test
 <syntaxhighlight lang="text">
 =WAITING FOR=
+* already waiting
 * move this task to waiting for
 <pre>
 details belonging to the task moved to waiting for
 </pre>
-* already waiting
 =NEXT ACTION=
 * keep this next action
 </syntaxhighlight>

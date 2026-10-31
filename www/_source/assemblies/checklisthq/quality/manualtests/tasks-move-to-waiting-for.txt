@@ -13,11 +13,11 @@
 # Select "Save"
 # For the item "ask supplier for delivery date", select "Move to 'WAITING FOR'"
 # Select "Edit"
-# Validate that the content exactly matches the following wikitext, with the moved item removed from "Next Action" and added directly after the "Waiting For" heading - if not fail the test
+# Validate that the content exactly matches the following wikitext, with the moved item removed from "Next Action" and appended at the end of "Waiting For", after all existing waiting tasks - if not fail the test
 <syntaxhighlight lang="text">
 =WAITING FOR=
-* ask supplier for delivery date
 * already waiting
+* ask supplier for delivery date
 =NEXT ACTION=
 * prepare weekly report
 </syntaxhighlight>

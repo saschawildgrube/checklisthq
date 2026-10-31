@@ -3,7 +3,7 @@
 # Run the mobile checks below in both Personal and Office contexts, using disposable test content and a mobile browser user agent.
 # After each operation below, wait for the automatic navigation to finish. Verify the final URL uses a read-only state (view, edit, or a visualization), never submit, submitline, or submitchecklist.
 # Reload the page twice, then background and foreground mobile Safari or Chrome. Verify no action repeats and no form-resubmission prompt appears.
-# On Tasks and Projects, cover adding at every available priority, completing a task, moving down, moving to highest priority/next action, and moving to waiting for. Check that neighboring tasks and attached preformatted blocks remain correct.
+# On Tasks and Projects, cover adding at every available priority, completing a task, moving down, moving to highest priority/next action, and moving to waiting for. Before moving to waiting for, seed that section with two existing tasks. Verify the moved task and its attached block appear at the end, after both existing tasks, exactly once before and after reload. Check that neighboring tasks and attached preformatted blocks remain correct.
 # Move a task to the other context. Verify the destination opens, contains the task once, and remains unchanged after reload; the source must no longer contain it.
 # Add a checklist to Tasks, with and without a prefix. Verify reloading the checklist page does not insert it again.
 # Save whole-page edits on Tasks, Projects, Checklists, Links, Notes, Recurring, Header, and Visual. Verify reload does not save again.

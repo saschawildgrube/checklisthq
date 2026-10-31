@@ -5,6 +5,7 @@
 # Replace the entire content with exactly the following wikitext:
 <syntaxhighlight lang="text">
 =WAITING FOR=
+* already waiting
 =NEXT ACTION=
 * move the last task before the separator
 -----
@@ -16,6 +17,7 @@
 # Validate that the content exactly matches the following wikitext, with the moved task at the bottom of "Waiting For" and the separator that would directly follow the "Next Action" heading removed - if not fail the test
 <syntaxhighlight lang="text">
 =WAITING FOR=
+* already waiting
 * move the last task before the separator
 =NEXT ACTION=
 * keep this next action

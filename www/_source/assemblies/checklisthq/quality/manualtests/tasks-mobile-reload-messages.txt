@@ -4,7 +4,7 @@
 # In NEXT ACTION, add a task named "reload message <sample> & row", a neighboring task, and a lower-priority task after a separator. Include a preformatted block immediately after the disposable task.
 # Select "Do next" on the lower-priority task. The modifying response must show exactly "Processing. Please wait..." with an animated spinning wheel and no activity confirmation. Its automatic navigation must lead to a read-only page.
 # On that reloaded page, verify the moved-task confirmation includes the correct row text, with no {LINE_MOVED} placeholder. Verify the task moved once and neighboring rows remain intact.
-# Repeat for "Do it later" and "Move to WAITING FOR". Verify the confirmation accurately describes the action on the reloaded page.
+# Repeat for "Do it later" and "Move to WAITING FOR". Before moving to WAITING FOR, seed that section with two existing tasks. Verify the moved task and its preformatted block appear at the end, after both existing tasks, exactly once before and after both reloads. Verify the confirmation accurately describes the action on the reloaded page.
 # Check off the disposable task. Before navigation, expect the same processing message and spinner. After navigation, expect the checked-off confirmation containing the removed row, with no {LINE_DELETED} placeholder. The row and its attached preformatted block must be gone.
 # Use a row containing literal angle brackets, ampersands, quotes, and {LINE_MOVED}; verify its contents display as text, not HTML or substituted template markup.
 # Reload each resulting page twice. The operation must not repeat, and its confirmation must not reappear. Background/foreground the mobile browser and verify the same behavior.
