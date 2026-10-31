@@ -1,6 +1,6 @@
 <?php
 
-	require_once(__DIR__."/wdk_webservice_transport.inc");
+	
 	require_once("wdk_json.inc");
 	require_once("wdk_xml.inc");
 	require_once("wdk_pathcontent.inc");
