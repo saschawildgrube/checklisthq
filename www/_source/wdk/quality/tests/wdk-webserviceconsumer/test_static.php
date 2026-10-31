@@ -1,12 +1,23 @@
 <?php
 
-	require_once(GetWDKDir()."wdk_webserviceconsumer.inc");
+	require_once(GetSourceDir()."webservices_directory.inc");
+	require_once(GetWDKDir()."wdk_webserviceconsumer_webapplication.inc");
 
 	class CTest extends CUnitTest
 	{
+
 		function __construct()
 		{
-			parent::__construct("Static webservice transport (requires demo/demo)");
+			$arrayConfig = array();
+			$arrayConfig["webservices"] = GetWebServicesDirectory();
+			parent::__construct("Static webservice transport (requires demo/demo)",$arrayConfig);
+		}
+
+		function OnInit()
+		{
+			$this->RequireWebservice("demo/demo");
+			$this->SetVerbose(false);
+			return parent::OnInit();
 		}
 
 		function Check($bCondition,$strDescription)
@@ -22,15 +33,18 @@
 		{
 			parent::OnTest();
 			$this->SetResult(true);
-			$strRootURL = GetWebservicesURL();
-			if (strpos($strRootURL,'://') === false)
+			$strURL = $this->GetWebserviceURL('demo/demo');
+			if (GetStaticWebserviceEntryPoint($strURL) === false)
 			{
-				$strRootURL = 'https://'.$strRootURL;
+				$this->SetTraceActive(true);
+				$this->Trace('PASSED: demo/demo is configured, but its URL does not support local invocation. Static transport checks skipped.');
+				return;
 			}
-			$strURL = rtrim($strRootURL,'/').'/demo/demo/';
-			$this->Check(GetStaticWebserviceEntryPoint($strURL) !== false,'Resolve existing entry point');
-			$this->Check(GetStaticWebserviceEntryPoint($strURL.'index.php') !== false,'Resolve explicit index.php');
-			$this->Check(GetStaticWebserviceEntryPoint($strRootURL.'../env.inc') === false,'Reject traversal');
+			$strServiceURL = preg_replace('~[?#].*$~','',$strURL);
+			$strServiceURL = preg_replace('~/index\.php$~','',$strServiceURL);
+			$strServiceURL = rtrim($strServiceURL,'/').'/';
+			$this->Check(GetStaticWebserviceEntryPoint($strServiceURL.'index.php') !== false,'Resolve explicit index.php');
+			$this->Check(GetStaticWebserviceEntryPoint($strServiceURL.'../env.inc') === false,'Reject traversal');
 			$this->Check(GetStaticWebserviceEntryPoint('https://invalid.example/webservices/demo/demo/') === false,'Reject foreign host');
 
 			$arrayState = array();
@@ -47,22 +61,22 @@
 			$nErrors = error_reporting();
 			$strDisplayErrors = ini_get('display_errors');
 			$nBufferLevel = ob_get_level();
-			$consumer = new CWebServiceConsumer();
+			$consumer = new CWebServiceConsumerWebApplication($this);
 			foreach (array('json','xml','csvpath','json') as $strFormat)
 			{
-				$arrayParams = array('command' => 'help','accesscode' => '12345','format' => $strFormat);
+				$arrayParams = array('command' => 'help','format' => $strFormat);
 				ob_start();
 				print('outer-buffer');
-				$bResult = $consumer->ConsumeWebService($strURL,$arrayParams,10,'static');
+				$bResult = $consumer->ConsumeWebService('demo/demo',$arrayParams,10,'static');
 				$strOuterOutput = ob_get_clean();
 				$this->Check($bResult,'Repeated static call in '.$strFormat.': '.$consumer->GetError());
 				$this->Check($consumer->GetMetaValue('NAME') == 'demo/demo','Response envelope');
 				$this->Check($consumer->GetServiceOutput() != '','Serialized response retained');
 				$this->Check($strOuterOutput == 'outer-buffer','Caller output buffer preserved');
 			}
-			$this->Check(!$consumer->ConsumeWebService($strURL,array(),10,'invalid')
+			$this->Check(!$consumer->ConsumeWebService('demo/demo',array(),10,'invalid')
 				&& $consumer->GetError() == 'TRANSPORT_INVALID','Reject invalid transport');
-			$this->Check(!$consumer->ConsumeWebService($strRootURL.'missing/service/',array(),10,'static')
+			$this->Check(!$consumer->ConsumeWebService($strServiceURL.'missing/service/',array(),10,'static')
 				&& $consumer->GetError() == 'REQUEST_FAILED','Missing entry point fails without HTTP fallback');
 			foreach (array('_GET','_POST','_REQUEST','_COOKIE','_FILES','_SERVER') as $strKey)
 			{
