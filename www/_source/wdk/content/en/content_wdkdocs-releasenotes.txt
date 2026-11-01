@@ -12,7 +12,7 @@ NOT YET Baselined
 ** Web Services can now either be consumed via http (like before) or by static calls - while maintaining the existing implementation pattern - to increase speed and consider web applications that do not need a distributed web services architecture.
 ** Function GetWebservicesDefaultTransportMode() is introduced to env.inc: it should either return "http" or "static". 
 * Improvements
-** Avoid to pass null to htmlentities() for 8.x compatibility.
+** Avoid to pass null to htmlentities() and several other functions for 8.x compatibility.
 * Discontinued
 ** No changes
 * Quality

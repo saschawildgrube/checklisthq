@@ -36,6 +36,7 @@
 		
 		private $m_bCalled;
 		private $m_strError;
+		private $m_strTransportError = "";
 		
 		private $m_arrayResultEnvelope;
 		private $m_strServiceOutput;
@@ -49,6 +50,7 @@
 		{
 			$this->m_bCalled = false;	
 			$this->m_strError = "";
+			$this->m_strTransportError = "";
 			$this->m_stopwatchRequest = new CStopWatch();
 			$this->m_stopwatchParsing = new CStopWatch();
 			$this->m_fSecondsScript = 0;
@@ -70,6 +72,7 @@
 			$this->m_arrayResultEnvelope = array();
 			
 			$this->m_strError = "";
+			$this->m_strTransportError = "";
 			
 			$this->m_fSecondsScript = 0;
 			
@@ -96,7 +99,7 @@
 			$this->m_stopwatchRequest->Start();
 			if ($strTransportMode == 'static')
 			{
-				$strServiceOutput = StaticWebserviceRequest($strURL,$arrayParams);
+				$strServiceOutput = StaticWebserviceRequest($strURL,$arrayParams,$this->m_strTransportError);
 			}
 			else if ($strTransportMode == 'http')
 			{
@@ -260,6 +263,11 @@
 			return true;
 		}
 		
+		function GetTransportError()
+		{
+			return $this->m_strTransportError;
+		}
+
 		function GetError()
 		{
 			if ($this->m_bCalled == false)

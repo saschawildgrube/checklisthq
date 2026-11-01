@@ -129,6 +129,10 @@
 			if ($bResult == false)
 			{
 				$this->Trace("ERROR: ".$this->GetError());
+				if ($this->GetTransportError() != "")
+				{
+					$this->Trace("Transport failure: ".$this->GetTransportError());
+				}
 			}
 
 			$this->Trace($this->GetServiceOutput());

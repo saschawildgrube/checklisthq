@@ -50,8 +50,18 @@
 		{
 			return false;
 		}
-		$strRoot = realpath(GetWebservicesDir());
-		$strEntry = realpath(GetWebservicesDir().'/'.$strService.'/index.php');
+		// Reject relative configuration rather than resolving it against the caller's directory.
+		$strConfiguredRoot = str_replace('\\','/',GetWebservicesDir());
+		if (substr($strConfiguredRoot,0,1) != '/' && !preg_match('~^[A-Za-z]:/~',$strConfiguredRoot))
+		{
+			return false;
+		}
+		$strRoot = realpath($strConfiguredRoot);
+		if ($strRoot === false)
+		{
+			return false;
+		}
+		$strEntry = realpath($strRoot.'/'.$strService.'/index.php');
 		if ($strRoot === false || $strEntry === false || !is_file($strEntry))
 		{
 			return false;
@@ -70,19 +80,98 @@
 		return $strEntry;
 	}
 
-	function IncludeStaticWebserviceEntryPoint($strEntryPoint)
+	function IncludeStaticWebserviceEntryPoint($strEntryPoint,&$strFailure = "",$strCallerScript = "")
 	{
-		// Keep entry-point variables separate from dispatcher bookkeeping.
-		include($strEntryPoint);
+		$strFailure = '';
+		// Shutdown destructors may start outside the site's permitted directories.
+		// Verify the return directory before executing a service with side effects.
+		$strCallerDir = getcwd();
+		try
+		{
+			if ($strCallerDir === false || !@chdir($strCallerDir)) 
+			{
+				$strScriptPath = str_replace('\\','/',$strCallerScript);
+				if ($strScriptPath == '' || (substr($strScriptPath,0,1) != '/'
+					&& !preg_match('~^[A-Za-z]:/~',$strScriptPath)))
+				{
+					$strFailure = 'CALLER_DIRECTORY_UNAVAILABLE';
+					return false;
+				}
+				$strFallbackDir = realpath(dirname($strScriptPath));
+				if ($strFallbackDir === false || !@chdir($strFallbackDir))
+				{
+					$strFailure = 'CALLER_SCRIPT_DIRECTORY_UNAVAILABLE';
+					return false;
+				}
+				error_log('Static webservice: inaccessible caller directory '.var_export($strCallerDir,true)
+					.'; using calling script directory '.$strFallbackDir);
+				$strCallerDir = $strFallbackDir;
+			}
+		}
+		catch (Throwable $error)
+		{
+			$strFailure = 'PREPARE_CALLER_DIRECTORY: '.get_class($error).' in '.$error->getFile().':'.$error->getLine();
+			return false;
+		}
+		$bResult = false;
+		$strStage = 'ENTER_SERVICE_DIRECTORY';
+		try
+		{
+			if (@chdir(dirname($strEntryPoint)))
+			{
+				$strStage = 'EXECUTE_ENTRY_POINT';
+				$bResult = ExecuteStaticWebserviceEntryPoint($strEntryPoint);
+				if (!$bResult)
+				{
+					$strFailure = 'ENTRY_POINT_RETURNED_FALSE';
+				}
+			}
+			else
+			{
+				$strFailure = 'SERVICE_DIRECTORY_UNAVAILABLE';
+			}
+		}
+		catch (Throwable $error)
+		{
+			$strFailure = $strStage.': '.get_class($error).' in '.$error->getFile().':'.$error->getLine();
+			$bResult = false;
+		}
+		finally
+		{
+			try
+			{
+				if (!@chdir($strCallerDir))
+				{
+					$strFailure .= ' RESTORE_CALLER_DIRECTORY_FAILED';
+					$bResult = false;
+				}
+			}
+			catch (Throwable $error)
+			{
+				$strFailure .= ' RESTORE_CALLER_DIRECTORY: '.get_class($error).' in '.$error->getFile().':'.$error->getLine();
+				$bResult = false;
+			}
+		}
+		return $bResult;
 	}
 
-	function StaticWebserviceRequest($strURL,$arrayParams)
+	function ExecuteStaticWebserviceEntryPoint($strEntryPoint)
 	{
+		// Entry-point variables must not overwrite the saved caller directory.
+		return (@include($strEntryPoint)) !== false;
+	}
+
+	function StaticWebserviceRequest($strURL,$arrayParams,&$strFailure = "")
+	{
+		$strFailure = '';
 		$strEntryPoint = GetStaticWebserviceEntryPoint($strURL);
 		if ($strEntryPoint === false || CWebServiceTransportContext::$nDepth >= 32)
 		{
+			$strFailure = ($strEntryPoint === false) ? 'LOCAL_ENTRY_POINT_UNAVAILABLE' : 'STATIC_CALL_DEPTH_EXCEEDED';
 			return false;
 		}
+		// Capture before installing the service's synthetic SERVER values.
+		$strCallerScript = isset($_SERVER['SCRIPT_FILENAME']) ? $_SERVER['SCRIPT_FILENAME'] : '';
 		$arraySavedGlobals = array();
 		foreach (array('_GET','_POST','_REQUEST','_COOKIE','_FILES','_SERVER') as $strKey)
 		{
@@ -91,7 +180,6 @@
 				$arraySavedGlobals[$strKey] = $GLOBALS[$strKey];
 			}
 		}
-		$strWorkingDir = getcwd();
 		$strIncludePath = get_include_path();
 		$strTimeZone = date_default_timezone_get();
 		$nErrorReporting = error_reporting();
@@ -143,21 +231,33 @@
 			$_SERVER['REQUEST_TIME_FLOAT'] = microtime(true);
 			$_SERVER['CONTENT_TYPE'] = 'application/x-www-form-urlencoded';
 			$_SERVER['CONTENT_LENGTH'] = strlen(is_array($arrayParams) ? MakeURLParameters($arrayParams) : GetStringValue($arrayParams));
-			if (!chdir(dirname($strEntryPoint)))
+			// Resolve bare includes against explicit service and framework directories.
+			set_include_path(dirname($strEntryPoint).PATH_SEPARATOR.__DIR__.PATH_SEPARATOR.GetSourceDir());
+			ob_start();
+			if (!IncludeStaticWebserviceEntryPoint($strEntryPoint,$strFailure,$strCallerScript))
 			{
 				return false;
 			}
-			set_include_path(__DIR__.PATH_SEPARATOR.$strWorkingDir.PATH_SEPARATOR.$strIncludePath);
-			ob_start();
-			IncludeStaticWebserviceEntryPoint($strEntryPoint);
 			while (ob_get_level() > $nBufferLevel + 1)
 			{
 				ob_end_flush();
 			}
-			return ob_get_level() == $nBufferLevel + 1 ? ob_get_contents() : false;
+			if (ob_get_level() != $nBufferLevel + 1)
+			{
+				$strFailure = 'RESPONSE_BUFFER_MISSING';
+				return false;
+			}
+			$strOutput = ob_get_contents();
+			if ($strOutput === '')
+			{
+				$strFailure = 'EMPTY_SERVICE_RESPONSE';
+			}
+			return $strOutput;
 		}
 		catch (Throwable $error)
 		{
+			$strFailure = 'STATIC_REQUEST: '.get_class($error).' in '.$error->getFile().':'.$error->getLine();
+			error_log('Static webservice execution failed: '.$strFailure);
 			return false;
 		}
 		finally
@@ -177,7 +277,6 @@
 					unset($GLOBALS[$strKey]);
 				}
 			}
-			chdir($strWorkingDir);
 			set_include_path($strIncludePath);
 			date_default_timezone_set($strTimeZone);
 			foreach ($arrayIni as $strKey => $strValue)
