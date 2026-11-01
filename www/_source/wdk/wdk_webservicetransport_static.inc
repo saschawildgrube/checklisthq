@@ -103,8 +103,6 @@
 					$strFailure = 'CALLER_SCRIPT_DIRECTORY_UNAVAILABLE';
 					return false;
 				}
-				error_log('Static webservice: inaccessible caller directory '.var_export($strCallerDir,true)
-					.'; using calling script directory '.$strFallbackDir);
 				$strCallerDir = $strFallbackDir;
 			}
 		}
@@ -257,7 +255,6 @@
 		catch (Throwable $error)
 		{
 			$strFailure = 'STATIC_REQUEST: '.get_class($error).' in '.$error->getFile().':'.$error->getLine();
-			error_log('Static webservice execution failed: '.$strFailure);
 			return false;
 		}
 		finally
