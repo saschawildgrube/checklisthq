@@ -120,6 +120,7 @@
 			$this->RegisterGenericOutputItem('GOOGLEAPPURL',array('app','email'));			
 			
 			$this->AddJavaScript('mermaid');
+			$this->AddStyleSheet('mermaid');
 
 			$passwordpolicy = new CPasswordPolicy();
 			$passwordpolicy->SetPolicy($this->GetConfig('passwordpolicy'));
