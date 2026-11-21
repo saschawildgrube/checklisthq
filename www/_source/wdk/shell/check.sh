@@ -81,6 +81,11 @@ fi
 echo ""
 echo ""
 
+echo "### nginx Version:"
+nginx -v  
+echo ""
+echo ""
+
 echo "### nginx Config Test:"
 nginx -t
 echo ""

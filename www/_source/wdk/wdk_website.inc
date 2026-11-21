@@ -5663,17 +5663,8 @@
 			return true;
 		}
 
-		function ActivateFacebookSDK()
-		{
-			$this->AddJavaScript('facebook-sdk');
-			$this->SetBodyItem('facebook-sdk','<div id="fb-root"></div>');
-		}		
-
 		function ActivateJQuery()
 		{
-			//$this->AddJavaScriptURL('jquery','https://code.jquery.com/jquery-1.12.4.min.js','sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=');
-			//$this->AddJavaScriptURL('jquery','https://code.jquery.com/jquery-3.5.1.slim.min.js','sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj');
-			//$this->AddJavaScriptURL('jquery','https://code.jquery.com/jquery-3.5.1.min.js','sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==');
 			$this->AddJavaScript('jquery','jquery-3.5.1.min');
 
 		}		
@@ -5711,7 +5702,7 @@
 
 		function ActivateFontAwesome5()
 		{ 
-			$this->AddJavaScriptURL('fontawesome5','https://use.fontawesome.com/releases/v5.0.8/js/all.js','sha384-SlE991lGASHoBfWbelyBPLsUlwY1GwNDJo3jSJO04KZ33K2bwfV9YBauFfnzvynJ');	
+			$this->AddJavaScript('fontawesome5','fontawesome-5.15.4.min');
 		}
 
 
@@ -5719,10 +5710,8 @@
 		{
 			$this->ActivateJQuery();
 			
-			//$this->AddJavaScriptURL('react','https://unpkg.com/react@16/umd/react.development.js'); 
-			$this->AddJavaScript('react','react-16.14.0.development');
-			//$this->AddJavaScriptURL('react-dom','https://unpkg.com/react-dom@16/umd/react-dom.development.js'); 
-			$this->AddJavaScript('react-dom','react-dom-16.14.0.development');
+			$this->AddJavaScript('react','react-19.3.1.development');
+			$this->AddJavaScript('react-dom','react-dom-19.3.1.development');
 
 			$this->AddJavaScript('wdk');
 			$this->AddJavaScript('wdk-react');
@@ -5730,13 +5719,6 @@
 			return true;
 		}		
 
-		function ActivateD3v5()
-		{
-			//$this->AddJavaScriptURL('d3v5','https://d3js.org/d3.v5.min.js'); 
-			$this->AddJavaScript('d3v5','d3-5.16.0.min'); 
-		
-			return true;
-		}		
 		
 
 		

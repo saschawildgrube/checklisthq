@@ -8,6 +8,7 @@
 @font-face {
   font-family: 'FontAwesome';
   src: url('{FONTAWESOMEURL}') format('woff2');
+  font-display: block;
   font-weight: normal;
   font-style: normal;
 }

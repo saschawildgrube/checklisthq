@@ -1,6 +1,6 @@
 <?php
 
-	require_once(GetWDKDir().'wdk_element_react_d3.inc');
+	require_once(GetAssemblyDir('d3').'element_react_d3.inc');
 
 	class CSankeyElement extends CD3ReactElement
 	{

@@ -94,7 +94,7 @@ function D3_ZoomableSunburst(vSelector, aProps)
       .attr("pointer-events", "all")
       .on("click", clicked);
 
-  function clicked(p)
+  function clicked(event,p)
   {
     parent.datum(p.parent || root);
 
@@ -107,7 +107,7 @@ function D3_ZoomableSunburst(vSelector, aProps)
 
     const t = g.transition().duration(750);
 
-    // Transition the data on all arcs, even the ones that aren’t visible,
+    // Transition the data on all arcs, even the ones that arenï¿½t visible,
     // so that if this transition is interrupted, entering arcs will start
     // the next transition from the desired position.
     path.transition(t)

@@ -239,22 +239,22 @@ function D3_ParallelSets(vSelector, aProps)
 	        textEnter.append("tspan")
 	            .attr("class", "sort alpha")
 	            .attr("dx", "2em")
-	            .text("alpha »")
+	            .text("alpha ï¿½")
 	            .on("mousedown.parsets", cancelEvent);
 	        textEnter.append("tspan")
 	            .attr("class", "sort size")
 	            .attr("dx", "2em")
-	            .text("size »")
+	            .text("size ï¿½")
 	            .on("mousedown.parsets", cancelEvent);
 	        dimension.merge(dEnter)
 	            .call(d3.drag()
 	              // .origin(identity)
-	              .on("start", function(d) {
+	              .on("start", function(inputEvent,d) {
 	                dragging = true;
 	                d.y0 = d.y;
 	              })
-	              .on("drag", function(d) {
-	                d.y0 = d.y = d3.event.y;
+	              .on("drag", function(inputEvent,d) {
+	                d.y0 = d.y = inputEvent.y;
 	                for (var i = 1; i < dimensions.length; i++)
 	                {
 	                  if (height * dimensions[i].y < height * dimensions[i - 1].y)
@@ -282,7 +282,7 @@ function D3_ParallelSets(vSelector, aProps)
 	                ribbon.filter(function(r) { return r.source.dimension === d || r.target.dimension === d; })
 	                    .attr("d", ribbonPath);
 	              })
-	              .on("end", function(d) {
+	              .on("end", function(inputEvent,d) {
 	                dragging = false;
 	                unhighlight();
 	                var y0 = 45,
@@ -309,9 +309,9 @@ function D3_ParallelSets(vSelector, aProps)
 	
 	      function sortBy(type, f, dimension)
 	      {
-	        return function(d) {
+	        return function(inputEvent,d) {
 	          var direction = this.__direction = -(this.__direction || 1);
-	          d3.select(this).text(direction > 0 ? type + " »" : "« " + type);
+	          d3.select(this).text(direction > 0 ? type + " ï¿½" : "ï¿½ " + type);
 	          d.categories.sort(function() { return direction * f.apply(this, arguments); });
 	          nodes = layout(tree, dimensions, ordinal);
 	          updateCategories(dimension.merge(dimension.enter()));
@@ -344,12 +344,12 @@ function D3_ParallelSets(vSelector, aProps)
 	        var mouseEnter = mouse.enter().append("path");   
 	
 	        mouseEnter.merge(mouse)
-	            .on("mousemove.parsets", function(d) {
+	            .on("mousemove.parsets", function(inputEvent,d) {
 	              ribbon.classed("active", false);
 	              if (dragging) return;
 	              highlight(d = d.node, true);
-	              showTooltip(tooltip_.call(this, d));
-	              d3.event.stopPropagation();
+	              showTooltip(tooltip_.call(this, d),inputEvent);
+	              inputEvent.stopPropagation();
 	            });
 	        mouse.merge(mouseEnter)
 	            .sort(function(a, b) { return b.value - a.value; })
@@ -424,23 +424,23 @@ function D3_ParallelSets(vSelector, aProps)
 	        // category.exit().remove();
 	        category
 	            .merge(categoryEnter)
-	            .on("mousemove.parsets", function(d) {
+	            .on("mousemove.parsets", function(inputEvent,d) {
 	              ribbon.classed("active", false);
 	              if (dragging) return;
 	              d.nodes.forEach(function(d) { highlight(d); });
-	              showTooltip(categoryTooltip.call(this, d));
-	              d3.event.stopPropagation();
+	              showTooltip(categoryTooltip.call(this, d),inputEvent);
+	              inputEvent.stopPropagation();
 	            })
 	            .on("mouseout.parsets", unhighlight)
 	            .on("mousedown.parsets", cancelEvent)
 	            .call(d3.drag()
 	              // .origin(identity)
-	              .on("start", function(d) {
+	              .on("start", function(inputEvent,d) {
 	                dragging = true;
 	                d.x0 = d.x;
 	              })
-	              .on("drag", function(d) {
-	                d.x = d3.event.x;
+	              .on("drag", function(inputEvent,d) {
+	                d.x = inputEvent.x;
 	                var categories = d.dimension.categories;
 	                for (var i = 0, c = categories[0]; ++i < categories.length;) {
 	                  if (c.x + c.dx / 2 > (c = categories[i]).x + c.dx / 2) {
@@ -456,7 +456,10 @@ function D3_ParallelSets(vSelector, aProps)
 	                var x = 0,
 	                    p = spacing / (categories.length - 1);
 	                categories.forEach(function(e) {
-	                  if (d === e) e.x0 = d3.event.x;
+	                  if (d === e)
+	                  {
+	                    e.x0 = inputEvent.x;
+	                  }
 	                  e.x = x;
 	                  x += e.value / total * (width - spacing) + p;
 	                });
@@ -466,7 +469,7 @@ function D3_ParallelSets(vSelector, aProps)
 	                ribbon.filter(function(r) { return r.source.node === d || r.target.node === d; })
 	                    .attr("d", ribbonPath);
 	              })
-	              .on("end", function(d)
+	              .on("end", function(inputEvent,d)
 	              {
 	                dragging = false;
 	                unhighlight();
@@ -592,9 +595,9 @@ function D3_ParallelSets(vSelector, aProps)
 	    return dimensionFormat.call(this, d.name, i);
 	  }
 	
-	  function showTooltip(html)
+	  function showTooltip(html,inputEvent)
 	  {
-	    var m = d3.mouse(body.node());
+	    var m = d3.pointer(inputEvent,body.node());
 	    tooltip
 	        .style("display", null)
 	        .style("left", m[0] + 30 + "px")
@@ -740,13 +743,17 @@ function D3_ParallelSets(vSelector, aProps)
 	
 	function autoDimensions(d)
 	{
-	  return d.length ? d3.keys(d[0]).sort() : [];
+	  if (d.length)
+	  {
+	    return Object.keys(d[0]).sort();
+	  }
+	  return [];
 	}
 	
-	function cancelEvent()
+	function cancelEvent(inputEvent)
 	{
-	  d3.event.stopPropagation();
-	  d3.event.preventDefault();
+	  inputEvent.stopPropagation();
+	  inputEvent.preventDefault();
 	}
 	
 	function dimensionName(d)
@@ -771,7 +778,7 @@ function D3_ParallelSets(vSelector, aProps)
 	    var t = this.textContent = text(d, i),
 	        w = width(d, i);
 	    if (this.getComputedTextLength() < w) return t;
-	    this.textContent = "…" + t;
+	    this.textContent = "ï¿½" + t;
 	    var lo = 0,
 	        hi = t.length + 1,
 	        x;
@@ -781,7 +788,7 @@ function D3_ParallelSets(vSelector, aProps)
 	      if ((x = this.getSubStringLength(0, mid)) < w) lo = mid + 1;
 	      else hi = mid;
 	    }
-	    return lo > 1 ? t.substr(0, lo - 2) + "…" : "";
+	    return lo > 1 ? t.substr(0, lo - 2) + "ï¿½" : "";
 	  };
 	}
 	

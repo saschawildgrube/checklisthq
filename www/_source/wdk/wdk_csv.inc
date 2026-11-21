@@ -13,18 +13,18 @@
 	*/
 
 
-	define("CSV_INITIAL",						0);
+	define("CSV_INITIAL",			0);
 	define("CSV_LEADINGWHITESPACE",	1);
-	define("CSV_UNQUOTEDVALUE",			2);
-	define("CSV_QUOTESTART",				3);
-	define("CSV_QUOTEDVALUE",				4);
-	define("CSV_ESCAPEDQUOTE",			5);
-	define("CSV_QUOTEEND",					6);
-	define("CSV_TRAILINGNOISE",			7);
-	define("CSV_SEPARATOR",					8);
-	define("CSV_NEWLINE",						9);
-	define("CSV_COMMENT",						10);
-	define("CSV_END",								11);
+	define("CSV_UNQUOTEDVALUE",		2);
+	define("CSV_QUOTESTART",		3);
+	define("CSV_QUOTEDVALUE",		4);
+	define("CSV_ESCAPEDQUOTE",		5);
+	define("CSV_QUOTEEND",			6);
+	define("CSV_TRAILINGNOISE",		7);
+	define("CSV_SEPARATOR",			8);
+	define("CSV_NEWLINE",			9);
+	define("CSV_COMMENT",			10);
+	define("CSV_END",				11);
 
 
 	function ParseCSV(
@@ -62,7 +62,6 @@
 
 		$nLength = StringLength($strCSV);
 		$bIsStringSingleByte = IsStringSingleByte($strCSV);
-		$nLengthSeparator = StringLength($strSeparator);
 		$nLengthQuote = StringLength($strQuote);
 		$nLengthEscapedQuote = StringLength($strEscapedQuote);
 		$nLengthNewLine = StringLength($strNewLine);
@@ -105,12 +104,7 @@
 					}
 					$arrayRow = array_combine($arrayRow1, $arrayRow);
 				}
-/*
-		    array_walk($arrayCSV, function(&$a) use ($arrayCSV)
-		    {
-		      $a = array_combine($arrayCSV[0], $a);
-		    });
-*/		    
+	    
 		    if ($IncludeHeadersInResult == false)
 		    {
 		    	array_shift($arrayCSV); // remove column header
@@ -119,18 +113,10 @@
 			return $arrayCSV;
 		}
 
-
-
-
-
-
-
-
 		
 		$arrayRows = array();
 		$arrayValues = array();
 		$nPos = 0;
-		$nStartPos = 0;
 		$nPreviousState = CSV_INITIAL;
 		$strNextValue = '';
 		$strNextToken = '';

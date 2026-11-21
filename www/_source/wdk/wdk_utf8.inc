@@ -33,7 +33,7 @@
 	{
 		if (IsStringUTF8($str) == true)
 		{
-			return $str;
+			return $str . '';
 		}
 		
 		// Step 1: Create the byte map

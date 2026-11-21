@@ -291,6 +291,7 @@
 			$table = new CTableElement($this->GetWebsite(),"default");
 			$strTable = $table->RenderTable($arrayDashboard,true,false);
 			$this->SetOutputItem("TABLE",$strTable);
+			$this->SetOutputItem("PAGE_LOADED_DATETIME",$this->GetWebsite()->RenderDateTime(GetTimeNow()));
 			
 
 			

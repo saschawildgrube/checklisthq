@@ -27,7 +27,7 @@
 			$strJson = JsonEncode($arrayProps);
 			$strPropsVarName = $strDomElementID.'_props';
 			$strJavaScript = $strPropsVarName.' = '.$strJson.';';
-			$strJavaScript .= "ReactDOM.render(e(".$strReactComponent.",".$strPropsVarName."),document.getElementById('".$strDomElementID."'));";
+			$strJavaScript .= "RenderReactElement(e(".$strReactComponent.",".$strPropsVarName."),document.getElementById('".$strDomElementID."'));";
 			$this->AddJavaScriptSourceCode(
 				$this->GetElementID().'-'.$strDomElementID,
 				$strJavaScript);

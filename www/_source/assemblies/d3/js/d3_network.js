@@ -264,34 +264,34 @@ function D3_Network(vSelector, aProps)
   });
   
 
-	function OnDragGetSubject()
+	function OnDragGetSubject(event)
 	{
-		return simulation.find(d3.event.x, d3.event.y);
+		return simulation.find(event.x, event.y);
   } 
-	function OnDragStart()
+	function OnDragStart(event)
 	{
-	  if (!d3.event.active)
+	  if (!event.active)
 	  {
 	  	simulation.alphaTarget(0.3).restart();
 	  }
-	  d3.event.subject.fx = d3.event.subject.x;
-	  d3.event.subject.fy = d3.event.subject.y;
+	  event.subject.fx = event.subject.x;
+	  event.subject.fy = event.subject.y;
 	}
 	
-	function OnDrag()
+	function OnDrag(event)
 	{
-	  d3.event.subject.fx = d3.event.x;
-	  d3.event.subject.fy = d3.event.y;
+	  event.subject.fx = event.x;
+	  event.subject.fy = event.y;
 	}
 	
-	function OnDragEnd()
+	function OnDragEnd(event)
 	{
-	  if (!d3.event.active)
+	  if (!event.active)
 	  {
 	  	simulation.alphaTarget(0);
 	  }
-	  d3.event.subject.fx = null;
-	  d3.event.subject.fy = null;
+	  event.subject.fx = null;
+	  event.subject.fy = null;
 	}
 
 

@@ -3,6 +3,23 @@
 
 const e = React.createElement;
 
+const wdkReactRoots = new WeakMap();
+
+function RenderReactElement(element, container)
+{
+	var root = wdkReactRoots.get(container);
+	if (root == null)
+	{
+		root = ReactDOM.createRoot(container);
+		wdkReactRoots.set(container, root);
+	}
+	// WDK initialization code expects the component to be mounted immediately.
+	ReactDOM.flushSync(() =>
+	{
+		root.render(element);
+	});
+}
+
 class WDKReactComponent extends React.Component
 {
   constructor(props)

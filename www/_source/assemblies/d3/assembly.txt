@@ -1,0 +1,32 @@
+D3 Assembly
+
+PURPOSE
+
+	Display SVG charts and interactive data visualizations using D3, directly or through WDK React elements.
+
+FEATURES
+
+	* Element linechart (CLineChartElement)
+	* Element divergingstackedbarchart (CDivergingStackedBarChartElement)
+	* Element network (CNetworkElement)
+	* Element parallelsets (CParallelSetsElement)
+	* Element radialtidytree (CRadialTidyTreeElement)
+	* Element sankey (CSankeyElement)
+	* Element zoomablesunburst (CZoomableSunburstElement)
+	* Shared CD3ReactElement and D3ReactComponent integration.
+	* Standalone JavaScript chart functions, including simple bar charts and simple network graphs.
+	* Network dragging, parallel-set sorting and tooltips, and zoomable sunburst navigation.
+
+DEPENDENCIES
+
+	D3 7.9.2 is bundled locally in js/d3-7.9.2.min.js; no CDN is required.
+	Include d3.inc and call ActivateD3v7($website) to load D3 for standalone charts.
+	React elements depend on WDK React integration. CD3ReactElement activates React and D3,
+	then includes react-d3.js before the chart-specific scripts and React components.
+	D3 assets and integration belong to this assembly and are no longer contained in WDK.
+
+LAB EXAMPLES
+
+	lab-d3 demonstrates standalone JavaScript charts.
+	lab-d3react demonstrates charts rendered through React elements using sample data.
+	lab-d3linechart demonstrates line charts with different data sizes and configurations.

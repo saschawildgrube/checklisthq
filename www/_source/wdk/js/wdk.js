@@ -389,19 +389,19 @@
 		});
 	}
 	
-  function ProgressIndicatorDownloadOnSubmit(elementContainer)
-  {
-    Trace('ProgressIndicatorDownloadOnSubmit()');
-    Trace(elementContainer);
+	function ProgressIndicatorDownloadOnSubmit(elementContainer)
+	{
+		Trace('ProgressIndicatorDownloadOnSubmit()');
+		Trace(elementContainer);
 
-    var strToken = elementContainer.attr('data-downloadtoken'); 
-    
-    Trace('Token: '+strToken);
-    var interval = window.setInterval(function()
-    {
-    	ProgressIndicatorDownloadCheckCookie(elementContainer,interval,strToken);
-    }, 1000);
-  }
+		var strToken = elementContainer.attr('data-downloadtoken'); 
+		
+		Trace('Token: '+strToken);
+		var interval = window.setInterval(function()
+		{
+			ProgressIndicatorDownloadCheckCookie(elementContainer,interval,strToken);
+		}, 1000);
+	}
 
 
 	function ProgressIndicatorDownloadCheckCookie(elementContainer,interval,strToken)

@@ -4,6 +4,12 @@
 	
 	class CTest extends CUnitTestRecursiveFileCheck
 	{
+		private $m_aConflictPatterns = array(
+			"conflicted copy", // Dropbox
+			"[Conflict]",      // Google Drive
+			"[conflicted",     // pCloud
+			"(conflicted");    // pCloud
+
 		function __construct()
 		{
 			parent::__construct("Check for unintended files");
@@ -28,29 +34,16 @@
 				$bUnintendedFile = true;
 			}
 			
-			// Dropbox sometimes leaves copies of files after unsuccessful merging
-			else if (FindString($strFileName,"conflicted copy") != -1)
+			// Sync tools sometimes leave conflicted copies.
+			foreach ($this->m_aConflictPatterns as $strPattern)
 			{
-				$bUnintendedFile = true;
+				if (FindString($strFileName,$strPattern) != -1)
+				{
+					$bUnintendedFile = true;
+					break;
+				}
 			}
 
-			// Google Drive sometimes leaves copies of files after unsuccessful syncing
-			else if (FindString($strFileName,"[Conflict]") != -1)
-			{
-				$bUnintendedFile = true;
-			}
-
-			// pCloud sometimes leaves copies of files after unsuccessful merging
-			else if (FindString($strFileName,"[conflicted") != -1)
-			{
-				$bUnintendedFile = true;
-			}			
-			else if (FindString($strFileName,"(conflicted") != -1)
-			{
-				$bUnintendedFile = true;
-			}				
-
-			
 			if ($bUnintendedFile == true)
 			{
 				$this->Trace("$strFilePath");

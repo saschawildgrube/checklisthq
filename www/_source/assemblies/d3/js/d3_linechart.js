@@ -99,10 +99,22 @@ function D3_LineChart(vSelector, aProps)
 	var nBorderLeft = 80;
 	var nBorderRight = 5;
 	var nBorderBottom = 40;
+
+
+	// Adjusting the right border to make sure that the last legend is properly displayed
+	var strLegendLast = GetStringValue(aData[aData.length - 1][config.legend]);
+	console.log('Last Legend: '+strLegendLast);
+	if (strLegendLast.length > 0 && aData.length > 10)
+	{
+		// This is just a good guess, but better than nothing
+		nBorderRight += strLegendLast.length/2 * 7;
+	}
+	
+
 	
 	var nChartHeight = Math.max(0,nSvgHeight-nBorderTop-nBorderBottom);
 	var nChartWidth = Math.max(0,nSvgWidth-nBorderLeft-nBorderRight);
-
+	
 
 	var fMax = d3.max(aData,function(row)
 		{
@@ -133,7 +145,8 @@ function D3_LineChart(vSelector, aProps)
 
 	var nIndex = -1;
 	var scaleX = d3.scaleBand()
-		.rangeRound([0, nChartWidth])
+		.range([0, nChartWidth])
+		//.rangeRound([0, nChartWidth])
 		.padding(.3)
 		.domain(aData.map(function(row)
 			{

@@ -22,3 +22,5 @@ TID_STATICFILEBROWSER_LINK_VIEW
 View
 TID_STATICFILEBROWSER_TOOL_BACK
 Back to folder
+TID_STATICFILEBROWSER_ERROR_FILE_INVALID
+The file cannot be read or is not a supported text file.

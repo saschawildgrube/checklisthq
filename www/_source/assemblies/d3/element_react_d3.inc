@@ -1,6 +1,7 @@
 <?php
 
 	require_once(GetWDKDir().'wdk_element_react.inc');
+	require_once(GetAssemblyDir('d3').'d3.inc');
 
 	abstract class CD3ReactElement extends CReactElement
 	{
@@ -14,12 +15,12 @@
 			parent::__construct(
 				$website,
 				$strElementID,
-				$strStyleID,
+				$strStyleID, 
 				$bLayoutCFG,
 				$bLayoutHTML);
 				
-			$this->GetWebsite()->ActivateD3v5();
-			$this->AddJavaScript('wdk-react-d3'); 
+			ActivateD3v7($this->GetWebsite());
+			$this->AddJavaScript('react-d3'); 
 		}
 	}
 

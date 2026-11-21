@@ -1,4 +1,4 @@
-// WDK D3ReactComponent
+// D3ReactComponent
 'use strict';
 
 class D3ReactComponent extends WDKReactComponent
