@@ -37,7 +37,7 @@
 		}
 		
 		$strAppURL = $strAppURL . '?authuser='.$strEmail;
-		$strAppURL = URLEncode($strAppURL);
+		$strAppURL = StringURLEncode($strAppURL);
 		
 		$strServiceParam = '';
 		if ($strAppId == 'mail')

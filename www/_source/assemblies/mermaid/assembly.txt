@@ -1,0 +1,28 @@
+Mermaid Assembly
+
+PURPOSE
+
+	Edit Mermaid source with a live diagram preview or display a read-only graph.
+
+FEATURES
+
+	* React component MermaidEditor
+	* React component MermaidViewer for the diagram preview
+	* Element mermaideditor (CMermaidEditorElement)
+	* Element mermaidviewer (CMermaidViewerElement), using MermaidViewer directly without a module.
+	* RenderMermaidViewer($strCode) accepts the Mermaid code as its only input.
+	* Module mermaid/mermaideditor (CMermaidEditorModule)
+	* Optional source configuration passed from module to element to React; defaults to empty.
+	* Source and SVG downloads. Changes are kept in memory until downloaded.
+
+DEPENDENCIES
+
+	WDK React integration. mermaid.js loads and initializes Mermaid 12.3.0 from jsDelivr.
+	Both elements include mermaid.js and react-mermaid.js before their React components.
+	MermaidReactComponent displays an error if the SDK is unavailable and refreshes when loading completes.
+	Rendering uses strict security and does not automatically scan the page.
+
+LAB EXAMPLES
+
+	State, beta swimlane, flowchart, classes and entity relationships.
+	Editor lab pages supply source through the module configuration. Viewer lab pages use the element directly.

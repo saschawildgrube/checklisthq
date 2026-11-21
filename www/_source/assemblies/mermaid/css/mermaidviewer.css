@@ -1,0 +1,6 @@
+.wdk-mermaidviewer { width: 100%; font: 13px/1.45 Consolas, 'Courier New', monospace; }
+.wdk-mermaidviewer * { box-sizing: border-box; }
+.wdk-mermaidviewer .mermaidviewer-pane { display: flex; flex-direction: column; min-width: 0; }
+.wdk-mermaidviewer .mermaidviewer-preview { overflow: auto; padding: .75rem; background: #383d45; color: #f1f3f5; }
+.wdk-mermaidviewer .mermaidviewer-preview svg { display: block; margin: 0 auto; }
+.wdk-mermaidviewer [hidden] { display: none !important; }

@@ -76,6 +76,9 @@
 			
 			$assembly = new CAssembly($this,'d3');
 			$assemblyLine->AddAssembly($assembly);	
+
+			$assembly = new CAssembly($this,'mermaid');
+			$assemblyLine->AddAssembly($assembly);		
 			
 			parent::OnInitAssemblyLine($assemblyLine);
 		}
@@ -116,6 +119,8 @@
 
 			$this->RegisterGenericOutputItem('GOOGLEAPPURL',array('app','email'));			
 			
+			$this->AddJavaScript('mermaid');
+
 			$passwordpolicy = new CPasswordPolicy();
 			$passwordpolicy->SetPolicy($this->GetConfig('passwordpolicy'));
 			
