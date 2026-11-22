@@ -1,0 +1,66 @@
+---
+config:
+  state:
+    useMaxWidth: false
+title: State Syntax Examples
+---
+stateDiagram-v2
+    accTitle: State syntax examples
+    accDescr: Declarations, transitions, nesting, concurrency, choices, forks, joins, notes and styles.
+    direction TB
+    %% Alternative header: stateDiagram (legacy renderer).
+    %% Alternative directions: LR, RL, BT.
+    Example1
+    state "Example 2 - quoted alias" as Example2
+    Example3: Example 3 - description
+    Example3: Additional description
+    [*] --> Example1
+    Example1 --> Example2
+    Example2 --> Example3: Example 4 - transition label
+    Example3 --> Example3: Example 5 - self transition
+    state Example6 <<choice>>
+    Example3 --> Example6
+    Example6 --> Example7: Example 6 - first condition
+    Example6 --> Example8: Example 6 - second condition
+    state "Example 7 - composite" as Example7 {
+        direction TB
+        [*] --> Nested1
+        Nested1: Example 7.1
+        state "Example 7.2 - nested composite" as Nested2 {
+            [*] --> Nested3
+            Nested3: Example 7.3
+            Nested3 --> [*]
+        }
+        Nested1 --> Nested2
+        Nested2 --> [*]
+    }
+    state "Example 8 - concurrent regions" as Example8 {
+        [*] --> Region1
+        Region1: Example 8.1
+        Region1 --> [*]
+        --
+        [*] --> Region2
+        Region2: Example 8.2
+        Region2 --> [*]
+    }
+    state Example9 <<fork>>
+    state Example12 <<join>>
+    Example7 --> Example9
+    Example8 --> Example9
+    Example9 --> Example10
+    Example9 --> Example11
+    Example10 --> Example12
+    Example11 --> Example12
+    Example12 --> Example13
+    Example13: Example 13 - final state
+    Example13 --> [*]
+    note left of Example1: Example 14 - single-line note
+    note right of Example13
+        Example 15 - multiline note
+        Second line
+    end note
+    classDef highlighted fill:#254b70,color:#fff,stroke:#88bbee
+    class Example1,Example2 highlighted
+    Example16:::highlighted: Example 16 - inline class
+    Example13 --> Example16: Example 17
+    Example16 --> [*]

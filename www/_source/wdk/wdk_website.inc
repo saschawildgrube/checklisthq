@@ -69,6 +69,7 @@
 		
 		private $m_arrayHeaders;
 		private $m_arrayJavaScripts;
+		private $m_arrayRawJavaScripts = array();
 		private $m_arrayStyleSheets;
 
 		private $m_bMonolingual;
@@ -2403,14 +2404,15 @@
 		}
 
 		final
-		function AddJavaScript($strTitle,$strID = '')
+		function AddJavaScript($strTitle,$strID = '', $bProcessTemplate = true)
 		{
 			if ($strID == '')
 			{
 				$strID = $strTitle;	
 			}
 			$this->m_arrayJavaScripts[$strTitle] = array(
-				'id' => $strID);	
+				'id' => $strID,
+				'processtemplate' => $bProcessTemplate);	
 		}
 
 		final
@@ -3903,6 +3905,18 @@
 
 				if ($strJavaScriptFile != "")
 				{
+					// Distribution files must bypass all page-template processing.
+					if (ArrayGetValue($arrayJavaScript, 'processtemplate') === false)
+					{
+						$strJavaScriptFileContent = FileReadBinary($strJavaScriptFile);
+						if ($strJavaScriptFileContent !== false && $strJavaScriptFileContent != '')
+						{
+							$strToken = 'WDK_RAW_JAVASCRIPT_'.MakeNumericToken(30);
+							$this->m_arrayRawJavaScripts[$strToken] = $strJavaScriptFileContent;
+							$strScriptHTML .= "\n<script>\n".$strToken."\n</script>";
+							continue;
+						}
+					}
 					$strJavaScriptFileContent = FileRead($strJavaScriptFile);
 					if ($strJavaScriptFileContent != '')
 					{
@@ -4138,6 +4152,13 @@
 			$this->Trace("RenderCode START");
 			$strOutput = $this->RenderCode($strOutput);
 			$this->Trace("RenderCode END");
+
+			// Restore distribution bytes only after every template/code-rendering pass.
+			foreach ($this->m_arrayRawJavaScripts as $strToken => $strJavaScriptSource)
+			{
+				$strOutput = ReplaceString($strOutput, $strToken, $strJavaScriptSource);
+			}
+			$this->m_arrayRawJavaScripts = array();
 			$this->ProfilingTrace();
 		
 
@@ -5665,17 +5686,15 @@
 
 		function ActivateJQuery()
 		{
-			$this->AddJavaScript('jquery','jquery-3.5.1.min');
+			$this->AddJavaScript('jquery','jquery-3.5.1.min', false);
 
 		}		
 
 		function ActivateBootstrap3()
 		{
 			$this->ActivateJQuery();
-			//$this->AddStyleSheetURL('bootstrap','https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css','sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u');
 			$this->AddStyleSheet('bootstrap','bootstrap-3.3.7.min');
-			//$this->AddJavaScriptURL('bootstrap','https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js','sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa');
-			$this->AddJavaScript('bootstrap','bootstrap-3.3.7.min');
+			$this->AddJavaScript('bootstrap','bootstrap-3.3.7.min', false);
 		}
 
 		function ActivateBootstrap4()
@@ -5687,7 +5706,6 @@
 		
 		function ActivateFontAwesome4()
 		{ 
-			//$this->AddStyleSheetURL('fontawesome4','https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');	
 			$this->AddStyleSheet('fontawesome4','fontawesome-4.7.0');	
 			$this->SetLayoutConfigItem(
 				'FONTAWESOMEURL',
@@ -5702,7 +5720,7 @@
 
 		function ActivateFontAwesome5()
 		{ 
-			$this->AddJavaScript('fontawesome5','fontawesome-5.15.4.min');
+			$this->AddJavaScript('fontawesome5','fontawesome-5.15.4.min', false);
 		}
 
 
@@ -5710,8 +5728,8 @@
 		{
 			$this->ActivateJQuery();
 			
-			$this->AddJavaScript('react','react-19.3.1.development');
-			$this->AddJavaScript('react-dom','react-dom-19.3.1.development');
+			$this->AddJavaScript('react','react-19.3.1.development', false);
+			$this->AddJavaScript('react-dom','react-dom-19.3.1.development', false);
 
 			$this->AddJavaScript('wdk');
 			$this->AddJavaScript('wdk-react');

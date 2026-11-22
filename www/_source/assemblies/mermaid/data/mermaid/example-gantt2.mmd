@@ -1,0 +1,53 @@
+---
+config:
+  gantt:
+    useMaxWidth: false
+    topAxis: true
+---
+gantt
+    title Gantt Syntax Examples
+    accTitle: Gantt syntax examples
+    accDescr: Dates, dependencies, durations, statuses, milestones and calendar settings.
+    dateFormat YYYY-MM-DD
+    axisFormat %d %b
+    tickInterval 1day
+    weekday monday
+    excludes weekends, 2026-12-25
+    weekend saturday
+    todayMarker stroke-width:2px,stroke:#e66,opacity:0.6
+    section Example 1 - dates and durations
+    Example 1 - explicit start and end :e1, 2026-12-01, 2026-12-03
+    Example 2 - start and duration     :e2, 2026-12-02, 2d
+    Example 3 - implicit start         :1d
+    Example 4 - implicit start and end :2026-12-08
+    Example 5 - hours                  :e5, 2026-12-08, 12h
+    Example 6 - minutes                :e6, after e5, 30m
+    Example 7 - seconds                :e7, after e6, 60s
+    Example 8 - weeks                  :e8, 2026-12-09, 1w
+    section Example 2 - dependencies
+    Example 9 - after one              :e9, after e1, 2d
+    Example 10 - after several         :e10, after e2 e9, 2d
+    Example 11 - fixed finish          :e11, after e10, 2026-12-14
+    Example 12 - anchor                :e12, 2026-12-18, 1d
+    Example 13 - until anchor          :e13, 2026-12-14, until e12
+    section Example 3 - statuses
+    Example 14 - done                  :done, e14, 2026-12-01, 2d
+    Example 15 - active                :active, e15, after e14, 2d
+    Example 16 - future                :e16, after e15, 2d
+    Example 17 - critical              :crit, e17, after e16, 2d
+    Example 18 - critical done         :crit, done, e18, 2026-12-01, 2d
+    Example 19 - critical active       :crit, active, e19, after e18, 2d
+    Example 20 - milestone             :milestone, e20, after e17, 0d
+    Example 21 - critical milestone    :crit, milestone, e21, after e20, 0d
+    %% Mutually exclusive chart-wide alternatives:
+    %% dateFormat YYYY-MM-DD HH:mm
+    %% axisFormat %H:%M
+    %% tickInterval 1week
+    %% weekday sunday
+    %% weekend friday
+    %% includes 2026-12-26
+    %% todayMarker off
+    %% Compact display: frontmatter config.gantt.displayMode: compact
+    %% Interactive examples require callbacks/security support in the host:
+    %% click e1 href "https://example.com"
+    %% click e2 call exampleCallback()

@@ -17,12 +17,43 @@ FEATURES
 
 DEPENDENCIES
 
-	WDK React integration. mermaid.js loads and initializes Mermaid 12.3.0 from jsDelivr.
-	Both elements include mermaid.js and react-mermaid.js before their React components.
+	Mermaid 12.3.0 is vendored as js/mermaid-12.3.0.min.js (the complete browser distribution).
+	Include mermaid.inc and call ActivateMermaid($website) for standalone pages.
+	The helper registers the SDK through AddJavaScript('mermaid-sdk', 'mermaid-12.3.0.min', false) before mermaid.js.
+	Both React elements call the same helper before registering their React components.
+	No CDN import or separately downloaded diagram chunks are required.
 	MermaidReactComponent displays an error if the SDK is unavailable and refreshes when loading completes.
-	Rendering uses strict security and does not automatically scan the page.
+	Rendering uses strict security. mermaid.js explicitly renders plain .mermaid containers after DOM readiness and reveals them only after rendering.
 
 LAB EXAMPLES
 
-	State, beta swimlane, flowchart, classes and entity relationships.
+	State, beta swimlane, flowchart, Gantt, sequence, classes and entity relationships; two shared data examples each.
 	Editor lab pages supply source through the module configuration. Viewer lab pages use the element directly.
+
+VENDORED DISTRIBUTION
+
+	Source: https://registry.npmjs.org/mermaid/-/mermaid-12.3.0.tgz
+	Version: npm latest stable was 12.3.0 on 2026-11-22.
+	Package SHA-512: 4113TdXeLAsMruJ79OpFL5O8+LTFXhQqZ260rF3tgUmiNAtRm4Uume04I+65PRN6yZ69J4f8rVYWW8zRk65UYw==
+	The published dist/mermaid.min.js is copied unchanged; license: js/mermaid-12.3.0.LICENSE.
+	For an upgrade, verify the npm package integrity, replace the versioned bundle and license,
+	then update ActivateMermaid() and this version record.
+
+DEPLOYMENT
+
+	Deploy this assembly and the updated WDK JavaScript registration/rendering code.
+	For efficient loading and browser caching, strongly prefer copying the versioned bundle
+	and license from the assembly js/ directory to the website-root www/js/ directory.
+	The public bundle must match the vendored assembly copy byte for byte.
+	WDK automatically serves that public copy as a static script when present.
+	Without a public copy, WDK embeds the assembly distribution inline in the same script order.
+
+INLINE DISTRIBUTIONS
+
+	AddJavaScript($title, $id, false) opts a distribution out of template processing.
+	The default third argument remains true for existing application scripts.
+	Raw inline scripts are read with FileReadBinary(), held behind temporary tokens during
+	page processing, and restored after RenderCode(), preserving the distribution bytes.
+	This bypasses output-item substitution, resource/generic tag expansion and code formatting.
+	The published Mermaid bundle contains no literal closing script tag.
+	Both loading paths use the same unchanged bundle and require no CDN.

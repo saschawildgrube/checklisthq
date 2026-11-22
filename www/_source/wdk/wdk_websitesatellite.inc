@@ -251,9 +251,9 @@
 			return $this->GetWebsite()->GetImageURL($strImageID,$strImageFileExtention);
 		}
 		
-		function AddJavaScript($strTitle,$strID='')
+		function AddJavaScript($strTitle,$strID='', $bProcessTemplate = true)
 		{
-			$this->GetWebsite()->AddJavaScript($strTitle,$strID); 
+			$this->GetWebsite()->AddJavaScript($strTitle,$strID,$bProcessTemplate); 
 		}
 
 		function AddJavaScriptURL($strTitle,$strURL,$strIntegrity='')

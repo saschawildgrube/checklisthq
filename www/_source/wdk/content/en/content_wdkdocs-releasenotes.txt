@@ -10,12 +10,14 @@ NOT YET Baselined
 ** Shell script config-plesk-php-fpm.sh did not consider the actual FPM engine version(s) when restarting. This has been fixed. 
 ** Webservice system/session eventually returned SESSION_NOT_FOUND if a session is written without changes. This has been fixed. 
 * New features
+** Added the optional $bProcessTemplate argument to CWebSite::AddJavaScript() and CWebsiteSatellite::AddJavaScript(). Pass false for third-party distributions to preserve their inline source through template expansion and code formatting. The default remains true for existing scripts. A matching file in www/js/ still takes precedence and is served as a static asset; copying distributions there is strongly recommended for browser caching and efficient delivery.
 ** Bundled Font Awesome Free 5.15.4 (all free solid, regular and brand icons). ActivateFontAwesome5() now loads the local JavaScript distribution instead of the Font Awesome 5.0.8 CDN script.
 ** Added CStaticFileViewerElement (staticfileviewer) to display local text and source code files with escaped contents and preserved formatting.
 ** Web Services can now either be consumed via http (like before) or by static calls - while maintaining the existing implementation pattern - to increase speed and consider web applications that do not need a distributed web services architecture.
 ** Function GetWebservicesDefaultTransportMode() is introduced to env.inc: it should either return "http" or "static". 
 ** Added function CDatabase::GetMatchedRows().
 * Improvements
+** WDK now registers its bundled jQuery, jQuery Countdown, Bootstrap 3, Font Awesome 5, React and React DOM distributions with template processing disabled, preserving their source when loaded inline.
 ** Refreshed the Font Awesome 4.7.0 CSS and WOFF2 distribution from upstream, retaining the WDK local font URL and explicitly blocking fallback glyphs while the icon font loads. 4.7.0 remains the final Font Awesome 4 release.
 ** Updated the bundled React and React DOM distributions from 16.14.0 to 19.3.1. CReactElement now uses reusable React roots through RenderReactElement(), preserving synchronous mounting for existing WDK initialization code.
 ** CServerManagerModule now displays the page-load date and time below the server table using WDK date/time formatting and the website's locale and timezone.

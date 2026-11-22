@@ -1,0 +1,24 @@
+---
+config:
+  flowchart:
+    useMaxWidth: false
+title: Simple Task - Flow
+---
+flowchart TB
+    new["New"]
+    requested["Requested"]
+    work_in_progress["Work in Progress"]
+    complete["Work is Completed"]
+    closed(["Closed"])
+    cancelled(["Cancelled"])
+    new -->|"Request: Requester or Manager"| requested
+    requested -->|"Start Work: Fulfiller or Manager"| work_in_progress
+    requested -->|"Cancel: Requester or Manager"| cancelled
+    work_in_progress -->|"Work Completed: Fulfiller or Manager"| complete
+    work_in_progress -->|"Cancel: Requester or Manager"| cancelled
+    complete -->|"Continue Work: Requester or Manager"| work_in_progress
+    complete -->|"Close: Requester or Manager"| closed
+    input[/"Task details"/] -.-> new
+    complete -.-> output[/"Results and completion evidence"/]
+    classDef terminal fill:#244b38,color:#fff,stroke:#62bf89
+    class closed,cancelled terminal

@@ -1,0 +1,74 @@
+---
+config:
+  er:
+    useMaxWidth: false
+title: Simple Task - Entity Relationships
+---
+erDiagram
+    direction TB
+    PROCESS ||--|{ STATE : defines
+    PROCESS ||--|{ TRANSITION : defines
+    PROCESS ||--o{ TASK : governs
+    STATE ||--o{ TASK : current_state
+    STATE ||--o{ TRANSITION : target_state
+    STATE ||--o{ STATE_TRANSITION : permits
+    TRANSITION ||--|{ STATE_TRANSITION : available_from
+    TRANSITION ||--|{ TRANSITION_ROLE : authorizes
+    ROLE ||--|{ TRANSITION_ROLE : may_perform
+    TASK ||--o{ TASK_ROLE : assigns
+    ROLE ||--o{ TASK_ROLE : grants
+    PERSON ||--o{ TASK_ROLE : holds
+    TASK ||--o{ EVIDENCE : documents
+    PROCESS {
+        string id PK "simple_task"
+        string name "Simple Task"
+        string description
+        string initial_state_id FK "new"
+    }
+    STATE {
+        string id PK "new, requested, work_in_progress, complete, closed, cancelled"
+        string process_id FK
+        boolean terminal "closed and cancelled"
+    }
+    TRANSITION {
+        string id PK "request, start_work, complete, continue_work, close, cancel"
+        string process_id FK
+        string target_state_id FK
+        string label
+    }
+    STATE_TRANSITION {
+        string source_state_id PK, FK
+        string transition_id PK, FK
+    }
+    ROLE {
+        string id PK "requester, fulfiller, manager"
+        string name
+    }
+    TRANSITION_ROLE {
+        string transition_id PK, FK
+        string role_id PK, FK
+    }
+    TASK {
+        string id PK
+        string process_id FK
+        string state_id FK
+        string input "Task details"
+        string output "Requested results"
+    }
+    PERSON {
+        string id PK
+        string name
+    }
+    TASK_ROLE {
+        string task_id PK, FK
+        string person_id PK, FK
+        string role_id PK, FK
+    }
+    EVIDENCE {
+        string id PK
+        string task_id FK
+        string documentation
+    }
+    %% STATE_TRANSITION rows preserve the exact allowed source states.
+    %% TRANSITION_ROLE grants Manager all six transitions; Requester request,
+    %% continue_work, close, cancel; Fulfiller start_work, complete.

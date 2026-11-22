@@ -1,0 +1,178 @@
+---
+title: Swimlane Syntax Examples
+config:
+  swimlane:
+    useMaxWidth: false
+  flowchart:
+    curve: basis
+---
+swimlane-beta TB
+    accTitle: Swimlane syntax examples
+    accDescr: Lanes, nested groups, handoffs, shapes, edge styles, labels and styling.
+    %% Optional direction after swimlane-beta: TB (default), TD, BT, RL, LR.
+    subgraph Basic["Example 1 - lane with traditional nodes"]
+        direction TB
+        A1["Example 1"]
+        A2("Example 2")
+        A3(["Example 3"])
+        A4[["Example 4"]]
+        A5[("Example 5")]
+        A6(("Example 6"))
+        A7>"Example 7"]
+        A8{"Example 8"}
+        A9{{"Example 9"}}
+        A10[/"Example 10"/]
+        A11[\"Example 11"\]
+        A12[/"Example 12"\]
+        A13[\"Example 13"/]
+        A14((("Example 14")))
+        A15
+        A16["Example 16 - #quot;quoted#quot; #35;"]
+        A17["Example 17<br/>Second line"]
+    end
+    subgraph Edges["Example 2 - lane with edge notation"]
+        direction TB
+        B1["Example 18"] --> B2["Example 19"]
+        B2 --- B3["Example 20"]
+        B3 -.-> B4["Example 21"]
+        B4 -.- B5["Example 22"]
+        B5 ==> B6["Example 23"]
+        B6 === B7["Example 24"]
+        B7 ~~~ B8["Example 25"]
+        B8 -- "Example 26" --> B9["Example 27"]
+        B9 -->|"Example 28"| B10["Example 29"]
+        B10 ---|"Example 30"| B11["Example 31"]
+        B11 -. "Example 32" .-> B12["Example 33"]
+        B12 == "Example 34" ==> B13["Example 35"]
+        B13 --o B14["Example 36"]
+        B14 --x B15["Example 37"]
+        B15 <--> B16["Example 38"]
+        B16 o--o B17["Example 39"]
+        B17 x--x B18["Example 40"]
+        B18 ----> B19["Example 41 - longer edge"]
+        B19 -...-> B20["Example 42"]
+        B20 ====> B21["Example 43"]
+        B21 --> B22 & B23
+        B22 & B23 --> B24 & B25
+        B24 --> B26 --> B27
+        B25 edge1@--> B28["Example 44 - edge ID"]
+        edge1@{ animate: true, animation: slow, curve: linear }
+        B28 edge2@--> B29["Example 45 - fast animation"]
+        edge2@{ animation: fast }
+    end
+    subgraph Nested["Example 3 - lane with nested groups"]
+        direction TB
+        subgraph Inner["Example 46"]
+            direction TB
+            C1["Example 47"] --> C2["Example 48"]
+        end
+        C3["Example 49"] --> Inner
+    end
+    Basic --> Nested
+    subgraph Shapes["Example 4 - lane with general shapes"]
+        direction TB
+        S1@{ shape: bang, label: "Example 50 - bang" }
+        S2@{ shape: browser, label: "Example 51 - browser" }
+        S3@{ shape: bucket, label: "Example 52 - bucket" }
+        S4@{ shape: notch-rect, label: "Example 53 - notch-rect" }
+        S5@{ shape: cloud, label: "Example 54 - cloud" }
+        S6@{ shape: hourglass, label: "Example 55 - hourglass" }
+        S7@{ shape: bolt, label: "Example 56 - bolt" }
+        S8@{ shape: brace, label: "Example 57 - brace" }
+        S9@{ shape: brace-r, label: "Example 58 - brace-r" }
+        S10@{ shape: braces, label: "Example 59 - braces" }
+        S11@{ shape: console, label: "Example 60 - console" }
+        S12@{ shape: lean-r, label: "Example 61 - lean-r" }
+        S13@{ shape: lean-l, label: "Example 62 - lean-l" }
+        S14@{ shape: datastore, label: "Example 63 - datastore" }
+        S15@{ shape: cyl, label: "Example 64 - cyl" }
+        S16@{ shape: diam, label: "Example 65 - diam" }
+        S17@{ shape: delay, label: "Example 66 - delay" }
+        S18@{ shape: h-cyl, label: "Example 67 - h-cyl" }
+        S19@{ shape: lin-cyl, label: "Example 68 - lin-cyl" }
+        S20@{ shape: curv-trap, label: "Example 69 - curv-trap" }
+        S21@{ shape: div-rect, label: "Example 70 - div-rect" }
+        S22@{ shape: doc, label: "Example 71 - doc" }
+        S23@{ shape: rounded, label: "Example 72 - rounded" }
+        S24@{ shape: tri, label: "Example 73 - tri" }
+        S25@{ shape: folder, label: "Example 74 - folder" }
+        S26@{ shape: fork, label: "Example 75 - fork" }
+        S27@{ shape: win-pane, label: "Example 76 - win-pane" }
+        S28@{ shape: f-circ, label: "Example 77 - f-circ" }
+        S29@{ shape: lin-doc, label: "Example 78 - lin-doc" }
+        S30@{ shape: lin-rect, label: "Example 79 - lin-rect" }
+        S31@{ shape: notch-pent, label: "Example 80 - notch-pent" }
+        S32@{ shape: flip-tri, label: "Example 81 - flip-tri" }
+        S33@{ shape: sl-rect, label: "Example 82 - sl-rect" }
+        S34@{ shape: trap-t, label: "Example 83 - trap-t" }
+        S35@{ shape: docs, label: "Example 84 - docs" }
+        S36@{ shape: st-rect, label: "Example 85 - st-rect" }
+        S37@{ shape: odd, label: "Example 86 - odd" }
+        S38@{ shape: flag, label: "Example 87 - flag" }
+        S39@{ shape: person, label: "Example 88 - person" }
+        S40@{ shape: hex, label: "Example 89 - hex" }
+        S41@{ shape: trap-b, label: "Example 90 - trap-b" }
+        S42@{ shape: rect, label: "Example 91 - rect" }
+        S43@{ shape: circle, label: "Example 92 - circle" }
+        S44@{ shape: sm-circ, label: "Example 93 - sm-circ" }
+        S45@{ shape: dbl-circ, label: "Example 94 - dbl-circ" }
+        S46@{ shape: fr-circ, label: "Example 95 - fr-circ" }
+        S47@{ shape: bow-rect, label: "Example 96 - bow-rect" }
+        S48@{ shape: fr-rect, label: "Example 97 - fr-rect" }
+        S49@{ shape: cross-circ, label: "Example 98 - cross-circ" }
+        S50@{ shape: tag-doc, label: "Example 99 - tag-doc" }
+        S51@{ shape: tag-rect, label: "Example 100 - tag-rect" }
+        S52@{ shape: stadium, label: "Example 101 - stadium" }
+        S53@{ shape: text, label: "Example 102 - text" }
+    end
+    M1["`Example 103 - **bold** and _italic_`"]
+    M2["`Example 104
+    Multiline Markdown`"]
+    M1 --> M2
+    classDef highlighted fill:#254b70,color:#fff,stroke:#88bbee,stroke-width:2px
+    classDef default font-size:14px
+    class A1,A2 highlighted
+    M3["Example 105 - inline class"]:::highlighted
+    style A3 fill:#354535,stroke:#8c8,color:#fff
+    linkStyle 0 stroke:#e96,stroke-width:3px
+    %% Other curve values: linear, step, stepBefore, stepAfter, cardinal,
+    %% catmullRom, monotoneX, monotoneY, natural, bumpX, bumpY.
+    %% Shape aliases are interchangeable with the canonical shape names above.
+    %% Optional assets require an image or a registered icon pack in the host:
+    %% Icon1@{ icon: "fa:user", form: "square", label: "Example 106", pos: "t", h: 60 }
+    %% Icon form alternatives: circle, rounded, or omit form.
+    %% Icon/image label position alternatives: t, b.
+    %% Image1@{ img: "https://example.com/example.png", label: "Example 107", pos: "b", w: 60, h: 60, constraint: "on" }
+    %% Image constraint alternative: off.
+    %% Font Awesome notation (requires Font Awesome): FA["fa:fa-user Example 108"]
+    %% Click variants require compatible host security (assembly uses strict):
+    %% click A1 exampleCallback "Example 109"
+    %% click A2 call exampleCallback() "Example 110"
+    %% click A3 "https://example.com" "Example 111" _blank
+    %% click A4 href "https://example.com" "Example 112" _self
+    %% Top-level subgraphs are lanes; nested subgraphs remain ordinary boxes.
+    %% Nodes belong to their first declared lane. Use unique node IDs per lane.
+    %% A deliberately empty lane is retained.
+    subgraph Empty["Example 113 - empty lane"]
+    end
+    %% A lane can also use its ID as its caption.
+    subgraph Example114
+        LaneNode["Example 114 - implicit lane caption"]
+    end
+    %% Cross-lane connections and loopback handoffs.
+    A1 -->|"Example 115 - handoff"| B1
+    B29 -. "Example 116 - return handoff" .-> A2
+    C2 ==> S1
+    S1 --> LaneNode
+    %% M1, M2 and M3 demonstrate nodes declared outside any lane.
+    %% Alternative accessibility syntax:
+    %% accDescr {
+    %%     Example 117 - multiline accessible description.
+    %% }
+
+    %% Invisible links keep the shape catalog and sections vertical.
+    S1 ~~~ S2 ~~~ S3 ~~~ S4 ~~~ S5 ~~~ S6 ~~~ S7 ~~~ S8 ~~~ S9 ~~~ S10 ~~~ S11 ~~~ S12 ~~~ S13 ~~~ S14 ~~~ S15 ~~~ S16 ~~~ S17 ~~~ S18 ~~~ S19 ~~~ S20 ~~~ S21 ~~~ S22 ~~~ S23 ~~~ S24 ~~~ S25 ~~~ S26 ~~~ S27 ~~~ S28 ~~~ S29 ~~~ S30 ~~~ S31 ~~~ S32 ~~~ S33 ~~~ S34 ~~~ S35 ~~~ S36 ~~~ S37 ~~~ S38 ~~~ S39 ~~~ S40 ~~~ S41 ~~~ S42 ~~~ S43 ~~~ S44 ~~~ S45 ~~~ S46 ~~~ S47 ~~~ S48 ~~~ S49 ~~~ S50 ~~~ S51 ~~~ S52 ~~~ S53
+    Basic ~~~ Edges ~~~ Nested ~~~ Shapes
+    Shapes ~~~ M1
+    M2 ~~~ M3
+    A1 ~~~ A2 ~~~ A3 ~~~ A4 ~~~ A5 ~~~ A6 ~~~ A7 ~~~ A8 ~~~ A9 ~~~ A10 ~~~ A11 ~~~ A12 ~~~ A13 ~~~ A14 ~~~ A15 ~~~ A16 ~~~ A17

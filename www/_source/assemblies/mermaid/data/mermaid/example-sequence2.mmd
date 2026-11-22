@@ -1,0 +1,108 @@
+---
+config:
+  sequence:
+    useMaxWidth: false
+title: Sequence Syntax Examples
+---
+sequenceDiagram
+    accTitle: Sequence syntax examples
+    accDescr: Participants, messages, activation, control blocks, notes and lifecycle.
+    autonumber 10 5
+    actor A as Example 1
+    box rgb(35,55,75) Example 2 - group
+        participant B as Example 2
+        participant C@{ "type": "boundary", "alias": "Example 3" }
+        participant D@{ "type": "control" } as Example 4
+    end
+    box transparent Example 3 - other participants
+        participant E@{ "type": "entity" } as Example 5
+        participant F@{ "type": "database" } as Example 6
+        participant G@{ "type": "collections" } as Example 7
+        participant H@{ "type": "queue" } as Example 8
+    end
+    A->B: Example 9 - solid line
+    A-->B: Example 10 - dotted line
+    A->>B: Example 11 - solid arrow
+    B-->>A: Example 12 - dotted arrow
+    A-xB: Example 13 - solid cross
+    B--xA: Example 14 - dotted cross
+    A-)B: Example 15 - asynchronous
+    B--)A: Example 16 - dotted asynchronous
+    A<<->>B: Example 17 - bidirectional
+    A<<-->>B: Example 18 - dotted bidirectional
+    A->>+B: Example 19 - activate shorthand
+    B->>+B: Example 20 - nested self call
+    B-->>-B: Example 21 - nested return
+    B-->>-A: Example 22 - deactivate shorthand
+    activate C
+    C->>D: Example 23 - explicit activation
+    deactivate C
+    Note left of A: Example 24 - left note
+    Note right of B: Example 25 - right note
+    Note over A,B: Example 26 - spanning note<br/>Second line
+    Note over C: Example 27 - single participant note
+    loop Example 28 - repetition
+        A->>B: Example 29
+    end
+    alt Example 30 - first condition
+        B->>C: Example 31
+    else Example 32 - second condition
+        B->>D: Example 33
+    else Example 34 - fallback
+        B->>E: Example 35
+    end
+    opt Example 36 - optional
+        E->>F: Example 37
+    end
+    par Example 38 - parallel branch
+        B->>G: Example 39
+    and Example 40 - parallel branch
+        B->>H: Example 41
+    end
+    critical Example 42 - protected region
+        B->>F: Example 43
+    option Example 44 - first exception
+        F-->>B: Example 45
+    option Example 46 - second exception
+        F-->>B: Example 47
+    end
+    break Example 48 - stop condition
+        B-->>A: Example 49
+    end
+    rect rgb(45,65,85)
+        A->>B: Example 50 - background region
+        rect rgba(80,100,120,0.3)
+            B->>C: Example 51 - nested background
+        end
+    end
+    create participant I as Example 52
+    B->>I: Example 53 - create participant
+    create actor J as Example 54
+    I->>J: Example 55 - create actor
+    destroy I
+    B-xI: Example 56 - destroy recipient
+    destroy J
+    J-->>B: Example 57 - destroy sender
+    A->>B: Example 58 - escaped #59; and #35;
+    %% Mermaid 12.3.0 popup menus require a rectangular participant.
+    %% Stick-figure actor A has no rectData and crashes drawPopup.
+    link B: Example 59 @ https://example.com
+    links B: {"Example 60": "https://example.com", "Example 61": "https://example.org"}
+    %% Alternative numbering: autonumber (default start/increment).
+    A-|\B: Example 62
+    A--|\B: Example 63
+    A-|/B: Example 64
+    A--|/B: Example 65
+    A/|-B: Example 66
+    A/|--B: Example 67
+    A\\-B: Example 68
+    A\\--B: Example 69
+    A-\\B: Example 70
+    A--\\B: Example 71
+    A-//B: Example 72
+    A--//B: Example 73
+    A//-B: Example 74
+    A//--B: Example 75
+    A->>()B: Example 76 - recipient center
+    A()->>B: Example 77 - sender center
+    A()->>()B: Example 78 - both centers

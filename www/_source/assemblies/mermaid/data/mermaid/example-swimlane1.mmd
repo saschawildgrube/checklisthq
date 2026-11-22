@@ -1,0 +1,34 @@
+---
+config:
+  swimlane:
+    useMaxWidth: false
+title: Simple Task - Responsibilities
+---
+swimlane-beta TB
+    accTitle: Simple Task responsibilities
+    accDescr: Requester and Fulfiller responsibilities, with all transitions also available to the Manager.
+    subgraph Requester["Requester"]
+        new["New - document task details"]
+        complete{"Work is Completed - review results and evidence"}
+        closed(["Closed"])
+        cancelled(["Cancelled"])
+    end
+    subgraph Fulfiller["Fulfiller"]
+        requested["Requested - waiting for work"]
+        work_in_progress["Work in Progress"]
+    end
+    subgraph Manager["Manager"]
+        permissions["May perform every transition:<br/>Request, Start Work, Work Completed,<br/>Continue Work, Close and Cancel"]
+    end
+    new -->|"Request: Requester or Manager"| requested
+    requested -->|"Start Work: Fulfiller or Manager"| work_in_progress
+    requested -->|"Cancel: Requester or Manager"| cancelled
+    work_in_progress -->|"Work Completed: Fulfiller or Manager"| complete
+    work_in_progress -->|"Cancel: Requester or Manager"| cancelled
+    complete -->|"Continue Work: Requester or Manager"| work_in_progress
+    complete -->|"Close: Requester or Manager"| closed
+    %% Each state appears once, in the lane responsible for the next action.
+    %% Manager permissions are alternatives, not additional process steps.
+    %% Input: task details. Output: results and documented completion evidence.
+    classDef terminal fill:#244b38,color:#fff,stroke:#62bf89
+    class closed,cancelled terminal

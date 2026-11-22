@@ -1,0 +1,55 @@
+---
+config:
+  er:
+    useMaxWidth: false
+title: Entity Relationship Syntax Examples
+---
+erDiagram
+    accTitle: Entity relationship syntax examples
+    accDescr: Entities, aliases, attributes, keys, cardinalities, identity and styles.
+    direction TB
+    %% Alternative directions: LR, RL, BT.
+    EXAMPLE_1["Example 1"] {
+        int id PK "Primary key"
+        string code UK "Unique key"
+        int parent_id FK "Foreign key"
+        int joined_id PK, FK "Multiple key types"
+        varchar(100) caption "Attribute comment"
+        string[] values
+        string plain_attribute
+    }
+    EXAMPLE_2["Example 2"] {
+        int id PK
+    }
+    EXAMPLE_3["Example 3"]
+    EXAMPLE_4["Example 4"]
+    EXAMPLE_5["Example 5"]
+    EXAMPLE_6["Example 6"]
+    EXAMPLE_7["Example 7"]
+    EXAMPLE_8["Example 8"]
+    EXAMPLE_9["Example 9 - standalone"]
+    "Example 10 - quoted entity" {
+        string label
+    }
+    %% All four cardinalities appear at both left and right ends.
+    EXAMPLE_1 ||--|| EXAMPLE_2 : "Example 11 - one to one"
+    EXAMPLE_2 |o--o| EXAMPLE_3 : "Example 12 - zero or one"
+    EXAMPLE_3 }o--o{ EXAMPLE_4 : "Example 13 - zero or many"
+    EXAMPLE_4 }|--|{ EXAMPLE_5 : "Example 14 - one or many"
+    EXAMPLE_5 ||..o{ EXAMPLE_6 : "Example 15 - non-identifying"
+    EXAMPLE_6 }o..o| EXAMPLE_7 : "Example 16 - optional"
+    EXAMPLE_7 }|..|{ EXAMPLE_8 : "Example 17 - mandatory many"
+    EXAMPLE_8 ||..|| EXAMPLE_1 : "Example 18 - mandatory one"
+    %% Text aliases for relationship tokens:
+    EXAMPLE_2 only one to zero or more EXAMPLE_6 : "Example 19"
+    EXAMPLE_3 zero or one optionally to one or more EXAMPLE_7 : "Example 20"
+    classDef highlighted fill:#254b70,color:#fff,stroke:#88bbee
+    class EXAMPLE_1,EXAMPLE_2 highlighted
+    EXAMPLE_11["Example 21 - inline class"]:::highlighted
+    style EXAMPLE_9 fill:#354535,stroke:#8c8,color:#fff
+    %% Cardinality synonyms: only one / 1; zero or one / one or zero;
+    %% zero or more / zero or many / many(0) / 0+;
+    %% one or more / one or many / many(1) / 1+.
+    %% Identity synonyms: -- / to; .. / optionally to.
+    "Example 22 - **bold** _italic_"
+    "Example 23 - Unicode ÄÖÜ"

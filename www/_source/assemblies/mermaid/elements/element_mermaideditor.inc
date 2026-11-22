@@ -1,13 +1,14 @@
 <?php
 
 	require_once(GetWDKDir().'wdk_element_react.inc');
+	require_once(GetAssemblyDir('mermaid').'mermaid.inc');
 
 	class CMermaidEditorElement extends CReactElement
 	{
 		function __construct(CWebSite $website, $strStyleID = 'default')
 		{
 			parent::__construct($website, 'mermaideditor', $strStyleID, false, false);
-			$this->AddJavaScript('mermaid');
+			ActivateMermaid($this->GetWebsite());
 			$this->AddJavaScript('react-mermaid');
 			$this->AddJavaScript('react-mermaidviewer');
 			$this->AddJavaScript('react-mermaideditor');

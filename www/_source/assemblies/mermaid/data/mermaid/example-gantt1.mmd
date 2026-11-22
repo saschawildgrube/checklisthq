@@ -1,0 +1,31 @@
+---
+config:
+  gantt:
+    useMaxWidth: false
+---
+gantt
+    title Simple Task - Illustrative Schedule
+    dateFormat YYYY-MM-DD
+    axisFormat %d %b
+    excludes weekends
+    %% Example dates and durations, not constraints of the process.
+    %% This is one completed instance with a continuation.
+    %% Cancellation is an alternative from Requested or Work in Progress.
+    %% A Manager may perform every transition on behalf of the named role.
+    section Requester
+    New - document task details       :done, draft, 2026-11-23, 1d
+    Request                           :milestone, request, after draft, 0d
+    section Fulfiller
+    Requested - await start           :done, queued, after draft, 1d
+    Start Work                        :milestone, start_work, after queued, 0d
+    Work in Progress                  :done, work, after queued, 3d
+    Work Completed - attach evidence  :milestone, complete, after work, 0d
+    section Requester review
+    Review results and evidence       :done, review, after work, 1d
+    Continue Work                     :milestone, continue_work, after review, 0d
+    section Fulfiller continuation
+    Work in Progress - continuation   :done, rework, after review, 2d
+    Work Completed again              :milestone, complete_again, after rework, 0d
+    section Requester closure
+    Confirm results                   :done, confirm, after rework, 1d
+    Close - Closed                    :milestone, closed, after confirm, 0d

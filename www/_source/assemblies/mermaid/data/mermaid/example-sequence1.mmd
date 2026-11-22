@@ -1,0 +1,32 @@
+---
+config:
+  sequence:
+    useMaxWidth: false
+title: Simple Task - Interactions
+---
+sequenceDiagram
+    actor R as Requester
+    participant T as Simple Task
+    actor F as Fulfiller
+    actor M as Manager
+    Note over R,M: Manager may perform every transition
+    R->>T: Create task with details (New)
+    R->>T: Request (Requested)
+    alt Cancel while Requested
+        R->>T: Cancel (Cancelled)
+    else Start delivery
+        F->>T: Start Work (Work in Progress)
+        alt Cancel while Work in Progress
+            R->>T: Cancel (Cancelled)
+        else Deliver results
+            F->>T: Work Completed with results and evidence (Complete)
+            T-->>R: Request confirmation
+            loop Each time the Requester requires continuation
+                R->>T: Continue Work (Work in Progress)
+                T-->>F: Continue delivery
+                F->>T: Work Completed with updated evidence (Complete)
+                T-->>R: Request confirmation again
+            end
+            R->>T: Close (Closed)
+        end
+    end

@@ -1,8 +1,20 @@
 .mermaid
 {
+    visibility: hidden;
     overflow: auto;
     padding: .75rem;
     background: #383d45;
     color: #f1f3f5;
     text-align: center;
+}
+
+.mermaid.mermaid-ready
+{
+    visibility: visible;
+}
+
+.mermaid > svg
+{
+    display: block;
+    margin: 0 auto;
 }

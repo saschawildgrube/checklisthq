@@ -1,0 +1,31 @@
+---
+config:
+  state:
+    useMaxWidth: false
+title: Simple Task - States
+---
+stateDiagram-v2
+    direction TB
+    state "New" as new
+    state "Requested" as requested
+    state "Work in Progress" as work_in_progress
+    state "Work is Completed" as complete
+    state "Closed" as closed
+    state "Cancelled" as cancelled
+    [*] --> new
+    new --> requested: Request / Requester or Manager
+    requested --> work_in_progress: Start Work / Fulfiller or Manager
+    requested --> cancelled: Cancel / Requester or Manager
+    work_in_progress --> complete: Work Completed / Fulfiller or Manager
+    work_in_progress --> cancelled: Cancel / Requester or Manager
+    complete --> work_in_progress: Continue Work / Requester or Manager
+    complete --> closed: Close / Requester or Manager
+    closed --> [*]
+    cancelled --> [*]
+    note right of new
+        Input: details of the requested task.
+    end note
+    note right of complete
+        Output: requested results and
+        documented completion evidence.
+    end note

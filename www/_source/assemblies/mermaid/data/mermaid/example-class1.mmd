@@ -1,0 +1,61 @@
+---
+config:
+  class:
+    useMaxWidth: false
+title: Simple Task - Process Model
+---
+classDiagram
+    direction TB
+    class SimpleTask {
+        +String id
+        +String description
+        +String input
+        +String output
+        +TaskState state
+        +request()
+        +start_work()
+        +complete()
+        +continue_work()
+        +close()
+        +cancel()
+    }
+    class TaskState {
+        <<enumeration>>
+        new
+        requested
+        work_in_progress
+        complete
+        closed
+        cancelled
+    }
+    class Requester {
+        +createTask()
+        +request()
+        +continue_work()
+        +close()
+        +cancel()
+    }
+    class Fulfiller {
+        +start_work()
+        +complete()
+    }
+    class Manager {
+        +request()
+        +start_work()
+        +complete()
+        +continue_work()
+        +close()
+        +cancel()
+    }
+    class CompletionEvidence {
+        +String results
+        +String documentation
+    }
+    SimpleTask --> TaskState : current state
+    Requester --> SimpleTask : requests and confirms
+    Fulfiller --> SimpleTask : delivers
+    Manager --> SimpleTask : oversees all transitions
+    SimpleTask "1" *-- "0..*" CompletionEvidence : documents
+    note for SimpleTask "Initial state: new\nTerminal states: closed, cancelled"
+    note for Requester "Cancel only from requested or work_in_progress\nContinue and close only from complete"
+    note for Fulfiller "Start only from requested\nComplete only from work_in_progress"

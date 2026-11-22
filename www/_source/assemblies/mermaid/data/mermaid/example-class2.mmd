@@ -1,0 +1,90 @@
+---
+config:
+  class:
+    useMaxWidth: false
+title: Class Syntax Examples
+---
+classDiagram
+    accTitle: Class syntax examples
+    accDescr: Members, generics, annotations, namespaces, relationships, notes and styling.
+    direction TB
+    %% Alternative directions: LR, RL, BT.
+    namespace Examples["Example 29 - namespace label"] {
+        class Example1["Example 1"] {
+            +String publicMember
+            -int privateMember
+            #bool protectedMember
+            ~String packageMember
+            +int staticMember$
+            +publicMethod(String value) bool
+            -privateMethod()
+            #protectedMethod()
+            ~packageMethod()
+            +abstractMethod()*
+            +staticMethod()$
+            +List~String~ genericMethod(List~int~ values) List~String~
+        }
+        class Example2 {
+            <<interface>>
+            +execute()*
+        }
+        class Example3 {
+            <<abstract>>
+        }
+        class Example4 {
+            <<service>>
+        }
+        class Example5 {
+            <<enumeration>>
+            EXAMPLE_A
+            EXAMPLE_B
+        }
+    }
+    class Example6~T~ {
+        +T value
+        +List~List~int~~ nestedList
+        +get() T
+    }
+    class Example7
+    Example7 : +String separateMember
+    Example7 : +separateMethod() bool
+    class Example8["Example 8 - label"]
+    <<interface>> Example8
+    class Example9 <<service>>
+    Example1 --|> Example3 : Example 10 - inheritance
+    Example1 *-- Example5 : Example 11 - composition
+    Example1 o-- Example6 : Example 12 - aggregation
+    Example1 --> Example7 : Example 13 - association
+    Example1 -- Example4 : Example 14 - solid link
+    Example1 ..> Example9 : Example 15 - dependency
+    Example1 ..|> Example2 : Example 16 - realization
+    Example1 .. Example8 : Example 17 - dotted link
+    Example6 "1" --> "0..1" Example7 : Example 18
+    Example7 "1..*" --> "*" Example8 : Example 19
+    Example8 "2" --> "0..3" Example9 : Example 20
+    Example9 "1..5" <|--|> Example3 : Example 21 - two ends
+    ExampleInterface ()-- Example7 : Example 22 - lollipop
+    note "Example 23 - general note"
+    note for Example1 "Example 24 - attached note\nSecond line"
+    classDef highlighted fill:#254b70,color:#fff,stroke:#88bbee
+    cssClass "Example1,Example2" highlighted
+    class Example10:::highlighted
+    style Example7 fill:#354535,stroke:#8c8,color:#fff
+    %% Interaction alternatives (disabled by this assembly's strict security):
+    %% link Example1 "https://example.com" "Example 25"
+    %% callback Example2 "exampleCallback" "Example 26"
+    %% click Example3 href "https://example.com" "Example 27" _blank
+    %% click Example4 call exampleCallback() "Example 28"
+    %% Namespaces can be nested or use dotted names in Mermaid 12.3.
+    namespace ExampleOuter {
+        namespace ExampleInner {
+            class ExampleNested
+        }
+    }
+    namespace ExampleOuter.ExampleDotted {
+        class ExampleDottedClass
+    }
+    ExampleNested --> ExampleDottedClass : Example 30
+    Example7 --() ExampleInterface2 : Example 31
+    %% Reverse endpoints are valid too: <|--, --*, --o, <--, <.., <|..
+    %% Two-ended relations combine endpoint markers with -- or ..

@@ -3,6 +3,7 @@
 	require_once('env.inc');
 	require_once(GetWDKDir().'wdk_website_dynamic.inc');
 	require_once(GetAssemblyDir('google').'google_appurl.inc');
+	require_once(GetAssemblyDir('mermaid').'mermaid.inc');
 	
   class CChecklistHQWebSite extends CDynamicWebSite
 	{
@@ -119,8 +120,7 @@
 
 			$this->RegisterGenericOutputItem('GOOGLEAPPURL',array('app','email'));			
 			
-			$this->AddJavaScript('mermaid');
-			$this->AddStyleSheet('mermaid');
+			ActivateMermaid($this);
 
 			$passwordpolicy = new CPasswordPolicy();
 			$passwordpolicy->SetPolicy($this->GetConfig('passwordpolicy'));
