@@ -4,9 +4,10 @@
 .wdk-mermaideditor .mermaideditor-editor { border: 1px solid #59616b; background: #383d45; color: #f1f3f5; }
 .wdk-mermaideditor .mermaideditor-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; min-height: 38px; padding: 3px 6px; background: #536640; color: #f5f8ef; border: 1px solid #687b55; }
 .wdk-mermaideditor button { font: inherit; flex-shrink: 0; background: transparent; color: inherit; border: 0; border-radius: 3px; min-width: 24px; height: 28px; padding: 0 8px; cursor: pointer; }
+.wdk-mermaideditor .mermaideditor-docs { color: inherit; padding: 0 8px; text-decoration: underline; }
 .wdk-mermaideditor button:hover { background: #ffffff25; }
 .wdk-mermaideditor button:disabled { opacity: .5; cursor: default; }
-.wdk-mermaideditor button:focus-visible, .wdk-mermaideditor textarea:focus { outline: 2px solid var(--editor-accent); outline-offset: -2px; }
+.wdk-mermaideditor .mermaideditor-docs:focus-visible, .wdk-mermaideditor button:focus-visible, .wdk-mermaideditor textarea:focus { outline: 2px solid var(--editor-accent); outline-offset: -2px; }
 .wdk-mermaideditor .mermaideditor-panes { display: flex; height: 65vh; min-height: 360px; }
 .wdk-mermaideditor .mermaideditor-pane, .wdk-mermaideditor .mermaidviewer-pane { display: flex; flex-direction: column; flex: 1 1 0; min-width: 0; min-height: 0; }
 .wdk-mermaideditor .mermaideditor-pane + .mermaidviewer-pane { border-left: 1px solid #59616b; }

@@ -92,7 +92,7 @@ class MermaidEditor extends MermaidReactComponent
 			e('div', { className: 'mermaideditor-toolbar', role: 'toolbar', 'aria-label': 'Mermaid editor controls' },
 				this.button('Download source', () => this.download(this.state.source, 'text/plain;charset=utf-8', 'diagram.mmd')),
 				this.button('Download SVG', () => this.download(this.state.svg, 'image/svg+xml;charset=utf-8', 'diagram.svg'), !this.state.svg || this.state.pending || !!this.state.error),
-				this.button('Render', () => this.setState(state => ({ pending: true, error: '', renderRequest: state.renderRequest + 1 }))),
+				e('a', { className: 'mermaideditor-docs', href: 'https://mermaid.js.org/intro/', target: '_blank', rel: 'noopener noreferrer' }, 'Mermaid docs'),
 				e('span', { className: 'mermaideditor-view-controls' }, this.button(this.state.fullscreen ? 'Normal view' : 'Full screen', () => this.setFullscreen(!this.state.fullscreen)))),
 			e('div', { className: 'mermaideditor-panes', ref: element => { this.panes = element; } },
 				e('section', { style: this.state.sourceVisible ? { flexGrow: this.state.previewVisible ? this.state.split : 1 } : {}, className: 'mermaideditor-pane' + (this.state.sourceVisible ? '' : ' mermaideditor-pane-collapsed'), 'aria-label': 'Mermaid source' },
@@ -118,7 +118,7 @@ class MermaidEditor extends MermaidReactComponent
 			e('div', { className: 'mermaideditor-status', role: 'status' },
 				this.state.pending ? 'Rendering...' : this.state.error ? 'Preview is out of date' : this.state.svg ? 'Diagram rendered' : 'Enter Mermaid source to begin'),
 			this.state.error && e('div', { className: 'mermaideditor-error', role: 'alert' },
-				e('p', {}, 'Unable to render this source. The preview retains the last valid diagram. Correct the source or use Render to retry.'),
+				e('p', {}, 'Unable to render this source. The preview retains the last valid diagram. Correct the source to update the preview.'),
 				e('pre', {}, this.state.error)));
 	}
 }
