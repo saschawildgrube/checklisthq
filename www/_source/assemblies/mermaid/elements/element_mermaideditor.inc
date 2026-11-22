@@ -16,10 +16,10 @@
 			$this->GetWebsite()->ActivateFontAwesome4();
 		}
 
-		function RenderMermaidEditor($strCode)
+		function RenderMermaidEditor($strCode, $strCallbackUpdate = '', $strCallbackSave = '')
 		{
 			$strID = 'mermaideditor_'.MakeNumericToken(10);
-			$this->AddJavaScriptReactRenderByID('MermaidEditor', $strID, array('source' => $strCode));
+			$this->AddJavaScriptReactRenderByID('MermaidEditor', $strID, array('code' => $strCode, 'callbackUpdate' => $strCallbackUpdate, 'callbackSave' => $strCallbackSave));
 			return '<div id="'.$strID.'" class="wdk-mermaideditor"></div>';
 		}
 	}

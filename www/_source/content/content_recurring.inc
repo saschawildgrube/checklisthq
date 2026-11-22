@@ -11,8 +11,8 @@
 			$arrayConfig['userspecific'] = true;
 			$arrayConfig['defaultcontent'] = $this->GetWebsite()->LoadString('TID_CONTENT_RECURRINGDEFAULT');
  
-			$this->GetWebsite()->IncludeModule('cms/wikipad');
-			$wikipad = new CWikiPadModule(
+			$this->GetWebsite()->IncludeModule('checklisthq/checklistwikipad');
+			$wikipad = new CChecklistWikiPadModule(
 				$this->GetWebsite(),
 				$this->GetWebsite()->GetPlugin('checklisthq')->GetWikiPageID('recurring'),
 				$arrayConfig);

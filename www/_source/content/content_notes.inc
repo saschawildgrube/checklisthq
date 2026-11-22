@@ -12,8 +12,8 @@
 			$arrayConfig["showsubmitbuttonsaveandstay"] = true;
 			$arrayConfig["defaultcontent"] = $this->GetWebsite()->LoadString("TID_CONTENT_WIKIPADDEFAULT");
  
-			$this->GetWebsite()->IncludeModule("cms/wikipad");
-			$wikipad = new CWikiPadModule(
+			$this->GetWebsite()->IncludeModule("checklisthq/checklistwikipad");
+			$wikipad = new CChecklistWikiPadModule(
 				$this->GetWebsite(),
 				$this->GetWebsite()->GetPlugin('checklisthq')->GetWikiPageID('notes'),
 				$arrayConfig);

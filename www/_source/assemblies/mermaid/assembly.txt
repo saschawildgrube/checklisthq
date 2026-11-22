@@ -12,7 +12,16 @@ FEATURES
 	* Element mermaidviewer (CMermaidViewerElement), using MermaidViewer directly without a module.
 	* RenderMermaidViewer($strCode) accepts the Mermaid code as its only input.
 	* Module mermaid/mermaideditor (CMermaidEditorModule)
-	* Optional source configuration passed from module to element to React; defaults to empty.
+	* Optional source module configuration is passed to the React editor as code; defaults to empty.
+	* MermaidEditor accepts code for initialization and subsequent prop updates.
+	* RenderMermaidEditor($strCode, $strCallbackUpdate = '', $strCallbackSave = '') accepts an optional global JavaScript function name.
+	  Example: RenderMermaidEditor($strCode, 'handleMermaidUpdate') calls window.handleMermaidUpdate(code).
+	  Define the function in an independent script before the initial diagram finishes rendering.
+	* Optional callbackUpdate accepts a function or a global function name and runs after successful rendering, including valid initial code.
+	  Pending, invalid, empty and outdated results do not trigger the callback.
+	* Optional callbackSave accepts a function or a global function name, also supported by module configuration.
+	  When it resolves to a function, Save appears to the right of the view toggle.
+	  Clicking Save passes the current code, including empty, invalid or pending code.
 	* Source and SVG downloads. Changes are kept in memory until downloaded.
 
 DEPENDENCIES
@@ -28,7 +37,9 @@ DEPENDENCIES
 LAB EXAMPLES
 
 	State, beta swimlane, flowchart, Gantt, sequence, classes and entity relationships; two shared data examples each.
-	Editor lab pages supply source through the module configuration. Viewer lab pages use the element directly.
+	Editor lab pages supply source and callbackUpdate through the module configuration.
+	The lab-mermaideditor script defines LabMermaidEditorUpdate(code) and logs valid code updates to the browser console.
+	Viewer lab pages use the element directly.
 
 VENDORED DISTRIBUTION
 

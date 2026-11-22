@@ -13,7 +13,7 @@
 		{
 			$this->IncludeElement('mermaideditor');
 			$editor = new CMermaidEditorElement($this->GetWebsite(), 'default');
-			$this->SetOutputItem('EDITOR', $editor->RenderMermaidEditor((string)$this->GetModuleConfig('source')));
+			$this->SetOutputItem('EDITOR', $editor->RenderMermaidEditor((string)$this->GetModuleConfig('source'), (string)$this->GetModuleConfig('callbackUpdate'), (string)$this->GetModuleConfig('callbackSave')));
 			return 'start';
 		}
 	}

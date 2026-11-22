@@ -5,7 +5,12 @@ class MermaidEditor extends MermaidReactComponent
 	constructor(props)
 	{
 		super(props);
-		this.state = { source: typeof props.source === 'string' ? props.source : '', svg: '', error: '', pending: true, fullscreen: false, sourceVisible: true, previewVisible: true, split: 50, renderRequest: 0 };
+		let code = '';
+		if (typeof props.code === 'string')
+		{
+			code = props.code;
+		}
+		this.state = { source: code, svg: '', error: '', pending: true, fullscreen: false, sourceVisible: true, previewVisible: true, split: 50, renderRequest: 0 };
 	}
 	componentDidMount()
 	{
@@ -15,8 +20,15 @@ class MermaidEditor extends MermaidReactComponent
 	}
 	componentDidUpdate(previous)
 	{
-		if (previous.source !== this.props.source)
-			this.changeSource(typeof this.props.source === 'string' ? this.props.source : '');
+		if (previous.code !== this.props.code)
+		{
+			let code = '';
+			if (typeof this.props.code === 'string')
+			{
+				code = this.props.code;
+			}
+			this.changeSource(code);
+		}
 	}
 	componentWillUnmount()
 	{
@@ -38,6 +50,39 @@ class MermaidEditor extends MermaidReactComponent
 	changeSource(source)
 	{
 		this.setState({ source: source, pending: true, error: '' });
+	}
+	updateRenderState(state, code)
+	{
+		this.setState(state, () => {
+			if (state.pending === false && state.error === '' && state.svg && code === this.state.source)
+			{
+				const callback = this.getCallback(this.props.callbackUpdate);
+				if (typeof callback === 'function')
+				{
+					callback(code);
+				}
+			}
+		});
+	}
+	getCallback(callback)
+	{
+		if (typeof callback === 'string')
+		{
+			callback = window[callback];
+		}
+		if (typeof callback === 'function')
+		{
+			return callback;
+		}
+		return null;
+	}
+	save()
+	{
+		const callback = this.getCallback(this.props.callbackSave);
+		if (callback)
+		{
+			callback(this.state.source);
+		}
 	}
 	download(contents, type, filename)
 	{
@@ -88,12 +133,20 @@ class MermaidEditor extends MermaidReactComponent
 	}
 	renderMermaid()
 	{
+		const code = this.state.source;
+		let viewLabel = 'Full screen';
+		if (this.state.fullscreen)
+		{
+			viewLabel = 'Normal view';
+		}
 		return e('div', { className: 'mermaideditor-editor' + (this.state.fullscreen ? ' mermaideditor-fullscreen' : '') },
 			e('div', { className: 'mermaideditor-toolbar', role: 'toolbar', 'aria-label': 'Mermaid editor controls' },
 				this.button('Download source', () => this.download(this.state.source, 'text/plain;charset=utf-8', 'diagram.mmd')),
 				this.button('Download SVG', () => this.download(this.state.svg, 'image/svg+xml;charset=utf-8', 'diagram.svg'), !this.state.svg || this.state.pending || !!this.state.error),
 				e('a', { className: 'mermaideditor-docs', href: 'https://mermaid.js.org/intro/', target: '_blank', rel: 'noopener noreferrer' }, 'Mermaid docs'),
-				e('span', { className: 'mermaideditor-view-controls' }, this.button(this.state.fullscreen ? 'Normal view' : 'Full screen', () => this.setFullscreen(!this.state.fullscreen)))),
+				e('span', { className: 'mermaideditor-view-controls' },
+					this.button(viewLabel, () => this.setFullscreen(!this.state.fullscreen)),
+					this.getCallback(this.props.callbackSave) && e('button', { type: 'button', className: 'mermaideditor-save', onClick: () => this.save() }, 'Save'))),
 			e('div', { className: 'mermaideditor-panes', ref: element => { this.panes = element; } },
 				e('section', { style: this.state.sourceVisible ? { flexGrow: this.state.previewVisible ? this.state.split : 1 } : {}, className: 'mermaideditor-pane' + (this.state.sourceVisible ? '' : ' mermaideditor-pane-collapsed'), 'aria-label': 'Mermaid source' },
 					this.paneHeader('Mermaid source', 'sourceVisible'),
@@ -112,7 +165,7 @@ class MermaidEditor extends MermaidReactComponent
 				}),
 				e(MermaidViewer, {
 					source: this.state.source, renderRequest: this.state.renderRequest, visible: this.state.previewVisible,
-					onRenderState: state => this.setState(state),
+					onRenderState: state => this.updateRenderState(state, code),
 					sourceVisible: this.state.sourceVisible, split: this.state.split,
 					header: this.paneHeader('Diagram preview', 'previewVisible') })),
 			e('div', { className: 'mermaideditor-status', role: 'status' },

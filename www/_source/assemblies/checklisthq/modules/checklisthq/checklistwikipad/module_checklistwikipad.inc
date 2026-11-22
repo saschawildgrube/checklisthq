@@ -639,6 +639,7 @@
 			}
 
 			$strSourceContent = $strContent;
+			$strContent = $this->PrepareMermaidEditing($strContent);
 
 			if ($this->GetConfigIsTaskList() == true)
 			{
@@ -862,6 +863,85 @@
 		}
 		
 		
+		function GetMermaidBlocks($strContent)
+		{
+			$strMasked = $this->MaskWikiLiteralSections($strContent);
+			preg_match_all('/(<div\b[^>]*\sclass\s*=\s*(["\x27])((?:[^"\x27]*\s)?mermaid(?:\s[^"\x27]*)?)\2[^>]*>)(.*?)(<\/div\s*>)/is',$strMasked,$arrayMatches,PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
+			$arrayBlocks = array();
+			foreach ($arrayMatches as $match)
+			{
+				if (in_array('mermaid',preg_split('/\s+/',StringTrim($match[3][0])),true))
+				{
+					$arrayBlocks[] = $match;
+				}
+			}
+			return $arrayBlocks;
+		}
+
+		function PrepareMermaidEditing($strContent)
+		{
+			if ($this->IsViewOnly() || !$this->IsToolVisible('edit'))
+			{
+				return $strContent;
+			}
+			$arrayBlocks = $this->GetMermaidBlocks($strContent);
+			if (ArrayCount($arrayBlocks) == 0)
+			{
+				return $strContent;
+			}
+			require_once(GetAssemblyDir('mermaid').'elements/element_mermaideditor.inc');
+			$editor = new CMermaidEditorElement($this->GetWebsite());
+			$this->GetWebsite()->AddJavaScriptFile('checklisthq-mermaid',GetAssemblyDir('checklisthq').'js/checklisthq-mermaid.js');
+			$strHash = MakeHash($strContent);
+			// Insert backwards to preserve the offsets of earlier diagrams.
+			for ($nIndex = ArrayCount($arrayBlocks) - 1; $nIndex >= 0; $nIndex--)
+			{
+				$block = $arrayBlocks[$nIndex];
+				$strURL = $this->GetWebsite()->MakeURL(array(
+					$this->GetModuleVarNameState() => 'submit',
+					$this->GetModuleVarName('mermaidindex') => $nIndex,
+					$this->GetModuleVarName('mermaidhash') => $strHash),false);
+				$strAttributes = ' data-checklisthq-mermaid-url="'.HtmlEncode($strURL).'"'.
+					' data-checklisthq-mermaid-field="'.HtmlEncode($this->GetModuleVarName('content')).'"'.
+					' data-checklisthq-mermaid-code="'.rawurlencode(HtmlDecode($block[4][0])).'"';
+				$nOffset = $block[1][1] + strlen($block[1][0]) - 1;
+				$strContent = substr_replace($strContent,$strAttributes,$nOffset,0);
+			}
+			return $strContent;
+		}
+
+		function StateSubmit()
+		{
+			if ($this->IsModuleParam('mermaidindex'))
+			{
+				if ($this->IsViewOnly() || !$this->IsToolVisible('edit'))
+				{
+					return $this->StateView();
+				}
+				$strPage = $this->GetData($this->GetDataName());
+				if ($strPage === false)
+				{
+					$this->SetErrorMessageCode('WIKIPAD_GET');
+					return $this->StateView();
+				}
+				$strIndex = $this->GetModuleVar('mermaidindex');
+				$arrayBlocks = $this->GetMermaidBlocks($strPage);
+				if (!$this->IsModuleParam('content') || !$this->IsModuleParam('mermaidhash')
+					|| !ctype_digit((string)$strIndex) || !isset($arrayBlocks[(int)$strIndex])
+					|| $this->GetModuleVar('mermaidhash') !== MakeHash($strPage))
+				{
+					$this->SetErrorMessageCode('SECTION');
+					$this->SetModuleVar('content','');
+					return $this->StateEdit();
+				}
+				$block = $arrayBlocks[(int)$strIndex];
+				$strCode = HtmlEncode($this->GetModuleVarInsecure('content'));
+				$strPage = substr_replace($strPage,$strCode,$block[4][1],strlen($block[4][0]));
+				$this->SetModuleVar('content',$strPage);
+			}
+			return parent::StateSubmit();
+		}
+
 		function CleanUpTaskListContent($strContent)
 		{
 			$strContent = ReplaceString($strContent,"\r\n","\n");
