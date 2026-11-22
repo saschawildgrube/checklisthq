@@ -213,15 +213,15 @@
 
 		function ShowTaskActionMessage($strCode,$strLine)
 		{
-			if (!in_array($strCode,array('LINEDELETED','LINEMOVEDDOWN','LINEMOVEDTONEXTACTION',
-				'LINEMOVEDTOWAITINGFOR','LINEMOVEDTOOTHERCONTEXT','LINEADDED'),true))
+			if (!ArrayValueExists(array('LINEDELETED','LINEMOVEDDOWN','LINEMOVEDTONEXTACTION',
+				'LINEMOVEDTOWAITINGFOR','LINEMOVEDTOOTHERCONTEXT','LINEADDED'),$strCode,true))
 			{
 				return;
 			}
 			$plugin = $this->GetWebsite()->GetPlugin('checklisthq');
 			// Module output items are not available to the site's message stack.
 			// Encode braces too, so task text cannot become a later template placeholder.
-			$strLineHTML = strtr(HtmlEncode($strLine),array('{' => '&#123;','}' => '&#125;'));
+			$strLineHTML = ReplaceString(ReplaceString(HtmlEncode($strLine),'{','&#123;'),'}','&#125;');
 			$this->SetInfoMessageText(strtr($this->GetMessage('info',$strCode),array(
 				'{LINE_DELETED}' => '<pre>'.$strLineHTML.'</pre>',
 				'{LINE_MOVED}' => '<pre>'.$strLineHTML.'</pre>',
@@ -231,8 +231,12 @@
 
 		function GetPendingTaskMessages()
 		{
-			$arrayMessages = json_decode($this->GetModuleVarInsecure('task_messages'),true);
-			return is_array($arrayMessages) ? $arrayMessages : array();
+			$arrayMessages = JsonDecode($this->GetModuleVarInsecure('task_messages'));
+			if (IsArray($arrayMessages))
+			{
+				return $arrayMessages;
+			}
+			return array();
 		}
 
 		function QueueTaskActionMessage($strCode,$strLine)
@@ -242,7 +246,7 @@
 			$arrayMessages = array_slice($arrayMessages,-9,null,true);
 			$strToken = MakeHexToken(32);
 			$arrayMessages[$strToken] = array('code' => $strCode,'line' => $strLine);
-			$this->SetModuleVar('task_messages',json_encode($arrayMessages));
+			$this->SetModuleVar('task_messages',JsonEncode($arrayMessages));
 			return $strToken;
 		}
 
@@ -257,7 +261,12 @@
 			}
 			$arrayMessage = $arrayMessages[$strToken];
 			unset($arrayMessages[$strToken]);
-			$this->SetModuleVar('task_messages',count($arrayMessages) ? json_encode($arrayMessages) : '');
+			$strMessages = '';
+			if (ArrayCount($arrayMessages) > 0)
+			{
+				$strMessages = JsonEncode($arrayMessages);
+			}
+			$this->SetModuleVar('task_messages',$strMessages);
 			if (isset($arrayMessage['code'],$arrayMessage['line'])
 				&& is_string($arrayMessage['code']) && is_string($arrayMessage['line']))
 			{
@@ -269,7 +278,7 @@
 		{
 			// Navigation must not resume an editor or replay a saved submission from the session.
 			if (!$this->IsModuleParam('state')
-				&& in_array($strState,array('edit','editsection','submit','submitsection'),true))
+				&& ArrayValueExists(array('edit','editsection','submit','submitsection'),$strState,true))
 			{
 				$strState = '';
 				$this->SetState('');
@@ -295,7 +304,7 @@
 			{
 				$strState = 'radialtidytree';	
 			}
-			if (in_array($strState,array('','view','edit','editsection','network','zoomablesunburst','radialtidytree'),true))
+			if (ArrayValueExists(array('','view','edit','editsection','network','zoomablesunburst','radialtidytree'),$strState,true))
 			{
 				$this->ShowPendingTaskActionMessage();
 			}
@@ -573,8 +582,16 @@
 				if (StringSection($strLine,0,1) == '=')
 				{
 					$nLineToAddHigh = $nLine + 1;
-					$nLineToAddLow = ($nNextHeader != -1) ? $nNextHeader : $nLineCount;
-					$nLineToAddMedium = ($nNextSection != -1) ? $nNextSection : 0;
+					$nLineToAddLow = $nLineCount;
+					if ($nNextHeader != -1)
+					{
+						$nLineToAddLow = $nNextHeader;
+					}
+					$nLineToAddMedium = 0;
+					if ($nNextSection != -1)
+					{
+						$nLineToAddMedium = $nNextSection;
+					}
 					$arrayPositions[$nLine] = array(
 						'low' => $nLineToAddLow,
 						'medium' => $nLineToAddMedium,
@@ -716,7 +733,7 @@
 					}
 					if ($bFirstLineInSection == false)
 					{
-						$bFirstLineInSection = ($strOldSection != $strSection) ? (true) : (false);
+						$bFirstLineInSection = ($strOldSection != $strSection);
 					}
 
 					
@@ -870,7 +887,7 @@
 			$arrayBlocks = array();
 			foreach ($arrayMatches as $match)
 			{
-				if (in_array('mermaid',preg_split('/\s+/',StringTrim($match[3][0])),true))
+				if (ArrayValueExists(preg_split('/\s+/',StringTrim($match[3][0])),'mermaid',true))
 				{
 					$arrayBlocks[] = $match;
 				}
@@ -889,7 +906,7 @@
 			{
 				return $strContent;
 			}
-			require_once(GetAssemblyDir('mermaid').'elements/element_mermaideditor.inc');
+			$this->IncludeElement('mermaideditor');
 			$editor = new CMermaidEditorElement($this->GetWebsite());
 			$this->GetWebsite()->AddJavaScriptFile('checklisthq-mermaid',GetAssemblyDir('checklisthq').'js/checklisthq-mermaid.js');
 			$strHash = MakeHash($strContent);
@@ -903,7 +920,7 @@
 					$this->GetModuleVarName('mermaidhash') => $strHash),false);
 				$strAttributes = ' data-checklisthq-mermaid-url="'.HtmlEncode($strURL).'"'.
 					' data-checklisthq-mermaid-field="'.HtmlEncode($this->GetModuleVarName('content')).'"'.
-					' data-checklisthq-mermaid-code="'.rawurlencode(HtmlDecode($block[4][0])).'"';
+					' data-checklisthq-mermaid-code="'.ReplaceString(StringURLEncode(HtmlDecode($block[4][0])),'+','%20').'"';
 				$nOffset = $block[1][1] + strlen($block[1][0]) - 1;
 				$strContent = substr_replace($strContent,$strAttributes,$nOffset,0);
 			}
@@ -1103,7 +1120,7 @@
 
 					// Moving a sub-task up or down makes it a top-level task.
 					// Shift its descendants equally, preserving their relative depth.
-					$bPromoteTask = ($nTaskDepth > 1 && in_array($strAction,array('movedown','movetop','movetonextaction')));
+					$bPromoteTask = ($nTaskDepth > 1 && ArrayValueExists(array('movedown','movetop','movetonextaction'),$strAction));
 					$bInTaskPre = false;
 					$strTaskBlockToModify = '';
 					for ($nTaskBlockLine = $nLineToModify; $nTaskBlockLine <= $nLineToModifyEnd; $nTaskBlockLine++)
@@ -1399,7 +1416,15 @@
 						}
 						else
 						{
-							$nInsertAt = $bInWaitingFor ? ArrayCount($arrayLines) : (($nWaitingForEnd != -1) ? $nWaitingForEnd : 0);
+							$nInsertAt = 0;
+							if ($bInWaitingFor)
+							{
+								$nInsertAt = ArrayCount($arrayLines);
+							}
+							else if ($nWaitingForEnd != -1)
+							{
+								$nInsertAt = $nWaitingForEnd;
+							}
 							$arrayInsert = array('=NEXT ACTION=',$strLineText);
 						}
 						array_splice($arrayLines,$nInsertAt,0,$arrayInsert);
